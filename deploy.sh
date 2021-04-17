@@ -2,13 +2,13 @@
 
 SRC_BRANCH="main"
 
-git add --all && git commit --no-verify -m "Publishing source of blog to master branch" && git push origin master 
+git add --all && git commit --no-verify -m "Publishing source of blog to main branch" && git push origin main
 
 # Check if there are any uncommitted changes
 if ! git diff-index --quiet HEAD --; then
     echo "Changes to the following files are uncommitted:"
     git diff-index --name-only HEAD --
-    echo "Please commit the changes to master branch (which contains the source files of this blog) before proceeding."
+    echo "Please commit the changes to main branch (which contains the source files of this blog) before proceeding."
     # Push to SRC_BRANCH
     #git add -fA
     #git commit --allow-empty -m "$(git log -1 --pretty=%B) [ci skip]"
