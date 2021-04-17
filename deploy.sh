@@ -47,4 +47,4 @@ echo "Cleaning up files"
 cd ..
 git worktree prune
 
-rm -rf public
+# rm -rf public
