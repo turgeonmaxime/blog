@@ -1,4 +1,4 @@
-baseurl: /
+baseurl: https://maxturgeon.ca/blog
 languageCode: en-ca
 title: Blog—Max Turgeon
 theme: hugo-lithium
@@ -11,7 +11,7 @@ ignoreFiles:
   - \.knit\.md$
   - \.utf8\.md$
 permalinks:
-  post: /:year/:month/:day/:slug/
+  post: /:year-:month-:day-:slug/
 menu:
   main:
     - name: Home
