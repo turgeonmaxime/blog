@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>prediction on Blog—Max Turgeon</title>
-    <link>maxturgeon.ca/blog/tags/prediction/</link>
+    <link>https://maxturgeon.ca/blog/tags/prediction/</link>
     <description>Recent content in prediction on Blog—Max Turgeon</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-ca</language>
     <lastBuildDate>Sat, 23 Feb 2019 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="maxturgeon.ca/blog/tags/prediction/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://maxturgeon.ca/blog/tags/prediction/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Oscar 2019 predictions</title>
-      <link>maxturgeon.ca/blog/2019-02-23-oscar-predictions-2019/</link>
+      <link>https://maxturgeon.ca/blog/2019-02-23-oscar-predictions-2019/</link>
       <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2019-02-23-oscar-predictions-2019/</guid>
+      <guid>https://maxturgeon.ca/blog/2019-02-23-oscar-predictions-2019/</guid>
       <description>&lt;p&gt;Again this year, I will be using a prediction model to try and predict the winners in the top four categories: Best Picure, Best Director, Best Actor, and Best Actress. As in previous years, I still provide predictions for the other categories, but they were derived on a more &lt;em&gt;ad hoc&lt;/em&gt; basis.&lt;/p&gt;
 &lt;p&gt;According to most pundits, the Best Picture race is wide open. But as you&amp;rsquo;ll see below, my prediction is less equivocal. To see this, it&amp;rsquo;s informative to look at how the winning probabilities have changed over time as more information was coming in:&lt;/p&gt;
 &lt;p&gt;![Winning probabilities]({{ site.github.url }}/figure/posts/oscar2019_bestPic.png &amp;ldquo;Winning probabilities over time&amp;rdquo;)&lt;/p&gt;
@@ -27,19 +27,19 @@
     
     <item>
       <title>Predictive model for the Oscars</title>
-      <link>maxturgeon.ca/blog/2018-02-25-oscar-prediction-model/</link>
+      <link>https://maxturgeon.ca/blog/2018-02-25-oscar-prediction-model/</link>
       <pubDate>Sun, 25 Feb 2018 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2018-02-25-oscar-prediction-model/</guid>
+      <guid>https://maxturgeon.ca/blog/2018-02-25-oscar-prediction-model/</guid>
       <description>&lt;p&gt;A few years ago, as part of the graduate course &lt;em&gt;Data Analysis and Report Writing&lt;/em&gt; in the Department of Epidemiology, Biostatistics and Occupational Health at McGill University, we explored the topic of predictive modeling using a dataset containing movies, directors and actors who were nominated for an Academy Award. The goal was to select some variables and build a predictive model for the winner in four categories: Best Picture, Best Director, Best Actor, and Best Actress. As a movie fan, this was the dream assignment: I could combine my love of movies with my love of statistics! And it payed off: I was the only one in my class to correctly predict all four winners.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Oscar 2018 predictions</title>
-      <link>maxturgeon.ca/blog/2018-02-24-oscar-predictions-2018/</link>
+      <link>https://maxturgeon.ca/blog/2018-02-24-oscar-predictions-2018/</link>
       <pubDate>Sat, 24 Feb 2018 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2018-02-24-oscar-predictions-2018/</guid>
+      <guid>https://maxturgeon.ca/blog/2018-02-24-oscar-predictions-2018/</guid>
       <description>&lt;p&gt;For the past few years, I have tried to predict the winners in all categories at the Academy Awards. Again, I will be using statistics and data analysis to inform my decision in some categories: Best Picure, Best Director, Best Actor, Best Actress, Best Supporting Actor, and Best Supporting Actress&lt;/p&gt;
 &lt;p&gt;As for the last three years, I stick to what the model tells me for my prediction in these categories. However, I&amp;rsquo;m skeptical about the predictions I have for best picture: several pundits see &lt;em&gt;The Shape of Water&lt;/em&gt; as a front runner, but my model only gives it a 16% chance of winning. Due to rule changes that now require a preferential ballot for Best Picture, the winner has been difficult to predict in recent years. Since &lt;em&gt;The Shape of Water&lt;/em&gt; possibly has a broader appeal than &lt;em&gt;Lady Bird&lt;/em&gt; and &lt;em&gt;Three Billboards Outside Ebbing, Missouri&lt;/em&gt;, it may prevail in the end. But I still believe &lt;em&gt;Three Billboards Outside Ebbing, Missouri&lt;/em&gt; is the actual front-runner; but I do think my model is under-estimating &lt;em&gt;The Shape of Water&lt;/em&gt;&amp;rsquo;s chances and over-estimating &lt;em&gt;Lady Bird&lt;/em&gt;&amp;rsquo;s.&lt;/p&gt;
 &lt;p&gt;In the next few days, I will write another post in which I&amp;rsquo;ll describe how my model works. I&amp;rsquo;ll take the opportunity to try and explain why my model is so bearish for &lt;em&gt;The Shape of Water&lt;/em&gt;.&lt;/p&gt;
@@ -48,10 +48,10 @@
     
     <item>
       <title>Oscar 2017 predictions</title>
-      <link>maxturgeon.ca/blog/2017-02-12-oscar-predictions-2017/</link>
+      <link>https://maxturgeon.ca/blog/2017-02-12-oscar-predictions-2017/</link>
       <pubDate>Sun, 12 Feb 2017 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2017-02-12-oscar-predictions-2017/</guid>
+      <guid>https://maxturgeon.ca/blog/2017-02-12-oscar-predictions-2017/</guid>
       <description>&lt;p&gt;For the past few years, I have tried to predict the winners in all categories at the Academy Awards. And &lt;a href=&#34;oscar-predictions-2016&#34;&gt;for the past two years&lt;/a&gt;, I&amp;rsquo;ve also used statistics and data analysis to inform my decision in four categories: Best Picure, Best Director, Best Actor, and Best Actress.&lt;/p&gt;
 &lt;p&gt;As for the last two years, I stick to what the model tells me for my prediction in these categories. However, I&amp;rsquo;m skeptical about the predictions I have for the acting categories. First, for best actor, Denzel Washington and Casey Affleck are the only two front-runners&amp;ndash;there is no way Ryan Gosling will win this award. Second, for best actress, although I would argue that Emma Stone is now the favourite, Isabelle Huppert definitely has a chance too. Therefore, I expect to miss one of these categories.&lt;/p&gt;
 &lt;p&gt;Finally, this year is definitely &lt;em&gt;La La Land&lt;/em&gt;&amp;rsquo;s show: 14 nominations, tied with &lt;a href=&#34;https://www.imdb.com/title/tt0120338/&#34;&gt;&lt;em&gt;Titanic&lt;/em&gt;&lt;/a&gt; and &lt;a href=&#34;https://www.imdb.com/title/tt0042192/&#34;&gt;&lt;em&gt;All About Eve&lt;/em&gt;&lt;/a&gt; for the most ever. I don&amp;rsquo;t think it will set a new record (which is 11 wins), but I expect them to win around 10 awards. I don&amp;rsquo;t expect them to run the tables in the sound/music categories&amp;ndash;which would be a first for a musical. I think the only one of these four awards they could miss is Best Sound Editing, which I predict will probably go to &lt;em&gt;Arrival&lt;/em&gt;.&lt;/p&gt;
@@ -61,19 +61,19 @@
     
     <item>
       <title>By how much will Clinton win?</title>
-      <link>maxturgeon.ca/blog/2016-03-08-democratic-primary/</link>
+      <link>https://maxturgeon.ca/blog/2016-03-08-democratic-primary/</link>
       <pubDate>Tue, 08 Mar 2016 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2016-03-08-democratic-primary/</guid>
+      <guid>https://maxturgeon.ca/blog/2016-03-08-democratic-primary/</guid>
       <description>&lt;p&gt;American politics is great for statistics: there are huge amounts of polls being conducted every week, some positions are up for re-election every other year, and there is really only two parties. Moreover, the complicated nature of the whole election process, which for example involves the electoral college for the presidential election, makes it more interesting than most democracies around the world. It&amp;rsquo;s for all these reasons that an incredible website like &lt;a href=&#34;https://fivethirtyeight.com/&#34;&gt;FiveThirtyEight&lt;/a&gt; is possible.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Oscar 2016 predictions</title>
-      <link>maxturgeon.ca/blog/2016-02-07-oscar-predictions-2016/</link>
+      <link>https://maxturgeon.ca/blog/2016-02-07-oscar-predictions-2016/</link>
       <pubDate>Sun, 07 Feb 2016 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2016-02-07-oscar-predictions-2016/</guid>
+      <guid>https://maxturgeon.ca/blog/2016-02-07-oscar-predictions-2016/</guid>
       <description>&lt;p&gt;For the past three years, I have tried to predict the winners in all categories at the Academy Awards. But last year, I was able to combine my passion for both movies and statistics: as part of my Data Analysis course at McGill University, we had to come up with a prediction model for four categories: Best Picture, Best Director, Best Actor, and Best Actress. And my model performed quite well: it was the only one to predict correctly the four winners.&lt;/p&gt;
 &lt;p&gt;This year, I decided to repeat the experience again, especially since the Best Picture category is more competitive this year than last year. I have shared my predictions below, for all categories; however, I have used a statistical model only for the four categories mentionned above. All other categories are based on my own judgement (and readings I have done). My predictions are in bold font.&lt;/p&gt;
 &lt;p&gt;After the Academy Awards, I will update this post and point out the winners (I will indicate them in italics). I may also write a post on my prediction model.&lt;/p&gt;

@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>dimension reduction on Blog—Max Turgeon</title>
-    <link>maxturgeon.ca/blog/tags/dimension-reduction/</link>
+    <link>https://maxturgeon.ca/blog/tags/dimension-reduction/</link>
     <description>Recent content in dimension reduction on Blog—Max Turgeon</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-ca</language>
     <lastBuildDate>Thu, 06 Aug 2015 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="maxturgeon.ca/blog/tags/dimension-reduction/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://maxturgeon.ca/blog/tags/dimension-reduction/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Principal components of explained variance</title>
-      <link>maxturgeon.ca/blog/2015-08-06-pcev/</link>
+      <link>https://maxturgeon.ca/blog/2015-08-06-pcev/</link>
       <pubDate>Thu, 06 Aug 2015 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2015-08-06-pcev/</guid>
+      <guid>https://maxturgeon.ca/blog/2015-08-06-pcev/</guid>
       <description>&lt;p&gt;I have been spending most of my time on a very interesting technique that has,
 unfortunately, received little attention (I&amp;rsquo;ll come back later about some
 possible reasons). The purpose of this post is to introduce this method and give

@@ -2,31 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>continuous-integration on Blog—Max Turgeon</title>
-    <link>maxturgeon.ca/blog/tags/continuous-integration/</link>
+    <link>https://maxturgeon.ca/blog/tags/continuous-integration/</link>
     <description>Recent content in continuous-integration on Blog—Max Turgeon</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-ca</language>
     <lastBuildDate>Sat, 01 Apr 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="maxturgeon.ca/blog/tags/continuous-integration/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://maxturgeon.ca/blog/tags/continuous-integration/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Installing multiple R versions</title>
-      <link>maxturgeon.ca/blog/2017-04-01-multiple-r-versions/</link>
+      <link>https://maxturgeon.ca/blog/2017-04-01-multiple-r-versions/</link>
       <pubDate>Sat, 01 Apr 2017 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2017-04-01-multiple-r-versions/</guid>
+      <guid>https://maxturgeon.ca/blog/2017-04-01-multiple-r-versions/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://sahirbhatnagar.com/&#34;&gt;Sahir Bhatnagar&lt;/a&gt; and I are currently wrapping up the first version of our package &lt;a href=&#34;https://sahirbhatnagar.com/casebase/&#34;&gt;casebase&lt;/a&gt;. In short, it&amp;rsquo;s an R package for survival analysis, where we use case-base sampling to fit smooth-in-time hazards. (I could write a post on this package, but there&amp;rsquo;s no need: check out the &lt;a href=&#34;https://sahirbhatnagar.com/casebase/&#34;&gt;website&lt;/a&gt; and the four vignettes.) As part of our workflow, we perform continuous integration using &lt;a href=&#34;https://travis-ci.org/&#34;&gt;Travis CI&lt;/a&gt;, and we test our package against both the current and development versions of R. Recently, some tests began to fail against the development version, and so I had to install R-devel on my local machine in order to debug our code. This blog post is a summary of how I did it.&lt;/p&gt;
 &lt;p&gt;To be fair, this is already documented online, and I made use of these resources; see the &lt;a href=&#34;https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Installation&#34;&gt;official R installation docs&lt;/a&gt; and this &lt;a href=&#34;https://support.rstudio.com/hc/en-us/articles/215488098-Installing-multiple-versions-of-R&#34;&gt;RStudio support post&lt;/a&gt;. I&amp;rsquo;m writing yet another post simply as a reference for myself and my colleagues. But I also ran into a compilation error that I wanted to document here. That error was &amp;ldquo;caused&amp;rdquo; by following closely the (amazing) book &lt;a href=&#34;http://r-pkgs.had.co.nz/&#34;&gt;&lt;em&gt;R packages&lt;/em&gt;&lt;/a&gt; by &lt;a href=&#34;http://hadley.nz/&#34;&gt;Hadley Wickham&lt;/a&gt;. Stick around to learn what the problem was!&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Removing all R CMD check warnings</title>
-      <link>maxturgeon.ca/blog/2016-04-08-check-warnings/</link>
+      <link>https://maxturgeon.ca/blog/2016-04-08-check-warnings/</link>
       <pubDate>Fri, 08 Apr 2016 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2016-04-08-check-warnings/</guid>
+      <guid>https://maxturgeon.ca/blog/2016-04-08-check-warnings/</guid>
       <description>&lt;p&gt;Making R packages is an important aspect of the statistician&amp;rsquo;s work. Or at least it should be: it is quite annoying when a new method appears in the literature but no implementation is readily available.&lt;/p&gt;
 &lt;p&gt;A favourite mantra of mine when making R packages is the following: &lt;strong&gt;an R package is more than the sum of its functions&lt;/strong&gt;. A functioning R package needs to be able to interact properly with the R environment (through the &lt;code&gt;NAMESPACE&lt;/code&gt;); a good R package also needs great documentation; a great R package will also include a vignette to guide new users and explain how all the functions interact with one another.&lt;/p&gt;
 &lt;p&gt;The main reference for how to make R packages is &lt;a href=&#34;https://cran.r-project.org/doc/manuals/r-release/R-exts.html&#34;&gt;&lt;em&gt;Writing R extensions&lt;/em&gt;&lt;/a&gt;. Everything you need to know is there, if you know what you are looking for. Another, very useful reference is Hadley Wickam&amp;rsquo;s &lt;a href=&#34;http://r-pkgs.had.co.nz/&#34;&gt;book on R packages&lt;/a&gt;. This book explains the different components of an R package, and it also serves as an introduction to his &lt;a href=&#34;https://cran.r-project.org/package=devtools&#34;&gt;&lt;code&gt;devtools&lt;/code&gt; package&lt;/a&gt;.&lt;/p&gt;

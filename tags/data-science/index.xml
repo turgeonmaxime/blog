@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>data science on Blog—Max Turgeon</title>
-    <link>maxturgeon.ca/blog/tags/data-science/</link>
+    <link>https://maxturgeon.ca/blog/tags/data-science/</link>
     <description>Recent content in data science on Blog—Max Turgeon</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-ca</language>
     <lastBuildDate>Fri, 28 Sep 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="maxturgeon.ca/blog/tags/data-science/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://maxturgeon.ca/blog/tags/data-science/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>What I (currently) do at the Saskatchewan Health Authority</title>
-      <link>maxturgeon.ca/blog/2018-09-28-what-i-currently-do/</link>
+      <link>https://maxturgeon.ca/blog/2018-09-28-what-i-currently-do/</link>
       <pubDate>Fri, 28 Sep 2018 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2018-09-28-what-i-currently-do/</guid>
+      <guid>https://maxturgeon.ca/blog/2018-09-28-what-i-currently-do/</guid>
       <description>&lt;p&gt;During the summer of 2016, my wife and I moved to Saskatoon so that she could pursue her medical residency training at the University of Saskatchewan. At the point, I was only wrapping up the third year of my PhD, and so I wasn&amp;rsquo;t necessary looking for a job. But one thing led to another, and I ended up applying for a new biostatistician position with the Saskatoon Health Region (SHR).&lt;/p&gt;
 &lt;p&gt;The job description talked about being a connection point between the health care system and the Saskatchewan Centre for Patient-Oriented Research (&lt;a href=&#34;scpor.ca&#34;&gt;SCPOR&lt;/a&gt;), by providing both study design and methodological support for researchers. I thought I would be a good fit: McGill&amp;rsquo;s focus on data analysis and report writing provided me the tools to do the job; meanwhile I could learn more about the health care system itself and use my academic background to provide effective consultation to researchers.&lt;/p&gt;</description>
     </item>

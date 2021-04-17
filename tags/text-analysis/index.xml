@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Text analysis on Blog—Max Turgeon</title>
-    <link>maxturgeon.ca/blog/tags/text-analysis/</link>
+    <link>https://maxturgeon.ca/blog/tags/text-analysis/</link>
     <description>Recent content in Text analysis on Blog—Max Turgeon</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-ca</language>
     <lastBuildDate>Fri, 20 Jan 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="maxturgeon.ca/blog/tags/text-analysis/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://maxturgeon.ca/blog/tags/text-analysis/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>US Presidential Inaugural Addresses</title>
-      <link>maxturgeon.ca/blog/2017-01-20-trump-inauguration/</link>
+      <link>https://maxturgeon.ca/blog/2017-01-20-trump-inauguration/</link>
       <pubDate>Fri, 20 Jan 2017 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2017-01-20-trump-inauguration/</guid>
+      <guid>https://maxturgeon.ca/blog/2017-01-20-trump-inauguration/</guid>
       <description>&lt;p&gt;Earlier this week, on January 20th 2017, Donald J. Trump was inaugurated as the 45th president of the USA. He also gave what seemed like a very short inaugural address, and so I was curious to see how short it really was compared to previous addresses. It was also an opportunity to have a quick look at other properties of his speech.&lt;/p&gt;</description>
     </item>
     

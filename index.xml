@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Blog—Max Turgeon</title>
-    <link>maxturgeon.ca/blog/</link>
+    <link>https://maxturgeon.ca/blog/</link>
     <description>Recent content on Blog—Max Turgeon</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-ca</language>
     <lastBuildDate>Thu, 06 Feb 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="maxturgeon.ca/blog/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://maxturgeon.ca/blog/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Multivariate t distribution</title>
-      <link>maxturgeon.ca/blog/2020-02-06-multivariate-t-distribution/</link>
+      <link>https://maxturgeon.ca/blog/2020-02-06-multivariate-t-distribution/</link>
       <pubDate>Thu, 06 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2020-02-06-multivariate-t-distribution/</guid>
+      <guid>https://maxturgeon.ca/blog/2020-02-06-multivariate-t-distribution/</guid>
       <description>&lt;p&gt;I am currently teaching a graduate course in Multivariate Analysis (the course website can be found &lt;a href=&#34;https://www.maxturgeon.ca/w20-stat7200/&#34;&gt;here&lt;/a&gt;). A few weeks ago, I introduced the family of elliptical distributions. In this blog post, I want to discuss the multivariate &lt;em&gt;t&lt;/em&gt; distribution, how to generate samples, and highlight the issue of uncorrelatedness vs independence.&lt;/p&gt;
 &lt;h2 id=&#34;elliptical-distributions&#34;&gt;Elliptical distributions&lt;/h2&gt;
 &lt;p&gt;If we generate samples from a multivariate normal, we can easily see that the contour lines are &lt;em&gt;ellipses&lt;/em&gt;:&lt;/p&gt;
@@ -35,16 +35,16 @@ Y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span styl
   &lt;span style=&#34;color:#a6e22e&#34;&gt;geom_point&lt;/span&gt;(alpha &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
   &lt;span style=&#34;color:#a6e22e&#34;&gt;geom_density_2d&lt;/span&gt;() &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
   &lt;span style=&#34;color:#a6e22e&#34;&gt;theme_minimal&lt;/span&gt;()
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;maxturgeon.ca/blog/figure/source/2020-02-06-multivariate-t-distribution_files/figure-latex/unnamed-chunk-1-1.png&#34; alt=&#34;Elliptical contours of multivariate normal&#34;&gt;&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://maxturgeon.ca/blog/figure/source/2020-02-06-multivariate-t-distribution_files/figure-latex/unnamed-chunk-1-1.png&#34; alt=&#34;Elliptical contours of multivariate normal&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Elliptical distributions are a generalization of the multivariate normal distribution that retain this property that lines of constant density are ellipses.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Oscar 2019 predictions</title>
-      <link>maxturgeon.ca/blog/2019-02-23-oscar-predictions-2019/</link>
+      <link>https://maxturgeon.ca/blog/2019-02-23-oscar-predictions-2019/</link>
       <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2019-02-23-oscar-predictions-2019/</guid>
+      <guid>https://maxturgeon.ca/blog/2019-02-23-oscar-predictions-2019/</guid>
       <description>&lt;p&gt;Again this year, I will be using a prediction model to try and predict the winners in the top four categories: Best Picure, Best Director, Best Actor, and Best Actress. As in previous years, I still provide predictions for the other categories, but they were derived on a more &lt;em&gt;ad hoc&lt;/em&gt; basis.&lt;/p&gt;
 &lt;p&gt;According to most pundits, the Best Picture race is wide open. But as you&amp;rsquo;ll see below, my prediction is less equivocal. To see this, it&amp;rsquo;s informative to look at how the winning probabilities have changed over time as more information was coming in:&lt;/p&gt;
 &lt;p&gt;![Winning probabilities]({{ site.github.url }}/figure/posts/oscar2019_bestPic.png &amp;ldquo;Winning probabilities over time&amp;rdquo;)&lt;/p&gt;
@@ -55,29 +55,29 @@ Y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span styl
     
     <item>
       <title>What I (currently) do at the Saskatchewan Health Authority</title>
-      <link>maxturgeon.ca/blog/2018-09-28-what-i-currently-do/</link>
+      <link>https://maxturgeon.ca/blog/2018-09-28-what-i-currently-do/</link>
       <pubDate>Fri, 28 Sep 2018 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2018-09-28-what-i-currently-do/</guid>
+      <guid>https://maxturgeon.ca/blog/2018-09-28-what-i-currently-do/</guid>
       <description>&lt;p&gt;During the summer of 2016, my wife and I moved to Saskatoon so that she could pursue her medical residency training at the University of Saskatchewan. At the point, I was only wrapping up the third year of my PhD, and so I wasn&amp;rsquo;t necessary looking for a job. But one thing led to another, and I ended up applying for a new biostatistician position with the Saskatoon Health Region (SHR).&lt;/p&gt;
 &lt;p&gt;The job description talked about being a connection point between the health care system and the Saskatchewan Centre for Patient-Oriented Research (&lt;a href=&#34;scpor.ca&#34;&gt;SCPOR&lt;/a&gt;), by providing both study design and methodological support for researchers. I thought I would be a good fit: McGill&amp;rsquo;s focus on data analysis and report writing provided me the tools to do the job; meanwhile I could learn more about the health care system itself and use my academic background to provide effective consultation to researchers.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Predictive model for the Oscars</title>
-      <link>maxturgeon.ca/blog/2018-02-25-oscar-prediction-model/</link>
+      <link>https://maxturgeon.ca/blog/2018-02-25-oscar-prediction-model/</link>
       <pubDate>Sun, 25 Feb 2018 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2018-02-25-oscar-prediction-model/</guid>
+      <guid>https://maxturgeon.ca/blog/2018-02-25-oscar-prediction-model/</guid>
       <description>&lt;p&gt;A few years ago, as part of the graduate course &lt;em&gt;Data Analysis and Report Writing&lt;/em&gt; in the Department of Epidemiology, Biostatistics and Occupational Health at McGill University, we explored the topic of predictive modeling using a dataset containing movies, directors and actors who were nominated for an Academy Award. The goal was to select some variables and build a predictive model for the winner in four categories: Best Picture, Best Director, Best Actor, and Best Actress. As a movie fan, this was the dream assignment: I could combine my love of movies with my love of statistics! And it payed off: I was the only one in my class to correctly predict all four winners.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Oscar 2018 predictions</title>
-      <link>maxturgeon.ca/blog/2018-02-24-oscar-predictions-2018/</link>
+      <link>https://maxturgeon.ca/blog/2018-02-24-oscar-predictions-2018/</link>
       <pubDate>Sat, 24 Feb 2018 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2018-02-24-oscar-predictions-2018/</guid>
+      <guid>https://maxturgeon.ca/blog/2018-02-24-oscar-predictions-2018/</guid>
       <description>&lt;p&gt;For the past few years, I have tried to predict the winners in all categories at the Academy Awards. Again, I will be using statistics and data analysis to inform my decision in some categories: Best Picure, Best Director, Best Actor, Best Actress, Best Supporting Actor, and Best Supporting Actress&lt;/p&gt;
 &lt;p&gt;As for the last three years, I stick to what the model tells me for my prediction in these categories. However, I&amp;rsquo;m skeptical about the predictions I have for best picture: several pundits see &lt;em&gt;The Shape of Water&lt;/em&gt; as a front runner, but my model only gives it a 16% chance of winning. Due to rule changes that now require a preferential ballot for Best Picture, the winner has been difficult to predict in recent years. Since &lt;em&gt;The Shape of Water&lt;/em&gt; possibly has a broader appeal than &lt;em&gt;Lady Bird&lt;/em&gt; and &lt;em&gt;Three Billboards Outside Ebbing, Missouri&lt;/em&gt;, it may prevail in the end. But I still believe &lt;em&gt;Three Billboards Outside Ebbing, Missouri&lt;/em&gt; is the actual front-runner; but I do think my model is under-estimating &lt;em&gt;The Shape of Water&lt;/em&gt;&amp;rsquo;s chances and over-estimating &lt;em&gt;Lady Bird&lt;/em&gt;&amp;rsquo;s.&lt;/p&gt;
 &lt;p&gt;In the next few days, I will write another post in which I&amp;rsquo;ll describe how my model works. I&amp;rsquo;ll take the opportunity to try and explain why my model is so bearish for &lt;em&gt;The Shape of Water&lt;/em&gt;.&lt;/p&gt;
@@ -86,29 +86,29 @@ Y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span styl
     
     <item>
       <title>First steps with Leaflet</title>
-      <link>maxturgeon.ca/blog/2017-07-05-leaflet-saskatoon/</link>
+      <link>https://maxturgeon.ca/blog/2017-07-05-leaflet-saskatoon/</link>
       <pubDate>Wed, 05 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2017-07-05-leaflet-saskatoon/</guid>
+      <guid>https://maxturgeon.ca/blog/2017-07-05-leaflet-saskatoon/</guid>
       <description>I should probably be working on my thesis, but instead I started reading through the introduction to the R package leaflet. And the following made me feel excited: Code for America has GeoJSON data on their Github page for several cities in the world. In particular, they have both Saskatoon and Montreal! I used the leaflet package to draw the boundaries of each neighbourhoods. You can see the results here. (I wasn&amp;rsquo;t able to host the maps directly on this webpage.</description>
     </item>
     
     <item>
       <title>Installing multiple R versions</title>
-      <link>maxturgeon.ca/blog/2017-04-01-multiple-r-versions/</link>
+      <link>https://maxturgeon.ca/blog/2017-04-01-multiple-r-versions/</link>
       <pubDate>Sat, 01 Apr 2017 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2017-04-01-multiple-r-versions/</guid>
+      <guid>https://maxturgeon.ca/blog/2017-04-01-multiple-r-versions/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://sahirbhatnagar.com/&#34;&gt;Sahir Bhatnagar&lt;/a&gt; and I are currently wrapping up the first version of our package &lt;a href=&#34;https://sahirbhatnagar.com/casebase/&#34;&gt;casebase&lt;/a&gt;. In short, it&amp;rsquo;s an R package for survival analysis, where we use case-base sampling to fit smooth-in-time hazards. (I could write a post on this package, but there&amp;rsquo;s no need: check out the &lt;a href=&#34;https://sahirbhatnagar.com/casebase/&#34;&gt;website&lt;/a&gt; and the four vignettes.) As part of our workflow, we perform continuous integration using &lt;a href=&#34;https://travis-ci.org/&#34;&gt;Travis CI&lt;/a&gt;, and we test our package against both the current and development versions of R. Recently, some tests began to fail against the development version, and so I had to install R-devel on my local machine in order to debug our code. This blog post is a summary of how I did it.&lt;/p&gt;
 &lt;p&gt;To be fair, this is already documented online, and I made use of these resources; see the &lt;a href=&#34;https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Installation&#34;&gt;official R installation docs&lt;/a&gt; and this &lt;a href=&#34;https://support.rstudio.com/hc/en-us/articles/215488098-Installing-multiple-versions-of-R&#34;&gt;RStudio support post&lt;/a&gt;. I&amp;rsquo;m writing yet another post simply as a reference for myself and my colleagues. But I also ran into a compilation error that I wanted to document here. That error was &amp;ldquo;caused&amp;rdquo; by following closely the (amazing) book &lt;a href=&#34;http://r-pkgs.had.co.nz/&#34;&gt;&lt;em&gt;R packages&lt;/em&gt;&lt;/a&gt; by &lt;a href=&#34;http://hadley.nz/&#34;&gt;Hadley Wickham&lt;/a&gt;. Stick around to learn what the problem was!&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Oscar 2017 predictions</title>
-      <link>maxturgeon.ca/blog/2017-02-12-oscar-predictions-2017/</link>
+      <link>https://maxturgeon.ca/blog/2017-02-12-oscar-predictions-2017/</link>
       <pubDate>Sun, 12 Feb 2017 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2017-02-12-oscar-predictions-2017/</guid>
+      <guid>https://maxturgeon.ca/blog/2017-02-12-oscar-predictions-2017/</guid>
       <description>&lt;p&gt;For the past few years, I have tried to predict the winners in all categories at the Academy Awards. And &lt;a href=&#34;oscar-predictions-2016&#34;&gt;for the past two years&lt;/a&gt;, I&amp;rsquo;ve also used statistics and data analysis to inform my decision in four categories: Best Picure, Best Director, Best Actor, and Best Actress.&lt;/p&gt;
 &lt;p&gt;As for the last two years, I stick to what the model tells me for my prediction in these categories. However, I&amp;rsquo;m skeptical about the predictions I have for the acting categories. First, for best actor, Denzel Washington and Casey Affleck are the only two front-runners&amp;ndash;there is no way Ryan Gosling will win this award. Second, for best actress, although I would argue that Emma Stone is now the favourite, Isabelle Huppert definitely has a chance too. Therefore, I expect to miss one of these categories.&lt;/p&gt;
 &lt;p&gt;Finally, this year is definitely &lt;em&gt;La La Land&lt;/em&gt;&amp;rsquo;s show: 14 nominations, tied with &lt;a href=&#34;https://www.imdb.com/title/tt0120338/&#34;&gt;&lt;em&gt;Titanic&lt;/em&gt;&lt;/a&gt; and &lt;a href=&#34;https://www.imdb.com/title/tt0042192/&#34;&gt;&lt;em&gt;All About Eve&lt;/em&gt;&lt;/a&gt; for the most ever. I don&amp;rsquo;t think it will set a new record (which is 11 wins), but I expect them to win around 10 awards. I don&amp;rsquo;t expect them to run the tables in the sound/music categories&amp;ndash;which would be a first for a musical. I think the only one of these four awards they could miss is Best Sound Editing, which I predict will probably go to &lt;em&gt;Arrival&lt;/em&gt;.&lt;/p&gt;
@@ -118,28 +118,28 @@ Y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span styl
     
     <item>
       <title>US Presidential Inaugural Addresses</title>
-      <link>maxturgeon.ca/blog/2017-01-20-trump-inauguration/</link>
+      <link>https://maxturgeon.ca/blog/2017-01-20-trump-inauguration/</link>
       <pubDate>Fri, 20 Jan 2017 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2017-01-20-trump-inauguration/</guid>
+      <guid>https://maxturgeon.ca/blog/2017-01-20-trump-inauguration/</guid>
       <description>&lt;p&gt;Earlier this week, on January 20th 2017, Donald J. Trump was inaugurated as the 45th president of the USA. He also gave what seemed like a very short inaugural address, and so I was curious to see how short it really was compared to previous addresses. It was also an opportunity to have a quick look at other properties of his speech.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>The Instability of Forward and Backward Selection</title>
-      <link>maxturgeon.ca/blog/2016-05-29-forward-backward-selection/</link>
+      <link>https://maxturgeon.ca/blog/2016-05-29-forward-backward-selection/</link>
       <pubDate>Sun, 29 May 2016 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2016-05-29-forward-backward-selection/</guid>
+      <guid>https://maxturgeon.ca/blog/2016-05-29-forward-backward-selection/</guid>
       <description>&lt;p&gt;Classical statistics often assumes that the analyst knows which variables are important and which variables are not. Of course, this is a strong assumption, and therefore many variable selection procedures have been developed to address this problem. In this blog post, I want to focus on two subset selection methods, and I want to address their instability. In other words, I want to discuss how &lt;strong&gt;small changes&lt;/strong&gt; in the data can lead to &lt;strong&gt;completely different solutions&lt;/strong&gt;.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Removing all R CMD check warnings</title>
-      <link>maxturgeon.ca/blog/2016-04-08-check-warnings/</link>
+      <link>https://maxturgeon.ca/blog/2016-04-08-check-warnings/</link>
       <pubDate>Fri, 08 Apr 2016 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2016-04-08-check-warnings/</guid>
+      <guid>https://maxturgeon.ca/blog/2016-04-08-check-warnings/</guid>
       <description>&lt;p&gt;Making R packages is an important aspect of the statistician&amp;rsquo;s work. Or at least it should be: it is quite annoying when a new method appears in the literature but no implementation is readily available.&lt;/p&gt;
 &lt;p&gt;A favourite mantra of mine when making R packages is the following: &lt;strong&gt;an R package is more than the sum of its functions&lt;/strong&gt;. A functioning R package needs to be able to interact properly with the R environment (through the &lt;code&gt;NAMESPACE&lt;/code&gt;); a good R package also needs great documentation; a great R package will also include a vignette to guide new users and explain how all the functions interact with one another.&lt;/p&gt;
 &lt;p&gt;The main reference for how to make R packages is &lt;a href=&#34;https://cran.r-project.org/doc/manuals/r-release/R-exts.html&#34;&gt;&lt;em&gt;Writing R extensions&lt;/em&gt;&lt;/a&gt;. Everything you need to know is there, if you know what you are looking for. Another, very useful reference is Hadley Wickam&amp;rsquo;s &lt;a href=&#34;http://r-pkgs.had.co.nz/&#34;&gt;book on R packages&lt;/a&gt;. This book explains the different components of an R package, and it also serves as an introduction to his &lt;a href=&#34;https://cran.r-project.org/package=devtools&#34;&gt;&lt;code&gt;devtools&lt;/code&gt; package&lt;/a&gt;.&lt;/p&gt;
@@ -148,19 +148,19 @@ Y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span styl
     
     <item>
       <title>By how much will Clinton win?</title>
-      <link>maxturgeon.ca/blog/2016-03-08-democratic-primary/</link>
+      <link>https://maxturgeon.ca/blog/2016-03-08-democratic-primary/</link>
       <pubDate>Tue, 08 Mar 2016 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2016-03-08-democratic-primary/</guid>
+      <guid>https://maxturgeon.ca/blog/2016-03-08-democratic-primary/</guid>
       <description>&lt;p&gt;American politics is great for statistics: there are huge amounts of polls being conducted every week, some positions are up for re-election every other year, and there is really only two parties. Moreover, the complicated nature of the whole election process, which for example involves the electoral college for the presidential election, makes it more interesting than most democracies around the world. It&amp;rsquo;s for all these reasons that an incredible website like &lt;a href=&#34;https://fivethirtyeight.com/&#34;&gt;FiveThirtyEight&lt;/a&gt; is possible.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Oscar 2016 predictions</title>
-      <link>maxturgeon.ca/blog/2016-02-07-oscar-predictions-2016/</link>
+      <link>https://maxturgeon.ca/blog/2016-02-07-oscar-predictions-2016/</link>
       <pubDate>Sun, 07 Feb 2016 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2016-02-07-oscar-predictions-2016/</guid>
+      <guid>https://maxturgeon.ca/blog/2016-02-07-oscar-predictions-2016/</guid>
       <description>&lt;p&gt;For the past three years, I have tried to predict the winners in all categories at the Academy Awards. But last year, I was able to combine my passion for both movies and statistics: as part of my Data Analysis course at McGill University, we had to come up with a prediction model for four categories: Best Picture, Best Director, Best Actor, and Best Actress. And my model performed quite well: it was the only one to predict correctly the four winners.&lt;/p&gt;
 &lt;p&gt;This year, I decided to repeat the experience again, especially since the Best Picture category is more competitive this year than last year. I have shared my predictions below, for all categories; however, I have used a statistical model only for the four categories mentionned above. All other categories are based on my own judgement (and readings I have done). My predictions are in bold font.&lt;/p&gt;
 &lt;p&gt;After the Academy Awards, I will update this post and point out the winners (I will indicate them in italics). I may also write a post on my prediction model.&lt;/p&gt;
@@ -169,29 +169,29 @@ Y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span styl
     
     <item>
       <title>Makefile and Beamer presentations</title>
-      <link>maxturgeon.ca/blog/2015-12-07-makefile-beamer/</link>
+      <link>https://maxturgeon.ca/blog/2015-12-07-makefile-beamer/</link>
       <pubDate>Mon, 07 Dec 2015 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2015-12-07-makefile-beamer/</guid>
+      <guid>https://maxturgeon.ca/blog/2015-12-07-makefile-beamer/</guid>
       <description>&lt;p&gt;I have been wondering about Makefiles for some time now, and recently I finally got around learning about them so that I could use &lt;code&gt;make&lt;/code&gt; to regenerate all the different versions of a manuscript I&amp;rsquo;m working on. And I thought I would take the opportunity to explain how they can be useful for Beamer presentations.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Test case: Optimising PCEV</title>
-      <link>maxturgeon.ca/blog/2015-09-11-optimisation-test-case/</link>
+      <link>https://maxturgeon.ca/blog/2015-09-11-optimisation-test-case/</link>
       <pubDate>Fri, 11 Sep 2015 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2015-09-11-optimisation-test-case/</guid>
+      <guid>https://maxturgeon.ca/blog/2015-09-11-optimisation-test-case/</guid>
       <description>&lt;p&gt;I will give an example of code optimisation in R, using Noam Ross&amp;rsquo;s &lt;code&gt;proftable&lt;/code&gt; function and Luke Tierney&amp;rsquo;s &lt;code&gt;proftools&lt;/code&gt; package, which I discuss in my [tutorial on optimisation]({{ site.github.url }}/optimisation/). The code we will optimise comes from the main function of our &lt;a href=&#34;https://github.com/GreenwoodLab/pcev&#34;&gt;PCEV package&lt;/a&gt;. A few months ago, while testing the method using simulations, I had to speed up my code because it was way to slow, and the result of this optimisation is given below.&lt;/p&gt;
 &lt;p&gt;For background, recall that PCEV is a dimension-reduction technique, akin to PCA, but where the components are obtained by maximising the proportion of variance explained by a set of covariates. For more information, see this [blog post]({{ site.github.url }}/pcev/).&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Tutorial: Optimising R code</title>
-      <link>maxturgeon.ca/blog/2015-09-10-optimisation/</link>
+      <link>https://maxturgeon.ca/blog/2015-09-10-optimisation/</link>
       <pubDate>Thu, 10 Sep 2015 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2015-09-10-optimisation/</guid>
+      <guid>https://maxturgeon.ca/blog/2015-09-10-optimisation/</guid>
       <description>&lt;p&gt;The R language is very good for statistical computations, due to its strong functional capabilities, its open source philosophy, and its extended package ecosystem. However, it can also be quite slow, because of some &lt;a href=&#34;http://adv-r.had.co.nz/Performance.html#language-performance&#34;&gt;design choices&lt;/a&gt; (e.g. lazy evaluation and extreme dynamic typing).&lt;/p&gt;
 &lt;p&gt;This tutorial is mainly based on Hadley Wickam&amp;rsquo;s book &lt;a href=&#34;http://adv-r.had.co.nz/&#34;&gt;Advanced R&lt;/a&gt;.&lt;/p&gt;
 &lt;h3 id=&#34;before-optimising&#34;&gt;Before optimising&amp;hellip;&lt;/h3&gt;
@@ -211,19 +211,19 @@ Y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span styl
     
     <item>
       <title>Using MathJax</title>
-      <link>maxturgeon.ca/blog/2015-08-14-mathjax-poole/</link>
+      <link>https://maxturgeon.ca/blog/2015-08-14-mathjax-poole/</link>
       <pubDate>Fri, 14 Aug 2015 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2015-08-14-mathjax-poole/</guid>
+      <guid>https://maxturgeon.ca/blog/2015-08-14-mathjax-poole/</guid>
       <description>&lt;p&gt;I had some trouble rendering correctly the mathematical equations in my [previous post]({{ site.github.url }}/pcev/): at first I could only see the untransformed markup, then the text simply disappeared, without being transformed, and finally the equations appeared, but coloured orange. As you can see, everything now looks fine, but to fix this I ended up learning a bit more about how markdown, HTML, CSS and javacript all work together to create the website you are currently visiting. The purpose of this post is to share some of what I learned, so that future visitors can be spared some of the pain that accompanied the learning.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Principal components of explained variance</title>
-      <link>maxturgeon.ca/blog/2015-08-06-pcev/</link>
+      <link>https://maxturgeon.ca/blog/2015-08-06-pcev/</link>
       <pubDate>Thu, 06 Aug 2015 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2015-08-06-pcev/</guid>
+      <guid>https://maxturgeon.ca/blog/2015-08-06-pcev/</guid>
       <description>&lt;p&gt;I have been spending most of my time on a very interesting technique that has,
 unfortunately, received little attention (I&amp;rsquo;ll come back later about some
 possible reasons). The purpose of this post is to introduce this method and give
@@ -232,20 +232,20 @@ motivation for its use.&lt;/p&gt;</description>
     
     <item>
       <title>Hello World!</title>
-      <link>maxturgeon.ca/blog/2015-07-12-hello-world/</link>
+      <link>https://maxturgeon.ca/blog/2015-07-12-hello-world/</link>
       <pubDate>Sun, 12 Jul 2015 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/2015-07-12-hello-world/</guid>
+      <guid>https://maxturgeon.ca/blog/2015-07-12-hello-world/</guid>
       <description>I am finally launching my personal website! It will mainly be used to share my projects and my thoughts about statistics. I will also share the slides from my talks and the occasional tutorial, whenever I feel I&amp;rsquo;ve learned some interesting stuff in my work (be it statistical or related to programming).
 In the meantime, I encourage you to take a look at my Github page, where you can see some of the projects I&amp;rsquo;ve contributed to.</description>
     </item>
     
     <item>
       <title>R Notebook</title>
-      <link>maxturgeon.ca/blog/1-01-01-r-notebook/</link>
+      <link>https://maxturgeon.ca/blog/1-01-01-r-notebook/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>maxturgeon.ca/blog/1-01-01-r-notebook/</guid>
+      <guid>https://maxturgeon.ca/blog/1-01-01-r-notebook/</guid>
       <description>Thanks to Code for America for sharing the GeoJSON on their Github page.
 Saskatoon {% highlight r %} library(leaflet) library(magrittr)
 stoon &amp;lt;- geojsonio::geojson_read(&amp;ldquo;https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/saskatoon.geojson&amp;quot;, what = &amp;ldquo;sp&amp;rdquo;) labels &amp;lt;- sprintf(&amp;ldquo;%s&amp;rdquo;, stoon$name) %&amp;gt;% lapply(htmltools::HTML)
