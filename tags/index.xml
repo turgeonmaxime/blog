@@ -2,228 +2,228 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Blog—Max Turgeon</title>
-    <link>/tags/</link>
+    <link>maxturgeon.ca/blog/tags/</link>
     <description>Recent content in Tags on Blog—Max Turgeon</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-ca</language>
     <lastBuildDate>Thu, 06 Feb 2020 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="maxturgeon.ca/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Multivariate analysis</title>
-      <link>/tags/multivariate-analysis/</link>
+      <link>maxturgeon.ca/blog/tags/multivariate-analysis/</link>
       <pubDate>Thu, 06 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>/tags/multivariate-analysis/</guid>
+      <guid>maxturgeon.ca/blog/tags/multivariate-analysis/</guid>
       <description></description>
     </item>
     
     <item>
       <title>R</title>
-      <link>/tags/r/</link>
+      <link>maxturgeon.ca/blog/tags/r/</link>
       <pubDate>Thu, 06 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>/tags/r/</guid>
+      <guid>maxturgeon.ca/blog/tags/r/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Oscar</title>
-      <link>/tags/oscar/</link>
+      <link>maxturgeon.ca/blog/tags/oscar/</link>
       <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
       
-      <guid>/tags/oscar/</guid>
+      <guid>maxturgeon.ca/blog/tags/oscar/</guid>
       <description></description>
     </item>
     
     <item>
       <title>prediction</title>
-      <link>/tags/prediction/</link>
+      <link>maxturgeon.ca/blog/tags/prediction/</link>
       <pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate>
       
-      <guid>/tags/prediction/</guid>
+      <guid>maxturgeon.ca/blog/tags/prediction/</guid>
       <description></description>
     </item>
     
     <item>
       <title>data science</title>
-      <link>/tags/data-science/</link>
+      <link>maxturgeon.ca/blog/tags/data-science/</link>
       <pubDate>Fri, 28 Sep 2018 00:00:00 +0000</pubDate>
       
-      <guid>/tags/data-science/</guid>
+      <guid>maxturgeon.ca/blog/tags/data-science/</guid>
       <description></description>
     </item>
     
     <item>
       <title>work</title>
-      <link>/tags/work/</link>
+      <link>maxturgeon.ca/blog/tags/work/</link>
       <pubDate>Fri, 28 Sep 2018 00:00:00 +0000</pubDate>
       
-      <guid>/tags/work/</guid>
+      <guid>maxturgeon.ca/blog/tags/work/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Leaflet</title>
-      <link>/tags/leaflet/</link>
+      <link>maxturgeon.ca/blog/tags/leaflet/</link>
       <pubDate>Wed, 05 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>/tags/leaflet/</guid>
+      <guid>maxturgeon.ca/blog/tags/leaflet/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Saskatoon</title>
-      <link>/tags/saskatoon/</link>
+      <link>maxturgeon.ca/blog/tags/saskatoon/</link>
       <pubDate>Wed, 05 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>/tags/saskatoon/</guid>
+      <guid>maxturgeon.ca/blog/tags/saskatoon/</guid>
       <description></description>
     </item>
     
     <item>
       <title>continuous-integration</title>
-      <link>/tags/continuous-integration/</link>
+      <link>maxturgeon.ca/blog/tags/continuous-integration/</link>
       <pubDate>Sat, 01 Apr 2017 00:00:00 +0000</pubDate>
       
-      <guid>/tags/continuous-integration/</guid>
+      <guid>maxturgeon.ca/blog/tags/continuous-integration/</guid>
       <description></description>
     </item>
     
     <item>
       <title>package</title>
-      <link>/tags/package/</link>
+      <link>maxturgeon.ca/blog/tags/package/</link>
       <pubDate>Sat, 01 Apr 2017 00:00:00 +0000</pubDate>
       
-      <guid>/tags/package/</guid>
+      <guid>maxturgeon.ca/blog/tags/package/</guid>
       <description></description>
     </item>
     
     <item>
       <title>politics</title>
-      <link>/tags/politics/</link>
+      <link>maxturgeon.ca/blog/tags/politics/</link>
       <pubDate>Fri, 20 Jan 2017 00:00:00 +0000</pubDate>
       
-      <guid>/tags/politics/</guid>
+      <guid>maxturgeon.ca/blog/tags/politics/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Text analysis</title>
-      <link>/tags/text-analysis/</link>
+      <link>maxturgeon.ca/blog/tags/text-analysis/</link>
       <pubDate>Fri, 20 Jan 2017 00:00:00 +0000</pubDate>
       
-      <guid>/tags/text-analysis/</guid>
+      <guid>maxturgeon.ca/blog/tags/text-analysis/</guid>
       <description></description>
     </item>
     
     <item>
       <title>subset selection</title>
-      <link>/tags/subset-selection/</link>
+      <link>maxturgeon.ca/blog/tags/subset-selection/</link>
       <pubDate>Sun, 29 May 2016 00:00:00 +0000</pubDate>
       
-      <guid>/tags/subset-selection/</guid>
+      <guid>maxturgeon.ca/blog/tags/subset-selection/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Variable selection</title>
-      <link>/tags/variable-selection/</link>
+      <link>maxturgeon.ca/blog/tags/variable-selection/</link>
       <pubDate>Sun, 29 May 2016 00:00:00 +0000</pubDate>
       
-      <guid>/tags/variable-selection/</guid>
+      <guid>maxturgeon.ca/blog/tags/variable-selection/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Beamer</title>
-      <link>/tags/beamer/</link>
+      <link>maxturgeon.ca/blog/tags/beamer/</link>
       <pubDate>Mon, 07 Dec 2015 00:00:00 +0000</pubDate>
       
-      <guid>/tags/beamer/</guid>
+      <guid>maxturgeon.ca/blog/tags/beamer/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Latex</title>
-      <link>/tags/latex/</link>
+      <link>maxturgeon.ca/blog/tags/latex/</link>
       <pubDate>Mon, 07 Dec 2015 00:00:00 +0000</pubDate>
       
-      <guid>/tags/latex/</guid>
+      <guid>maxturgeon.ca/blog/tags/latex/</guid>
       <description></description>
     </item>
     
     <item>
       <title>linux</title>
-      <link>/tags/linux/</link>
+      <link>maxturgeon.ca/blog/tags/linux/</link>
       <pubDate>Mon, 07 Dec 2015 00:00:00 +0000</pubDate>
       
-      <guid>/tags/linux/</guid>
+      <guid>maxturgeon.ca/blog/tags/linux/</guid>
       <description></description>
     </item>
     
     <item>
       <title>microbenchmark</title>
-      <link>/tags/microbenchmark/</link>
+      <link>maxturgeon.ca/blog/tags/microbenchmark/</link>
       <pubDate>Fri, 11 Sep 2015 00:00:00 +0000</pubDate>
       
-      <guid>/tags/microbenchmark/</guid>
+      <guid>maxturgeon.ca/blog/tags/microbenchmark/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Optimisation</title>
-      <link>/tags/optimisation/</link>
+      <link>maxturgeon.ca/blog/tags/optimisation/</link>
       <pubDate>Fri, 11 Sep 2015 00:00:00 +0000</pubDate>
       
-      <guid>/tags/optimisation/</guid>
+      <guid>maxturgeon.ca/blog/tags/optimisation/</guid>
       <description></description>
     </item>
     
     <item>
       <title>PCEV</title>
-      <link>/tags/pcev/</link>
+      <link>maxturgeon.ca/blog/tags/pcev/</link>
       <pubDate>Fri, 11 Sep 2015 00:00:00 +0000</pubDate>
       
-      <guid>/tags/pcev/</guid>
+      <guid>maxturgeon.ca/blog/tags/pcev/</guid>
       <description></description>
     </item>
     
     <item>
       <title>jekyll</title>
-      <link>/tags/jekyll/</link>
+      <link>maxturgeon.ca/blog/tags/jekyll/</link>
       <pubDate>Fri, 14 Aug 2015 00:00:00 +0000</pubDate>
       
-      <guid>/tags/jekyll/</guid>
+      <guid>maxturgeon.ca/blog/tags/jekyll/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Markdown</title>
-      <link>/tags/markdown/</link>
+      <link>maxturgeon.ca/blog/tags/markdown/</link>
       <pubDate>Fri, 14 Aug 2015 00:00:00 +0000</pubDate>
       
-      <guid>/tags/markdown/</guid>
+      <guid>maxturgeon.ca/blog/tags/markdown/</guid>
       <description></description>
     </item>
     
     <item>
       <title>MathJax</title>
-      <link>/tags/mathjax/</link>
+      <link>maxturgeon.ca/blog/tags/mathjax/</link>
       <pubDate>Fri, 14 Aug 2015 00:00:00 +0000</pubDate>
       
-      <guid>/tags/mathjax/</guid>
+      <guid>maxturgeon.ca/blog/tags/mathjax/</guid>
       <description></description>
     </item>
     
     <item>
       <title>dimension reduction</title>
-      <link>/tags/dimension-reduction/</link>
+      <link>maxturgeon.ca/blog/tags/dimension-reduction/</link>
       <pubDate>Thu, 06 Aug 2015 00:00:00 +0000</pubDate>
       
-      <guid>/tags/dimension-reduction/</guid>
+      <guid>maxturgeon.ca/blog/tags/dimension-reduction/</guid>
       <description></description>
     </item>
     

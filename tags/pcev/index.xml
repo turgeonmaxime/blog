@@ -2,31 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>PCEV on Blog—Max Turgeon</title>
-    <link>/tags/pcev/</link>
+    <link>maxturgeon.ca/blog/tags/pcev/</link>
     <description>Recent content in PCEV on Blog—Max Turgeon</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-ca</language>
     <lastBuildDate>Fri, 11 Sep 2015 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/pcev/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="maxturgeon.ca/blog/tags/pcev/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Test case: Optimising PCEV</title>
-      <link>/2015-09-11-optimisation-test-case/</link>
+      <link>maxturgeon.ca/blog/2015-09-11-optimisation-test-case/</link>
       <pubDate>Fri, 11 Sep 2015 00:00:00 +0000</pubDate>
       
-      <guid>/2015-09-11-optimisation-test-case/</guid>
+      <guid>maxturgeon.ca/blog/2015-09-11-optimisation-test-case/</guid>
       <description>&lt;p&gt;I will give an example of code optimisation in R, using Noam Ross&amp;rsquo;s &lt;code&gt;proftable&lt;/code&gt; function and Luke Tierney&amp;rsquo;s &lt;code&gt;proftools&lt;/code&gt; package, which I discuss in my [tutorial on optimisation]({{ site.github.url }}/optimisation/). The code we will optimise comes from the main function of our &lt;a href=&#34;https://github.com/GreenwoodLab/pcev&#34;&gt;PCEV package&lt;/a&gt;. A few months ago, while testing the method using simulations, I had to speed up my code because it was way to slow, and the result of this optimisation is given below.&lt;/p&gt;
 &lt;p&gt;For background, recall that PCEV is a dimension-reduction technique, akin to PCA, but where the components are obtained by maximising the proportion of variance explained by a set of covariates. For more information, see this [blog post]({{ site.github.url }}/pcev/).&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Principal components of explained variance</title>
-      <link>/2015-08-06-pcev/</link>
+      <link>maxturgeon.ca/blog/2015-08-06-pcev/</link>
       <pubDate>Thu, 06 Aug 2015 00:00:00 +0000</pubDate>
       
-      <guid>/2015-08-06-pcev/</guid>
+      <guid>maxturgeon.ca/blog/2015-08-06-pcev/</guid>
       <description>&lt;p&gt;I have been spending most of my time on a very interesting technique that has,
 unfortunately, received little attention (I&amp;rsquo;ll come back later about some
 possible reasons). The purpose of this post is to introduce this method and give

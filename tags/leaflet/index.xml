@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Leaflet on Blog—Max Turgeon</title>
-    <link>/tags/leaflet/</link>
+    <link>maxturgeon.ca/blog/tags/leaflet/</link>
     <description>Recent content in Leaflet on Blog—Max Turgeon</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-ca</language>
     <lastBuildDate>Wed, 05 Jul 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/leaflet/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="maxturgeon.ca/blog/tags/leaflet/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>First steps with Leaflet</title>
-      <link>/2017-07-05-leaflet-saskatoon/</link>
+      <link>maxturgeon.ca/blog/2017-07-05-leaflet-saskatoon/</link>
       <pubDate>Wed, 05 Jul 2017 00:00:00 +0000</pubDate>
       
-      <guid>/2017-07-05-leaflet-saskatoon/</guid>
+      <guid>maxturgeon.ca/blog/2017-07-05-leaflet-saskatoon/</guid>
       <description>I should probably be working on my thesis, but instead I started reading through the introduction to the R package leaflet. And the following made me feel excited: Code for America has GeoJSON data on their Github page for several cities in the world. In particular, they have both Saskatoon and Montreal! I used the leaflet package to draw the boundaries of each neighbourhoods. You can see the results here. (I wasn&amp;rsquo;t able to host the maps directly on this webpage.</description>
     </item>
     

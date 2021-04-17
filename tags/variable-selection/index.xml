@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Variable selection on Blog—Max Turgeon</title>
-    <link>/tags/variable-selection/</link>
+    <link>maxturgeon.ca/blog/tags/variable-selection/</link>
     <description>Recent content in Variable selection on Blog—Max Turgeon</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-ca</language>
     <lastBuildDate>Sun, 29 May 2016 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/variable-selection/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="maxturgeon.ca/blog/tags/variable-selection/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>The Instability of Forward and Backward Selection</title>
-      <link>/2016-05-29-forward-backward-selection/</link>
+      <link>maxturgeon.ca/blog/2016-05-29-forward-backward-selection/</link>
       <pubDate>Sun, 29 May 2016 00:00:00 +0000</pubDate>
       
-      <guid>/2016-05-29-forward-backward-selection/</guid>
+      <guid>maxturgeon.ca/blog/2016-05-29-forward-backward-selection/</guid>
       <description>&lt;p&gt;Classical statistics often assumes that the analyst knows which variables are important and which variables are not. Of course, this is a strong assumption, and therefore many variable selection procedures have been developed to address this problem. In this blog post, I want to focus on two subset selection methods, and I want to address their instability. In other words, I want to discuss how &lt;strong&gt;small changes&lt;/strong&gt; in the data can lead to &lt;strong&gt;completely different solutions&lt;/strong&gt;.&lt;/p&gt;</description>
     </item>
     
