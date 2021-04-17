@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>politics on Blog—Max Turgeon</title>
+    <link>/tags/politics/</link>
+    <description>Recent content in politics on Blog—Max Turgeon</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-ca</language>
+    <lastBuildDate>Fri, 20 Jan 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/politics/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>US Presidential Inaugural Addresses</title>
+      <link>/2017-01-20-trump-inauguration/</link>
+      <pubDate>Fri, 20 Jan 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/2017-01-20-trump-inauguration/</guid>
+      <description>&lt;p&gt;Earlier this week, on January 20th 2017, Donald J. Trump was inaugurated as the 45th president of the USA. He also gave what seemed like a very short inaugural address, and so I was curious to see how short it really was compared to previous addresses. It was also an opportunity to have a quick look at other properties of his speech.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>By how much will Clinton win?</title>
+      <link>/2016-03-08-democratic-primary/</link>
+      <pubDate>Tue, 08 Mar 2016 00:00:00 +0000</pubDate>
+      
+      <guid>/2016-03-08-democratic-primary/</guid>
+      <description>&lt;p&gt;American politics is great for statistics: there are huge amounts of polls being conducted every week, some positions are up for re-election every other year, and there is really only two parties. Moreover, the complicated nature of the whole election process, which for example involves the electoral college for the presidential election, makes it more interesting than most democracies around the world. It&amp;rsquo;s for all these reasons that an incredible website like &lt;a href=&#34;https://fivethirtyeight.com/&#34;&gt;FiveThirtyEight&lt;/a&gt; is possible.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

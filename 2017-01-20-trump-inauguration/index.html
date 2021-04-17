@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en-ca">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.74.1" />
+
+
+<title>US Presidential Inaugural Addresses - Blog—Max Turgeon</title>
+<meta property="og:title" content="US Presidential Inaugural Addresses - Blog—Max Turgeon">
+
+
+  <link href='/icon.png' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/avatar.jpeg"
+         width="50"
+         height="50"
+         alt="Max Turgeon">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/">Home</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">6 min read</span>
+    
+
+    <h1 class="article-title">US Presidential Inaugural Addresses</h1>
+
+    
+    <span class="article-date">2017-01-20</span>
+    
+
+    <div class="article-content">
+      <p>Earlier this week, on January 20th 2017, Donald J. Trump was inaugurated as the 45th president of the USA. He also gave what seemed like a very short inaugural address, and so I was curious to see how short it really was compared to previous addresses. It was also an opportunity to have a quick look at other properties of his speech.</p>
+<h2 id="data-extraction">Data extraction</h2>
+<p>The data was extracted from the website of <a href="https://www.presidency.ucsb.edu/">The American Presidency Project</a> at the University of California&ndash;Santa Barbara. They have lots of interesting information, and in particular they have the transcripts of <strong>all</strong> <a href="https://www.presidency.ucsb.edu/inaugurals.php">inaugural addresses</a> ever delivered. So using Chrome&rsquo;s developper tools, I found a quick and dirty way of extracting the text from all these speeches. I&rsquo;m using the <a href="https://cran.r-project.org/package=rvest"><code>rvest</code> package</a>. Also, I&rsquo;m indexing each speech by the year of its corresponding inauguration.</p>
+<p>{% highlight r %}
+library(rvest)
+library(magrittr)
+library(dplyr)
+webpage &lt;- &ldquo;<a href="http://www.presidency.ucsb.edu/inaugurals.php%22">http://www.presidency.ucsb.edu/inaugurals.php&quot;</a></p>
+<p>years &lt;- read_html(webpage) %&gt;%
+html_nodes(&ldquo;table.ver11 a&rdquo;) %&gt;%
+html_text() %&gt;%
+substr(start = nchar(.) - 3, stop = nchar(.)) %&gt;%
+as.numeric</p>
+<p>urls &lt;- read_html(webpage) %&gt;%
+html_nodes(&ldquo;table.ver11 a&rdquo;) %&gt;%
+html_attr(&ldquo;href&rdquo;)</p>
+<p>address_data &lt;- data.frame(&ldquo;Year&rdquo; = years,
+&ldquo;URL&rdquo; = urls)</p>
+<h1 id="scrape-text----">Scrape text&mdash;-</h1>
+<h1 id="recall-that-dplyrmutate-needs-a-window-function">Recall that dplyr::mutate needs a window function</h1>
+<p>extract_text &lt;- function(url_vect) {
+sapply(seq_along(url_vect), function(i) {
+read_html(urls[i]) %&gt;%
+html_node(&quot;.displaytext&rdquo;) %&gt;%
+html_text()
+})
+}
+address_data %&lt;&gt;% mutate(&ldquo;Text&rdquo; = extract_text(URL))
+{% endhighlight %}</p>
+<p>Now we will look at the frequency of certain words, so we need to parse the text and extract individual words. Fortunately, this can easily be done with Julia Silge and Dave Robinson&rsquo;s <a href="https://cran.r-project.org/package=tidytext"><code>tidytext</code></a> package. The main advantage of their package is that we stay within the <a href="https://blog.rstudio.org/2016/09/15/tidyverse-1-0-0/">tidyverse</a>, and therefore we can easily use packages like <code>dplyr</code> and <code>ggplot2</code> with the output.</p>
+<p>{% highlight r %}
+library(tidytext)</p>
+<h1 id="tokenize-each-text">Tokenize each text</h1>
+<p>address_tokenized &lt;- address_data %&gt;%
+unnest_tokens(Token, Text)
+{% endhighlight %}</p>
+<p>We will be using <code>address_tokenized</code> for the rest of the analysis.</p>
+<h2 id="was-it-really-short">Was it really short?</h2>
+<p>First, we will look at the raw count of words, which should give us an idea of the length of the address itself.</p>
+<p>{% highlight r %}
+library(ggplot2)</p>
+<h1 id="plot-word-count-per-year">Plot word count per year</h1>
+<p>address_tokenized %&gt;%
+group_by(Year) %&gt;%
+summarise(Count = n()) %&gt;%
+ggplot(aes(Year, Count)) + geom_point() + geom_line()
+{% endhighlight %}</p>
+<p><img src="/figure/source/2017-01-20-trump-inauguration/unnamed-chunk-3-1.png" alt="Total number of words for each inaugural address"></p>
+<p>Indeed, Trump&rsquo;s address was on the short side; in fact, in was the shortest since <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=6575">Carter&rsquo;s address</a>. But is was only the 15th shortest address, essentially as long as Kennedy&rsquo;s famous address (<a href="http://www.presidency.ucsb.edu/ws/index.php?pid=8032">&ldquo;ask not what your country can do for you&ndash;ask what you can do for your country&rdquo;</a>).</p>
+<p>(For those who are interested: the shortest speech is <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=25801">Washington&rsquo;s second address</a>, and the longest was by POTUS number 9, <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=25813">William Henry Harrison</a>. Famously, Harrison died 31 days later due to complications from pneumonia.)</p>
+<p>Another interesting way of looking at this data is to look at how many <em>unique</em> words there are for every 1000 words (to adjust for the length of the speech itself). This can perhaps be construed as a measure of the vocabulary size of each President. A more accurate <a href="https://academic.oup.com/biomet/article-abstract/63/3/435/270845/Estimating-the-number-of-unseen-species-How-many">estimate of the vocabulary size</a> of a person is possible, but it typically requires a much larger corpus than what inaugural addresses can offer.</p>
+<p>{% highlight r %}
+unique_count &lt;- address_tokenized %&gt;%
+group_by(Year) %&gt;%
+count(Token) %&gt;%
+summarise(Count = n())</p>
+<p>total_count &lt;- address_tokenized %&gt;%
+group_by(Year) %&gt;%
+summarise(Total = n())</p>
+<p>inner_join(unique_count, total_count) %&gt;%
+ggplot(aes(Year, 1000 * Count/Total)) +
+geom_point() + geom_line() + ylab(&ldquo;Count per 1000 words&rdquo;)
+{% endhighlight %}</p>
+<p><img src="/figure/source/2017-01-20-trump-inauguration/unnamed-chunk-4-1.png" alt="Number of unique words per 1000 words for each inaugural address"></p>
+<p>Using this (very rough) metric, it would appear that Trump showed a broader choice of vocabulary than any President since <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=16607">FDR&rsquo;s fourth inaugural address</a> in 1945. Note that that largest value, from Washington&rsquo;s second inaugural address, is misleading, since his speech was only 133 words long.</p>
+<h2 id="make-america-great-again">Make America Great Again</h2>
+<p>You&rsquo;ve heard it, you&rsquo;ve read it, perhaps you&rsquo;ve loathed it or instead <a href="https://youtu.be/B-Ir153t7Eg">lurved it</a>: Trump&rsquo;s campaign slogan. We have heard so many times, in fact, that I was wondering if the words &ldquo;Great&rdquo; and &ldquo;America&rdquo; appeared more often in Trump&rsquo;s address than any other. The results, some surprising, appear below.</p>
+<h3 id="america">America</h3>
+<p>Let&rsquo;s start with the word &ldquo;America&rdquo;:</p>
+<p>{% highlight r %}
+address_tokenized %&gt;%
+group_by(Year) %&gt;%
+count(Token, wt = (Token == &ldquo;america&rdquo;)) %&gt;%
+summarise(Count = sum(n)) %&gt;%
+ggplot(aes(Year, Count)) + geom_point() + geom_line()
+{% endhighlight %}</p>
+<p><img src="/figure/source/2017-01-20-trump-inauguration/unnamed-chunk-5-1.png" alt="Number of times the word &lsquo;America&rsquo; appeared in each inaugural address"></p>
+<p>There is an interesting trend over time. John Adams was the first president to use the word &ldquo;America&rdquo; in his <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=25802">inaugural address</a>. And the first president to say it more than five times was Harding. But Trump has definitely said it multiple times, 15 in fact, the most of any president except Clinton in his <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=46366">1993 inaugural address</a>. But given that Clinton&rsquo;s address was slightly longer, we can probably agree that Trump takes this round.</p>
+<p>Another surprisi[ng fact: it would be unimaginable today to hear <em>any</em> presidential speech that doesn&rsquo;t conclude with some variation on &ldquo;God bless America&rdquo;. Still, before Eisenhower&rsquo;s <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=9600">first inaugural address</a>, 30 out of 41 addresses did not contain the word &ldquo;America&rdquo;; since then, it has always appeared at least twice.</p>
+<h3 id="great">Great</h3>
+<p>Now let&rsquo;s look at the word &ldquo;Great&rdquo;:</p>
+<p>{% highlight r %}
+address_tokenized %&gt;%
+group_by(Year) %&gt;%
+count(Token, wt = (Token == &ldquo;great&rdquo;)) %&gt;%
+summarise(Count = sum(n)) %&gt;%
+ggplot(aes(Year, Count)) + geom_point() + geom_line()
+{% endhighlight %}</p>
+<p><img src="/figure/source/2017-01-20-trump-inauguration/unnamed-chunk-6-1.png" alt="Number of times the word &lsquo;Great&rsquo; appeared in each inaugural address"></p>
+<p>So in fact, Trump is not the president who has uttered the word &ldquo;great&rdquo; the most! This honour goes to Monroe, on the <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=25808">last inaugural address</a> of the <a href="https://en.wikipedia.org/wiki/Era_of_Good_Feelings">Era of Good Feelings</a>. But Monroe&rsquo;s address was more than three times longer than Trump&rsquo;s, so to get a clearer picture, let&rsquo;s look at one many times per 1000 words the word &ldquo;great&rdquo; appears in each inaugural address.</p>
+<p>{% highlight r %}
+great_count &lt;- address_tokenized %&gt;%
+group_by(Year) %&gt;%
+count(Token, wt = (Token == &ldquo;great&rdquo;)) %&gt;%
+summarise(Count = sum(n))</p>
+<p>total_count &lt;- address_tokenized %&gt;%
+group_by(Year) %&gt;%
+summarise(Total = n())</p>
+<p>inner_join(great_count, total_count) %&gt;%
+ggplot(aes(Year, 1000 * Count/Total)) +
+geom_point() + geom_line() + ylab(&ldquo;Count per 1000 words&rdquo;)
+{% endhighlight %}</p>
+<p><img src="/figure/source/2017-01-20-trump-inauguration/unnamed-chunk-7-1.png" alt="Number of times per 1000 words the word &lsquo;Great&rsquo; appeared in each inaugural address"></p>
+<p>Therefore, after adjusting for total word count, Trump is still not the at the top. But now, instead of Monroe, we find Wilson&rsquo;s <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=25831">1913 inaugural address</a>.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>After looking at all this, we get a sense that, even though Trump&rsquo;s speech was on the short side, it was far from the shortest overall. Moreover, we saw that Trump used the word America more than any President before him (I will let you draw your own conclusions), but the word Great appears quite frequently in inaugural addresses, and Trump&rsquo;s had only the sixth highest frequency (after adjusting for the length of the speech).</p>
+<p>All the analyses above don&rsquo;t really address the meaning of Trump&rsquo;s inauguration in the grand scheme of things, and nor was it the goal. For those interested, you can look at <a href="https://www.nytimes.com/interactive/2017/01/20/us/politics/donald-trump-inauguration-speech-transcript.html?_r=0">annotated</a> <a href="http://www.npr.org/2017/01/20/510629447/watch-live-president-trumps-inauguration-ceremony">transcripts</a> of his <a href="https://www.theguardian.com/us-news/ng-interactive/2016/nov/09/president-victory-speech-annotated">inaugural</a> <a href="https://www.washingtonpost.com/news/the-fix/wp/2017/01/20/donald-trumps-full-inauguration-speech-transcript-annotated/">address</a>.</p>
+<p>As a follow-up analysis, it would be interesting to do a cluster analysis of the inaugural addresses, in order to see which Presidents had similar addresses. But this will have to wait for another post.</p>
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+
+    
+  </body>
+</html>
+

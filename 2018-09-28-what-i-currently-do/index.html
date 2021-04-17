@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en-ca">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.74.1" />
+
+
+<title>What I (currently) do at the Saskatchewan Health Authority - Blog—Max Turgeon</title>
+<meta property="og:title" content="What I (currently) do at the Saskatchewan Health Authority - Blog—Max Turgeon">
+
+
+  <link href='/icon.png' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/avatar.jpeg"
+         width="50"
+         height="50"
+         alt="Max Turgeon">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/">Home</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">9 min read</span>
+    
+
+    <h1 class="article-title">What I (currently) do at the Saskatchewan Health Authority</h1>
+
+    
+    <span class="article-date">2018-09-28</span>
+    
+
+    <div class="article-content">
+      <p>During the summer of 2016, my wife and I moved to Saskatoon so that she could pursue her medical residency training at the University of Saskatchewan. At the point, I was only wrapping up the third year of my PhD, and so I wasn&rsquo;t necessary looking for a job. But one thing led to another, and I ended up applying for a new biostatistician position with the Saskatoon Health Region (SHR).</p>
+<p>The job description talked about being a connection point between the health care system and the Saskatchewan Centre for Patient-Oriented Research (<a href="scpor.ca">SCPOR</a>), by providing both study design and methodological support for researchers. I thought I would be a good fit: McGill&rsquo;s focus on data analysis and report writing provided me the tools to do the job; meanwhile I could learn more about the health care system itself and use my academic background to provide effective consultation to researchers.</p>
+<p>And clearly, the hiring committee saw it the same way: in early September 2016, I was hired, and I started my first &ldquo;real&rdquo; job.</p>
+<p>My role actually quickly changed and evolved away from providing support to SCPOR. There were two main reasons for this:</p>
+<ol>
+<li>The work demand from SCPOR was simply never enough to fill up my entire schedule;</li>
+<li>As the only statistician within the organization, there were several opportunities for providing statistical support at the SHR.</li>
+</ol>
+<p>As the sole &ldquo;founding&rdquo; member of the statistical team, I also had the luxury of using the tools I preferred and that I was the most comfortable with. Specifically, I right away started using <a href="https://cran.r-project.org/"><code>R</code></a> to perform all my analyses. In a different context, I may had had to use and learn SAS. As a consequence, I could focus on learning other things that were also relevant to my position. For example, I spent a good amount of time learning about databases, how to build them, but mostly how to <em>connect</em> to them and extract data.</p>
+<p>Just over a year ago, my team also grew: we hired two more statisticians, and all of a sudden we were three. Three statisticians to provide support to what is now the Saskatchewan Health Authority. I had the opportunity of being very much involved in the hiring process of my colleagues. I learned how to select which candidates will be called in for an interview, how to conduct an interview, which skills to look for and which skills can be learned on the job, how to check references, etc. Many important skills that they don&rsquo;t teach you in graduate school.</p>
+<p>In what follows, I want to give a short overview of some of the work that we&rsquo;ve been doing in Saskatoon. It&rsquo;s a very interesting mix of data science, research, knowledge translation and performance support.</p>
+<h2 id="clinical-quality-improvement-program">Clinical Quality Improvement Program</h2>
+<p>The <a href="https://hqc.sk.ca/news-events/hqc-news/tag/cqip">Clinical Quality Improvement Program</a> (CQIP) is a relatively new initiative in Saskatchewan whereby physicians from all over the province receive training in quality improvement methodologies and implement an improvement project in their respective areas. My unit has been supporting our local physicians taking part in this initiative by providing coordination, helping secure the necessary operational approvals, consulting on their data needs, as well as providing support for study design and data analysis.</p>
+<p>For the data analysis, we follow this guiding principle: physicians will only be able to convinced their colleagues that their intervention was successful if they can back it up with sound methodology. This is because physicians are also typically well versed in research: they learned how to criticaly appraise research papers and most of them even conduct research. For this reason, one of my statistical colleagues has been providing critical statistical support to the participants. Over the last year, he has been involved in over a dozen such CQIP projects. The kind of support we typically can offer is very broad: we&rsquo;ve provided help with survey design and analysis, guidance on statistical process control charts, multivariate analysis, etc. And the feedback received shows that physicians greatly appreciate the support we offer.</p>
+<h2 id="forecasting">Forecasting</h2>
+<p>One interesting service we started offering to our stakeholders is <em>forecasting</em>. I never learned about time series during my graduate training, so when we started receiving requests for forecasting, I started using the <code>R</code> package <code>prophet</code>. It was developed by Facebook, and the main purpose is to &ldquo;forecast at scale&rdquo;, i.e. providing forecasts of reasonably good quality but quickly. I&rsquo;ve found that this approach works reasonably well for volume predictions (e.g. number of daily ED visits, number of daily discharges, and at different levels within the health care system). One area where this approach hasn&rsquo;t work as well is in predicting wait lists for procedures. But by drastically cutting down analysis time for most of our requests, we can concentrate our efforts somewhere else.</p>
+<p>As an example of operational problems we have addressed through forecasting, we were asked to provide suggestions for optimal periods of time to perform maintenance that required closing a certain number of beds; we then forecasted patient volumes and were able to identify periods of lower predicted volumes.</p>
+<h2 id="summary-of-cihi-reports">Summary of CIHI reports</h2>
+<p>One recent addition to our workload is that we provide summaries of the reports published by Canadian Institute for Health Information (CIHI). These summaries are shared with the relevant directors, but also with the communications department. For these summaries, we really had to work on our knowledge translation skills. The goal is &ldquo;simple&rdquo;: how to distill those reports into exactly the amount of information that&rsquo;s relevant for our stakeholders. Our approach has been two-pronged:</p>
+<ol>
+<li>Identify a small number of pieces of information (between 3 and 5) that is directly relevant to Saskatoon or Saskatchewan.</li>
+<li>Create clear, uncluttered, and to-the-point graphs.</li>
+</ol>
+<p>In particular, one my colleagues has become very skilled in the latter. She knows which types of graph will best suit the data <strong>and</strong> the message, and she knows how to effectively use colour (in this case, less is definitely more). This is definitely a skill that one can develop, and judging by the feedback received, it&rsquo;s also a highly desirable skill.</p>
+<h2 id="performance-support">Performance Support</h2>
+<p>My interest in this area has grown over the last few years. When I was initially hired, I thought I would be mostly supporting research, but I really got interested in how good and sound data analysis can help inform operations in the health care system. One of the first project I was involved in was related to trying to understand the patient population in the emergency department. The idea was to have, for each day, an hourly census of patients at different stages of their ED journey (arrival, physician initial assessment, admission to an inpatient unit, and discharge from ED). For this project, I also had the opportunity to hone my Shiny skills and develop an interactive report summarising this information; for a mock version (i.e. with fake data), see <a href="https://turgeonmaxime.shinyapps.io/EDutilization/">https://turgeonmaxime.shinyapps.io/EDutilization/</a>.</p>
+<p>For another project, we provided analytical support for the VP Integrated Health Services in proposing service-level targets for length of stay reduction. The general idea was that we were trying to achieve an overall, organization-level target, but it wasn&rsquo;t clear if each service area should follow the same target or a different target. Using a predictive model developed by CIHI that tries to predict the length of stay of a patient based on demographic and diagnostic information, we were able to identify which service areas had the largest potential for improvements, and which were already in line with the Canadian average. In this way, we proposed service-level targets that would roll up to the overall organizational target.</p>
+<p>In a similar vein, we also provided an analysis of the time between when a patient is admitted to an inpatient unit and when they actually leave the emergency department. To support the executive director for acute services, we tried to estimate how much wait time reduction we could expect if patient flow was &ldquo;optimal&rdquo;. The statistical trick we pulled was as follows: if we look at the distribution of wait times, we have a mix of patients who waited a few hours at most, until a bed was cleaned and prepared for them, and we have patients who can wait several hours until a bed is eventually freed. By fitting a mixture of gamma distributions, we were able to disentangle these two groups of patients and therefore estimate the wait times distribution under the optimality assumption. Again, this analysis helped us understand which areas have the largest potential gains, and which areas are probably already running under the optimality assumption.</p>
+<h2 id="epilogue--what-i-have-learned-over-the-past-two-years">Epilogue&ndash;What I have learned over the past two years</h2>
+<p>I have grown tremendously and learned a lot on this job. First of all, and that&rsquo;s probably the case for most people going from academia to the industry: I learned how to clean data. In fact, I probably spend more than half my desk time every day cleaning and munging data (and mostly using the <a href="https://www.tidyverse.org/"><code>tidyverse</code></a>). And related to this, I have a much stronger respect for data collection and measurement. Enormous amounts of data are stored in administrative databases, and a lot of it is <em>manually</em> abstracted from medical charts. This represents a huge amount of work, and each hopsital has its own small army of coders.</p>
+<p>I also learned a lot about areas of statistics I didn&rsquo;t know much about (e.g. statistical process control and time series). But more generally, I gained a deeper understanding of some of the fundamental ideas of statistics. On this job, you have to: if you want to explain your results to a non-technical audience, you have to relate the statistical methodology and concepts to something they can understand. And you simply can&rsquo;t do it effectively if you don&rsquo;t have a strong understanding of the fundamentals. My training at McGill definitely had a strong impact on this (check out the <a href="https://www.mcgill.ca/epi-biostat-occh/academic-programs/grad/biostatistics">Biostatistics program</a>!). One more time for the people at the back: there&rsquo;s nothing like being asked by a stakeholder &ldquo;What is this telling me?&rdquo;. It forces you to go back to the fundamentals.</p>
+<p>Finally, as a teaching assistant in graduate school, I knew I liked teaching, and I felt that I was doing a decent job of it. Now I also have tremendous pleasure mentoring my junior colleagues. And I hope that this can remain an important aspect of any future position I will hold.</p>
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+
+    
+  </body>
+</html>
+

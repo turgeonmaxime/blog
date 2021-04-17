@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en-ca">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.74.1" />
+
+
+<title>Removing all R CMD check warnings - Blog—Max Turgeon</title>
+<meta property="og:title" content="Removing all R CMD check warnings - Blog—Max Turgeon">
+
+
+  <link href='/icon.png' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/avatar.jpeg"
+         width="50"
+         height="50"
+         alt="Max Turgeon">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/">Home</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">8 min read</span>
+    
+
+    <h1 class="article-title">Removing all R CMD check warnings</h1>
+
+    
+    <span class="article-date">2016-04-08</span>
+    
+
+    <div class="article-content">
+      <p>Making R packages is an important aspect of the statistician&rsquo;s work. Or at least it should be: it is quite annoying when a new method appears in the literature but no implementation is readily available.</p>
+<p>A favourite mantra of mine when making R packages is the following: <strong>an R package is more than the sum of its functions</strong>. A functioning R package needs to be able to interact properly with the R environment (through the <code>NAMESPACE</code>); a good R package also needs great documentation; a great R package will also include a vignette to guide new users and explain how all the functions interact with one another.</p>
+<p>The main reference for how to make R packages is <a href="https://cran.r-project.org/doc/manuals/r-release/R-exts.html"><em>Writing R extensions</em></a>. Everything you need to know is there, if you know what you are looking for. Another, very useful reference is Hadley Wickam&rsquo;s <a href="http://r-pkgs.had.co.nz/">book on R packages</a>. This book explains the different components of an R package, and it also serves as an introduction to his <a href="https://cran.r-project.org/package=devtools"><code>devtools</code> package</a>.</p>
+<p>In what follows, I don&rsquo;t want to go over how to make an R package; the above references do a better job than I could hope to do. Rather, I want to share my experience about some of the most annoying part of making an R package: passing the <code>R CMD check</code>. Removing the errors is the most important part, and what kind of errors you get really depends on the package (the log file is typically quite useful in figuring out what triggered the errors). On the other hand, you also want to minimize the number of warnings and notes, and most warnings you probably want to remove altogether.</p>
+<h3 id="distribution-options">Distribution options</h3>
+<p>The first thing to do, perhaps even before starting to make the R package, is to decide how your package will be distributed. The simplest package you can make is probably one which <em>packages</em> all the functions you typically use in your daily life as a statistician. You don&rsquo;t necessarily need to share this package with anyone, so for example you may not care as much about good documentation. At the other extreme, if you plan on making a package that will be used by a large community and that is expected to interact with a large number of packages, you should first familiarize yourself with the rules governing the development of such packages (<a href="http://www.bioconductor.org/">Bioconductor</a> is an example of such a package repository).</p>
+<p>Below I go over three popular distribution options. They all assume that you want to share your package with the public.</p>
+<h4 id="github">GitHub</h4>
+<p>All my packages, and all my lab&rsquo;s packages, are on <a href="https://github.com/">GitHub</a>. This website is a great way of sharing your development code, and it also allows for easy collaboration and bug reporting. You can also easily install a package hosted on GitHub using the function <code>devtools::install_github</code>. If you are using this option, you are free to do as you please and ignore all warnings triggered by <code>R CMD check</code>, but you should still strive for a package that works well for anyone who wishes to install it.</p>
+<h4 id="cran">CRAN</h4>
+<p>This is the most popular package repository for R, the <a href="https://cran.r-project.org/">Comprehensive R Archive Network</a>. It is maintained by a handful of dedicated statisticians. As a result, communicating with them can be <a href="http://emhart.info/blog/2015/05/28/raiders-of-cran/">unpleasant and frustrating</a>, although being polite and making the required changes can make the process smoother.</p>
+<p>A very nice service they offer is to run <code>R CMD check</code> on their servers using a Windows installation. They will then send you an email with the log files, so you can check if your package also works on Windows. The easiest way to do this is probably using the function <code>devtools::build_win</code>.</p>
+<h4 id="bioconductor">Bioconductor</h4>
+<p>If you want to distribute your package through Bioconductor, you should start by familiarizing yourself with their <a href="http://www.bioconductor.org/developers/package-guidelines/">guidelines</a>. For example, they expect each package to have at least one vignette and each documentation page to have a runnable example. They also have strict guidelines for function and variable names. Believe me, you want to have the correct names when you <em>start</em> developing the package, not after everything is done!</p>
+<hr>
+<p>Once you have decided how you will share your package, and that you have a functionning package, you also need to think about the data in your package (if any) and its <code>NAMESPACE</code>.</p>
+<h3 id="data">Data</h3>
+<p>There are two main types of data in an R package: <em>internal data</em>, used internally by your R package and not available to the user; and <em>external data</em>, available to the user and typically used in examples and vignettes.</p>
+<h4 id="internal-data">Internal data</h4>
+<p>This is useful, for example, if you need tables of pre-computed values for some of your functions. All internal data should be saved as an R image in the file <code>R/sysdata.rda</code>. The objects in this file will retain their name, and the functions in your package can refer to them explicitely. It can also be a good idea to use the function <code>tools::checkRdaFiles</code> to determine what is the best compression type.</p>
+<h4 id="external-data">External data</h4>
+<p>If your package has a vignette, it can be useful to provide some data on which your package can be applied. This is probably the most useful form of documentation available in R.</p>
+<p>These objects should be saved in the directory <code>data/</code>. Also, it is highly recommended that you document all datasets (see for example the <a href="https://stat.ethz.ch/R-manual/R-devel/library/survival/html/veteran.html">veteran data in the survival package</a>).</p>
+<p>Following these guidelines should prevent a few headaches. For example, if you have internal data saved in <code>data/</code> and that should not be available to the user, you will be wondering why <code>R CMD check</code> asks that you document them anyway&hellip;</p>
+<h3 id="namespace">NAMESPACE</h3>
+<p>The <code>NAMESPACE</code> is probably the most subtle part of making an R package. Its main purpose is to dictate how your package interacts with other packages. It is not that important if you are only making a package for yourself, but it is <strong>vital</strong> if you plan to distribute your package in any way: you don&rsquo;t want your code to interfere with other packages, and vice versa.</p>
+<p>In my experience, the most frustrating part of <code>NAMESPACE</code> is how it relates to the different object-oriented systems. In general, you should export any <code>S3</code> methods you create (the only exception being methods for <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/InternalMethods.html">internal generics</a>). On the other hand, if the method is for a generic that is <em>not</em> part of your package, then you also need to import the generic (via <code>importFrom(package, generic)</code>).</p>
+<p>The <code>S4</code> system is a little bit more complicated: you need to import classes you extend (via <code>importClassesFrom(package, class)</code>) and generics for which you define methods (via <code>importMethodsFrom(package, generic)</code>). Moreover, if you use the <code>S4</code> system, you will need to import the package <code>methods</code>.</p>
+<p>Finally, one annoying warning I typically do not see on my computer but always get when running <code>R CMD check</code> on a vanilla system (e.g. on Travis, or when CRAN is performing their tests) is that I forgot to import functions from some of the base packages (e.g. <code>stats</code>, <code>grDevices</code>, <code>utils</code>). For example, if you use <code>lm</code> to perform linear regression, it is required that you add <code>importFrom(stats, lm)</code> to your <code>NAMESPACE</code>. There is one alternative: you can be explicit in your code and replace <code>lm</code> by <code>stats::lm</code>; in this case, the ambiguity in the name is resolved and no <code>NAMESPACE</code> directive is necessary.</p>
+<h3 id="extra-tips">Extra tips</h3>
+<ul>
+<li>
+<p><code>R CMD check</code> requires consistency between the different methods of a generic. This means consistency in the parameters and their names: if the generic as signature <code>foo(x, y, ...)</code>, your method needs all these parameters,and perhaps some new ones only required for a specific class <code>bar</code>, which would give <code>foo.bar(x, y, ..., z)</code>. This usually gives me a few headaches.</p>
+</li>
+<li>
+<p>When the checks are performed in a &ldquo;headless&rdquo; fashion, i.e. solely through the terminal, some graphical features may not be available. This can cause headaches, and it has in the past for our lab. As a specific example, the R package <code>rgl</code> will not work on a vanilla session of Travis. We get the following warning:</p>
+</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">** testing <span style="color:#66d9ef">if</span> installed package can be loaded
+Warning in rgl.init<span style="color:#f92672">(</span>initValue, onlyNULL<span style="color:#f92672">)</span> :
+ RGL: unable to open X11 display
+Warning: <span style="color:#e6db74">&#39;rgl_init&#39;</span> failed, running with rgl.useNULL <span style="color:#f92672">=</span> TRUE
+</code></pre></div><p>The solution we found was to set the following environment variable: <code>RGL_USE_NULL=TRUE</code>. As the warning mentions, this is essentially what happens anyway when <code>rgl_init</code> fails.</p>
+<ul>
+<li>
+<p>You should almost never use functions with side-effects in your package. Examples of such functions are <code>library</code>, <code>require</code>, <code>options</code> and <code>data</code>. In the first two cases, you should use the <code>NAMESPACE</code> and <code>DESCRIPTION</code> files if your package needs specific functions from another package. If you want to use <code>options</code> to turn off warnings or errors, you should instead use R&rsquo;s <a href="http://www.r-bloggers.com/error-handling-in-r/">exception handling capabilities</a>. Finally, you never need to use <code>data</code>; see the discussion about internal vs. external data above.</p>
+</li>
+<li>
+<p>If you are sending your package to CRAN or Bioconductor, you are not allowed to use the triple colon <code>:::</code> to access &ldquo;hidden&rdquo; functions. In any case, you should <strong>never</strong> use <code>:::</code> or <code>::</code> to access functions from your package; this is simply unnecessary.</p>
+</li>
+</ul>
+<p>I hope these tips will help. Please share your own in the comments below!</p>
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+

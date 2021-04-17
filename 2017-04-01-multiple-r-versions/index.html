@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en-ca">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.74.1" />
+
+
+<title>Installing multiple R versions - Blog—Max Turgeon</title>
+<meta property="og:title" content="Installing multiple R versions - Blog—Max Turgeon">
+
+
+  <link href='/icon.png' rel='icon' type='image/x-icon'/>
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/avatar.jpeg"
+         width="50"
+         height="50"
+         alt="Max Turgeon">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/">Home</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">4 min read</span>
+    
+
+    <h1 class="article-title">Installing multiple R versions</h1>
+
+    
+    <span class="article-date">2017-04-01</span>
+    
+
+    <div class="article-content">
+      <p><a href="https://sahirbhatnagar.com/">Sahir Bhatnagar</a> and I are currently wrapping up the first version of our package <a href="https://sahirbhatnagar.com/casebase/">casebase</a>. In short, it&rsquo;s an R package for survival analysis, where we use case-base sampling to fit smooth-in-time hazards. (I could write a post on this package, but there&rsquo;s no need: check out the <a href="https://sahirbhatnagar.com/casebase/">website</a> and the four vignettes.) As part of our workflow, we perform continuous integration using <a href="https://travis-ci.org/">Travis CI</a>, and we test our package against both the current and development versions of R. Recently, some tests began to fail against the development version, and so I had to install R-devel on my local machine in order to debug our code. This blog post is a summary of how I did it.</p>
+<p>To be fair, this is already documented online, and I made use of these resources; see the <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Installation">official R installation docs</a> and this <a href="https://support.rstudio.com/hc/en-us/articles/215488098-Installing-multiple-versions-of-R">RStudio support post</a>. I&rsquo;m writing yet another post simply as a reference for myself and my colleagues. But I also ran into a compilation error that I wanted to document here. That error was &ldquo;caused&rdquo; by following closely the (amazing) book <a href="http://r-pkgs.had.co.nz/"><em>R packages</em></a> by <a href="http://hadley.nz/">Hadley Wickham</a>. Stick around to learn what the problem was!</p>
+<h2 id="r-devel-on-travis-ci">R-devel on Travis CI</h2>
+<p>First, if you want Travis to test your package against both the release and the development version of R, simply add the following to your <code>.travis.yml</code> file:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#66d9ef">r</span>:
+  - release
+  - devel
+</code></pre></div><p>This effectively creates what Travis&rsquo; docs call a <em>build matrix</em>. Every time you push to your repository, Travis will run two jobs, corresponding to testing against both versions.</p>
+<h2 id="downloading-r-devel">Downloading R-devel</h2>
+<p>For what follows, I&rsquo;m assuming a Unix-like machine (the <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Installing-R-under-Windows">R installation docs</a> explain how to do this on Windows) You can download the source code directly from <a href="https://cran.r-project.org/">CRAN&rsquo;s website</a>, under alpha and beta releases.</p>
+<h2 id="installing-necessary-tools">Installing necessary tools</h2>
+<p>To have muliple versions concurrently running on your machine, you will have to install them from source. And to be able to do that, you need to make sure you have the appropriate tools. Again, the R docs provide all the <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Essential-and-useful-other-programs-under-a-Unix_002dalike">details you need</a>; in short, you need compilers for C, C++ and FORTRAN 90, appropriate libraries, and some extra tools. Fortunately, these tools are available through the usual package management systems. Moreover, if you&rsquo;re already building R packages, you already have these tools installed.</p>
+<h2 id="building-r-from-source">Building R from source</h2>
+<p>Once you have all the necessary tools and you have downloaded R-devel, unarchive the tarball and change directory to the source directory. The next step is to decide where you want to install this version; let&rsquo;s call it <code>/path-to-r-devel/</code>. This information needs to be passed to the <code>prefix</code> argument of the configure file:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./configure --prefix<span style="color:#f92672">=</span>/path-to-r-devel/ --enable-R-shlib
+</code></pre></div><p>As mentionned in the RStudio support post linked to above, the option <code>--enable-R-shlib</code> is required if you want to make this version of R available to RStudio.</p>
+<p>As soon as the configuration script finishes, you are ready to install R:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">make
+sudo make install
+</code></pre></div><h2 id="bonus-a-compilation-error"><strong>Bonus</strong>: A compilation error</h2>
+<p>During the configuration step, the C/C++ compilers are identified, and these are the ones used for building R itself. However, one of the last steps of the installation is to build <em>recommended</em> packages. If you have a <code>.R/Makevars</code> file on your machine, it could be used to select a <em>different</em> set of compilers. For example, if like me you&rsquo;ve learned how to make <code>R</code> packages by following Hadley Wickham&rsquo;s book <a href="http://r-pkgs.had.co.nz/"><em>R packages</em></a>, you may have added the following lines to <code>.R/Makevars</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">CC<span style="color:#f92672">=</span>ccache clang -Qunused-arguments
+CXX<span style="color:#f92672">=</span>ccache clang++ -Qunused-arguments
+CCACHE_CPP2<span style="color:#f92672">=</span>yes
+</code></pre></div><p>To be fair, he makes a very good case of why this would be a good idea: <code>clang++</code> gives better error messages than <code>g++</code>, and <code>ccache</code> will speed up compilation. However, I ran into an issue when trying to build the recommended package <code>mgcv</code>: to parallelize some of their computations, the authors of <code>mgcv</code> make use of OpenMP, which means it must be built with an OpenMP-enabled compiler. Once this has been figured out, the fix is easy: either go back to <code>g++</code>, or use the <a href="https://clang-omp.github.io/">OpenMP extension</a> to <code>clang</code>.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>That&rsquo;s it! The process is pretty straightforward, and if I ever need again to debug some code against R-devel, this is the process I will be going through.</p>
+<p>As a final note, here&rsquo;s how to <a href="https://support.rstudio.com/hc/en-us/articles/200486138-Using-Different-Versions-of-R">set up RStudio to use your version of choice</a>. If you comments or questions, leave them below!</p>
+    </div>
+  </article>
+
+  
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+  </body>
+</html>
+

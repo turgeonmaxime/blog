@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Optimisation on Blog—Max Turgeon</title>
+    <link>/tags/optimisation/</link>
+    <description>Recent content in Optimisation on Blog—Max Turgeon</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-ca</language>
+    <lastBuildDate>Fri, 11 Sep 2015 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/optimisation/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Test case: Optimising PCEV</title>
+      <link>/2015-09-11-optimisation-test-case/</link>
+      <pubDate>Fri, 11 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/2015-09-11-optimisation-test-case/</guid>
+      <description>&lt;p&gt;I will give an example of code optimisation in R, using Noam Ross&amp;rsquo;s &lt;code&gt;proftable&lt;/code&gt; function and Luke Tierney&amp;rsquo;s &lt;code&gt;proftools&lt;/code&gt; package, which I discuss in my [tutorial on optimisation]({{ site.github.url }}/optimisation/). The code we will optimise comes from the main function of our &lt;a href=&#34;https://github.com/GreenwoodLab/pcev&#34;&gt;PCEV package&lt;/a&gt;. A few months ago, while testing the method using simulations, I had to speed up my code because it was way to slow, and the result of this optimisation is given below.&lt;/p&gt;
+&lt;p&gt;For background, recall that PCEV is a dimension-reduction technique, akin to PCA, but where the components are obtained by maximising the proportion of variance explained by a set of covariates. For more information, see this [blog post]({{ site.github.url }}/pcev/).&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Tutorial: Optimising R code</title>
+      <link>/2015-09-10-optimisation/</link>
+      <pubDate>Thu, 10 Sep 2015 00:00:00 +0000</pubDate>
+      
+      <guid>/2015-09-10-optimisation/</guid>
+      <description>&lt;p&gt;The R language is very good for statistical computations, due to its strong functional capabilities, its open source philosophy, and its extended package ecosystem. However, it can also be quite slow, because of some &lt;a href=&#34;http://adv-r.had.co.nz/Performance.html#language-performance&#34;&gt;design choices&lt;/a&gt; (e.g. lazy evaluation and extreme dynamic typing).&lt;/p&gt;
+&lt;p&gt;This tutorial is mainly based on Hadley Wickam&amp;rsquo;s book &lt;a href=&#34;http://adv-r.had.co.nz/&#34;&gt;Advanced R&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;before-optimising&#34;&gt;Before optimising&amp;hellip;&lt;/h3&gt;
+&lt;p&gt;First of all, before we start optimising our R code, we need to ask ourselves a few questions:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Is my code doing what I want it to do?&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Do I really need to make my code faster?&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Is considerable speed up even possible?&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
