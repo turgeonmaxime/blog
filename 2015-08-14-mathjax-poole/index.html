@@ -28,7 +28,7 @@
 <h1 class=article-title>Using MathJax</h1>
 <span class=article-date>2015-08-14</span>
 <div class=article-content>
-<p>I had some trouble rendering correctly the mathematical equations in my [previous post]({{ site.github.url }}/pcev/): at first I could only see the untransformed markup, then the text simply disappeared, without being transformed, and finally the equations appeared, but coloured orange. As you can see, everything now looks fine, but to fix this I ended up learning a bit more about how markdown, HTML, CSS and javacript all work together to create the website you are currently visiting. The purpose of this post is to share some of what I learned, so that future visitors can be spared some of the pain that accompanied the learning.</p>
+<p>I had some trouble rendering correctly the mathematical equations in my <a href=https://www.maxturgeon.ca/blog/2015-08-06-pcev/>previous post</a>: at first I could only see the untransformed markup, then the text simply disappeared, without being transformed, and finally the equations appeared, but coloured orange. As you can see, everything now looks fine, but to fix this I ended up learning a bit more about how markdown, HTML, CSS and javacript all work together to create the website you are currently visiting. The purpose of this post is to share some of what I learned, so that future visitors can be spared some of the pain that accompanied the learning.</p>
 <p>As a disclaimer, I want to say that some of the following material is already well covered elsewhere on the web (e.g. take a look at <a href=https://christopherpoole.github.io/using-mathjax-on-github-pages/>Chris Poole&rsquo;s blog post</a>). Indeed, the only thing I had to figure out on my own is how to fix the orange font. In any case, I hope the extra background can be useful &ndash; it certainly was for me.</p>
 <h3 id=mathjax>MathJax</h3>
 <p>First of all, what is <a href=https://www.mathjax.org/>MathJax</a>? It is an open-source Javascript engine that renders some text into mathematical equations. As such there are two main components:</p>
@@ -42,15 +42,30 @@
 </ol>
 <p>The main strengths of MathJax are that it works with pretty much all browsers and that it understands both <a href=http://www.latex-project.org/>LaTex</a> and <a href=http://www.w3.org/Math/>MathML</a>, two of the most widely used equation markup languages. In other words, MathJax allows us to use the familiar LaTex macros directly inside our HTML document, and the Internet browser will automatically know how to interpret them.</p>
 <p>How can we use it? We simply need to add a few lines in the header of our html document, which will tell the browser where to find the necessary Javascript code. You can provide a custom implementation of MathJax (it&rsquo;s open-source!), but the simplest way is to point directly to the latest stable implementation, like this:</p>
-<p>{% highlight html %}</p>
-<pre><code>&lt;script type=&quot;text/javascript&quot;
-        src=&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;
-&lt;/script&gt;
-</code></pre>
-<p>If you want to change a few things to the script, but you only want these changes to apply to a given webpage, you can also add some custom Javascript between the &lt;script> tags. For example, if you want to change the color to yellow, you can do it like this:</p>
-<p>{% highlight html %}</p>
-<p>{% endhighlight %}</p>
-<p>How does MathJax know where to start and stop rendering the math equations? There are delimiters, of course! By default, MathJax supports three kinds: [ &mldr; ] for block mathematics, ( &mldr; ) for inline mathematics, and $$ &mldr; $$ for both (depending on the relation between the markup and the surrounding text, it will be displayed inline or as a block). Note, however, that the familiar LaTex-way of displaying inline equations (using single dollar signs) is <strong>not</strong> supported by default, since dollar signs are frequently used in plain text. If you want to change this default behaviour, have a look at the <a href=http://docs.mathjax.org/en/latest/tex.html#tex-and-latex-math-delimiters>documentation</a>.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-html data-lang=html>&lt;<span style=color:#f92672>head</span>&gt;
+
+<span style=color:#75715e>&lt;!-- Some html code --&gt;</span>
+
+    &lt;<span style=color:#f92672>script</span> <span style=color:#a6e22e>type</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;text/javascript&#34;</span>
+            <span style=color:#a6e22e>src</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;</span>&gt;
+    &lt;/<span style=color:#f92672>script</span>&gt;
+    
+<span style=color:#75715e>&lt;!-- Some more html code --&gt;</span>
+
+&lt;/<span style=color:#f92672>head</span>&gt;
+</code></pre></div><p>If you want to change a few things to the script, but you only want these changes to apply to a given webpage, you can also add some custom Javascript between the &lt;script> tags. For example, if you want to change the color to yellow, you can do it like this:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-html data-lang=html>&lt;<span style=color:#f92672>script</span> <span style=color:#a6e22e>type</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;text/javascript&#34;</span>
+        <span style=color:#a6e22e>src</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#34;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;</span>&gt;
+
+    <span style=color:#a6e22e>MathJax</span>.<span style=color:#a6e22e>Hub</span>.<span style=color:#a6e22e>Config</span>({ <span style=color:#a6e22e>styles</span><span style=color:#f92672>:</span> {
+        <span style=color:#e6db74>&#34;.MathJax&#34;</span><span style=color:#f92672>:</span> {
+            <span style=color:#a6e22e>color</span><span style=color:#f92672>:</span> <span style=color:#e6db74>&#34;#FFCC00&#34;</span>
+        }
+    }
+    })
+
+&lt;/<span style=color:#f92672>script</span>&gt;
+</code></pre></div><p>How does MathJax know where to start and stop rendering the math equations? There are delimiters, of course! By default, MathJax supports three kinds: [ &mldr; ] for block mathematics, ( &mldr; ) for inline mathematics, and $$ &mldr; $$ for both (depending on the relation between the markup and the surrounding text, it will be displayed inline or as a block). Note, however, that the familiar LaTex-way of displaying inline equations (using single dollar signs) is <strong>not</strong> supported by default, since dollar signs are frequently used in plain text. If you want to change this default behaviour, have a look at the <a href=http://docs.mathjax.org/en/latest/tex.html#tex-and-latex-math-delimiters>documentation</a>.</p>
 <h3 id=mathjax-and-markdown>MathJax and Markdown</h3>
 <p>If you are writing your HTML from scratch, then the above is all you need to add nicely displayed math equations to your webpage. However, if you are using Markdown (as I am), there are a few extra things you need to think about.</p>
 <p>For those unfamiliar with it, <a href=http://daringfireball.net/projects/markdown/>Markdown</a> is a lightweight markup language whose main purpose is to be easily <strong>writable</strong> and <strong>readable</strong> by humans in a basic text editor. In order to use it for your website, you also need some piece of software that will parse the Markdown and output HTML code. Since MathJax works directly on the HTML file, the main point is to make sure that the parsing will not change the equation markup. There are two things to keep in mind when choosing the parser:</p>

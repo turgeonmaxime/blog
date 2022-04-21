@@ -29,7 +29,7 @@
 <span class=article-date>2018-02-25</span>
 <div class=article-content>
 <p>A few years ago, as part of the graduate course <em>Data Analysis and Report Writing</em> in the Department of Epidemiology, Biostatistics and Occupational Health at McGill University, we explored the topic of predictive modeling using a dataset containing movies, directors and actors who were nominated for an Academy Award. The goal was to select some variables and build a predictive model for the winner in four categories: Best Picture, Best Director, Best Actor, and Best Actress. As a movie fan, this was the dream assignment: I could combine my love of movies with my love of statistics! And it payed off: I was the only one in my class to correctly predict all four winners.</p>
-<p>Over the years, I&rsquo;ve continued using the model, but I&rsquo;ve also tweaked it a bit. In this post, I want to describe my model and present the predictions for this year (see also ({{ site.github.url }}/oscar-predictions-2018)).</p>
+<p>Over the years, I&rsquo;ve continued using the model, but I&rsquo;ve also tweaked it a bit. In this post, I want to describe my model and present the predictions for this year (see my full predictions <a href=https://www.maxturgeon.ca/blog/2018-02-24-oscar-predictions-2018/>here</a>).</p>
 <h2 id=conditional-logistic-regression>Conditional logistic regression</h2>
 <p>The modeling method I&rsquo;ve selected is <em>conditional logistic regression</em>. I will give more details about how it works, but at the main principle is as follows: <strong>we condition on the number of events (i.e. winners) per strata</strong>. As we will see, this principle leads to many desirable characteristics that make this an ideal tool for this situation:</p>
 <ul>
@@ -191,7 +191,7 @@ boot_prob_pic <span style=color:#f92672>&lt;-</span> purrr<span style=color:#f92
     <span style=color:#a6e22e>ylab</span>(<span style=color:#e6db74>&#34;Probability&#34;</span>) <span style=color:#f92672>+</span> <span style=color:#a6e22e>expand_limits</span>(y <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>) <span style=color:#f92672>+</span>
     <span style=color:#a6e22e>scale_y_continuous</span>(lim <span style=color:#f92672>=</span> <span style=color:#a6e22e>c</span>(<span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>1</span>), expand <span style=color:#f92672>=</span> <span style=color:#a6e22e>c</span>(<span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>0</span>)) <span style=color:#f92672>+</span>
     <span style=color:#a6e22e>theme</span>(axis.text.x <span style=color:#f92672>=</span> <span style=color:#a6e22e>element_text</span>(angle <span style=color:#f92672>=</span> <span style=color:#ae81ff>45</span>, hjust <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>))
-</code></pre></div><p><img src=/figure/source/2018-02-25-oscar-prediction-model/unnamed-chunk-6-1.png alt="plot of chunk unnamed-chunk-6"></p>
+</code></pre></div><p><img src=unnamed-chunk-6-1.png alt="plot of chunk unnamed-chunk-6"></p>
 <p>As we can see, there is a lot of variation in these predictions, and therefore <em>The Shape of Water</em> winning is not incompatible with our model fit.</p>
 <p>One more thing to keep in mind: people are generally bad with probabilities, and even worse with <em>conditional</em> probabilities. As a consequence, it may be the case that pundits are overestimating <em>The Shape of Water</em>&rsquo;s chances because they have trouble combining the information from all sources and giving them the proper weight. As an illustration of this, let&rsquo;s compare the conditional estimates (i.e. the ones we got from the model) to marginal estimates (i.e. that we would get by fitting only one covariate at a time):</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#75715e># Window function to get marginal coefficients</span>
@@ -224,7 +224,7 @@ fit_pic <span style=color:#f92672>%&gt;%</span>
     <span style=color:#a6e22e>theme</span>(axis.text.x <span style=color:#f92672>=</span> <span style=color:#a6e22e>element_text</span>(angle <span style=color:#f92672>=</span> <span style=color:#ae81ff>45</span>, hjust <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>))
 </code></pre></div><pre tabindex=0><code>## Warning: attributes are not identical across measure variables;
 ## they will be dropped
-</code></pre><p><img src=/figure/source/2018-02-25-oscar-prediction-model/unnamed-chunk-7-1.png alt="plot of chunk unnamed-chunk-7"></p>
+</code></pre><p><img src=unnamed-chunk-7-1.png alt="plot of chunk unnamed-chunk-7"></p>
 <p>As we can see, although on its own the PGA Award winner seems a good predictor (since 1989, the Academy Award and the PGA Award went to the same movie 19 times out of 28), once we include the information coming from the other guild awards it loses its predictive ability. Therefore, given that <em>The Shape of Water</em> only won the PGA and DGA awards, I believe <em>Three Billboards Outside Ebbing, Missouri</em> is the real front-runner.</p>
 </div>
 </article>

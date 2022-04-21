@@ -6,6 +6,7 @@
 <title>Test case: Optimising PCEV - Blog—Max Turgeon</title>
 <meta property="og:title" content="Test case: Optimising PCEV - Blog—Max Turgeon">
 <link href=https://maxturgeon.ca/blog/icon.png rel=icon type=image/x-icon>
+<link href=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css rel=stylesheet type=text/css>
 <link rel=stylesheet href=/blog/css/fonts.css media=all>
 <link rel=stylesheet href=/blog/css/main.css media=all>
 </head>
@@ -27,400 +28,361 @@
 <h1 class=article-title>Test case: Optimising PCEV</h1>
 <span class=article-date>2015-09-11</span>
 <div class=article-content>
-<p>I will give an example of code optimisation in R, using Noam Ross&rsquo;s <code>proftable</code> function and Luke Tierney&rsquo;s <code>proftools</code> package, which I discuss in my [tutorial on optimisation]({{ site.github.url }}/optimisation/). The code we will optimise comes from the main function of our <a href=https://github.com/GreenwoodLab/pcev>PCEV package</a>. A few months ago, while testing the method using simulations, I had to speed up my code because it was way to slow, and the result of this optimisation is given below.</p>
-<p>For background, recall that PCEV is a dimension-reduction technique, akin to PCA, but where the components are obtained by maximising the proportion of variance explained by a set of covariates. For more information, see this [blog post]({{ site.github.url }}/pcev/).</p>
+<p>I will give an example of code optimisation in R, using Noam Ross&rsquo;s <code>proftable</code> function and Luke Tierney&rsquo;s <code>proftools</code> package, which I discuss in my <a href=https://www.maxturgeon.ca/blog/2015-09-10-optimisation/>tutorial on optimisation</a>. The code we will optimise comes from the main function of our <a href=https://github.com/GreenwoodLab/pcev>PCEV package</a>. A few months ago, while testing the method using simulations, I had to speed up my code because it was way to slow, and the result of this optimisation is given below.</p>
+<p>For background, recall that PCEV is a dimension-reduction technique, akin to PCA, but where the components are obtained by maximising the proportion of variance explained by a set of covariates. For more information, see this <a href=https://www.maxturgeon.ca/blog/2015-08-06-pcev/>blog post</a>.</p>
 <h3 id=first-version>First version</h3>
 <p>Below, I have reproduced the first version of the code that I was using:</p>
-<p>{% highlight r %}</p>
-<h1 id=compute-pcev-and-its-p-value>Compute PCEV and its p-value</h1>
-<p>Wilks.lambda &lt;- function(Y, x) {
-N &lt;- dim(Y)[1]
-p &lt;- dim(Y)[2]
-bar.Y &lt;- as.vector(apply(Y, 2, mean))</p>
-<h1 id=estimte-the-two-variance-components>Estimte the two variance components</h1>
-<p>fit &lt;- lm(Y~x)
-Y.fit &lt;- fit$fitted
-Vr &lt;- t((Y - Y.fit)) %<em>% Y
-Vg &lt;- (t(Y.fit) %</em>% Y - N * bar.Y %*% t(bar.Y))
-res &lt;- Y-Y.fit</p>
-<h1 id=we-need-to-take-the-square-root-of-vr>We need to take the square root of Vr</h1>
-<p>temp &lt;- eigen(Vr,symmetric=T)
-Ur &lt;- temp$vectors
-diagD &lt;- temp$values
-value &lt;- 1/sqrt(diagD)
-root.Vr &lt;- Ur %<em>% diag(value) %</em>% t(Ur)
-m &lt;- root.Vr %<em>% Vg %</em>% root.Vr</p>
-<h1 id=pcev-and-wilks-are-eigen-components-of-m>PCEV and Wilks are eigen-components of m</h1>
-<p>temp1 &lt;- eigen(m,symmetric=T)
-PCEV &lt;- root.Vr %*% temp1$vectors
-d &lt;- temp1$values</p>
-<h1 id=wilks-is-an-f-test>Wilks is an F-test</h1>
-<p>wilks.lambda &lt;- ((N-p-1)/p) * d[1]
-df1 &lt;- p
-df2 &lt;- N-p-1
-p.value &lt;- pf(wilks.lambda, df1, df2, lower.tail = FALSE)</p>
-<p>return(list(&ldquo;environment&rdquo; = Vr,
-&ldquo;genetic&rdquo; = Vg,
-&ldquo;PCEV&rdquo;=PCEV,
-&ldquo;root.Vr&rdquo;=root.Vr,
-&ldquo;values&rdquo;=d,
-&ldquo;p.value&rdquo;=p.value))
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#75715e># Compute PCEV and its p-value </span>
+Wilks.lambda <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>function</span>(Y, x) {
+  N <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>dim</span>(Y)[1]
+  p <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>dim</span>(Y)[2] 
+  bar.Y <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>as.vector</span>(<span style=color:#a6e22e>apply</span>(Y, <span style=color:#ae81ff>2</span>, mean))
+  <span style=color:#75715e># Estimte the two variance components</span>
+  fit <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>lm</span>(Y<span style=color:#f92672>~</span>x)
+  Y.fit <span style=color:#f92672>&lt;-</span> fit<span style=color:#f92672>$</span>fitted
+  Vr <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>t</span>((Y <span style=color:#f92672>-</span> Y.fit)) <span style=color:#f92672>%*%</span> Y
+  Vg <span style=color:#f92672>&lt;-</span> (<span style=color:#a6e22e>t</span>(Y.fit) <span style=color:#f92672>%*%</span> Y <span style=color:#f92672>-</span> N <span style=color:#f92672>*</span> bar.Y <span style=color:#f92672>%*%</span> <span style=color:#a6e22e>t</span>(bar.Y))
+  res <span style=color:#f92672>&lt;-</span> Y<span style=color:#f92672>-</span>Y.fit
+  <span style=color:#75715e># We need to take the square root of Vr</span>
+  temp <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>eigen</span>(Vr,symmetric<span style=color:#f92672>=</span>T)
+  Ur <span style=color:#f92672>&lt;-</span> temp<span style=color:#f92672>$</span>vectors
+  diagD <span style=color:#f92672>&lt;-</span> temp<span style=color:#f92672>$</span>values 
+  value <span style=color:#f92672>&lt;-</span> <span style=color:#ae81ff>1</span><span style=color:#f92672>/</span><span style=color:#a6e22e>sqrt</span>(diagD)
+  root.Vr <span style=color:#f92672>&lt;-</span> Ur <span style=color:#f92672>%*%</span> <span style=color:#a6e22e>diag</span>(value) <span style=color:#f92672>%*%</span> <span style=color:#a6e22e>t</span>(Ur)
+  m <span style=color:#f92672>&lt;-</span> root.Vr <span style=color:#f92672>%*%</span> Vg <span style=color:#f92672>%*%</span> root.Vr
+  <span style=color:#75715e># PCEV and Wilks are eigen-components of m</span>
+  temp1 <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>eigen</span>(m,symmetric<span style=color:#f92672>=</span>T)
+  PCEV <span style=color:#f92672>&lt;-</span> root.Vr <span style=color:#f92672>%*%</span> temp1<span style=color:#f92672>$</span>vectors
+  d <span style=color:#f92672>&lt;-</span> temp1<span style=color:#f92672>$</span>values
+  <span style=color:#75715e># Wilks is an F-test</span>
+  wilks.lambda <span style=color:#f92672>&lt;-</span> ((N<span style=color:#f92672>-</span>p<span style=color:#ae81ff>-1</span>)<span style=color:#f92672>/</span>p) <span style=color:#f92672>*</span> d[1]
+  df1 <span style=color:#f92672>&lt;-</span> p
+  df2 <span style=color:#f92672>&lt;-</span> N<span style=color:#f92672>-</span>p<span style=color:#ae81ff>-1</span>
+  p.value <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>pf</span>(wilks.lambda, df1, df2, lower.tail <span style=color:#f92672>=</span> <span style=color:#66d9ef>FALSE</span>)
+  
+  <span style=color:#a6e22e>return</span>(<span style=color:#a6e22e>list</span>(<span style=color:#e6db74>&#34;environment&#34;</span> <span style=color:#f92672>=</span> Vr, 
+              <span style=color:#e6db74>&#34;genetic&#34;</span> <span style=color:#f92672>=</span> Vg, 
+              <span style=color:#e6db74>&#34;PCEV&#34;</span><span style=color:#f92672>=</span>PCEV, 
+              <span style=color:#e6db74>&#34;root.Vr&#34;</span><span style=color:#f92672>=</span>root.Vr,
+              <span style=color:#e6db74>&#34;values&#34;</span><span style=color:#f92672>=</span>d, 
+              <span style=color:#e6db74>&#34;p.value&#34;</span><span style=color:#f92672>=</span>p.value))
 }
-{% endhighlight %}</p>
-<p>As we can see, we are using a few common R functions, like <code>lm</code>, matrix multiplication and <code>eigen</code>. Let&rsquo;s see where the bottlenecks are. As mentioned in the <a href=http://www.hep.by/gnu/r-patched/r-exts/R-exts_71.html#SEC71>documentation</a>, we will wrap our code in a call to replicate so that we can accurately investigate the call stack.</p>
-<p>{% highlight r %}
-set.seed(12345)
-Y &lt;- matrix(rnorm(100*20), nrow=100)
-X &lt;- rnorm(100)</p>
-<p>library(proftools)</p>
-<p>Rprof(tmp &lt;- tempfile())
-res &lt;- replicate(n = 1000, Wilks.lambda(Y, X), simplify = FALSE)
-Rprof()
-proftable(tmp)
-{% endhighlight %}</p>
-<p>{% highlight text %}</p>
-<h2 id=pcttime>PctTime</h2>
-<h2 id=1195>11.95</h2>
-<h2 id=755>7.55</h2>
-<h2 id=692>6.92</h2>
-<h2 id=440>4.40</h2>
-<h2 id=314>3.14</h2>
-<h2 id=314-1>3.14</h2>
-<h2 id=314-2>3.14</h2>
-<h2 id=252>2.52</h2>
-<h2 id=252-1>2.52</h2>
-<h2 id=252-2>2.52</h2>
-<h2 id=call>Call</h2>
-<h2 id=eigen>eigen</h2>
-<h2 id=lm--modelframedefault--external2--naomit--naomitdataframe>lm > model.frame.default > .External2 > na.omit > na.omit.data.frame</h2>
-<h2 id=heading>%*%</h2>
-<h2 id=lm--lmfit>lm > lm.fit</h2>
-<h2 id=asvector--apply>as.vector > apply</h2>
-<h2 id=asvector--apply--meandefault>as.vector > apply > mean.default</h2>
-<h2 id=lm>lm</h2>
-<h2 id=heading-1></h2>
-<h2 id=lm--modelframedefault>lm > model.frame.default</h2>
-<h2 id=lm--lmfit--structure>lm > lm.fit > structure</h2>
-<h2 id=heading-2></h2>
-<h2 id=parent-call-local--evalparent--eval--eval--eval--eval--anonymous--process_file--withcallinghandlers--process_group--process_groupblock--call_block--block_exec--in_dir--anonymous--evaluate_call--handle--try--trycatch--trycatchlist--trycatchone--dotrycatch--withcallinghandlers--withvisible--eval--eval--replicate--sapply--lapply--fun--wilkslambda-->Parent Call: local > eval.parent > eval > eval > eval > eval > > process_file > withCallingHandlers > process_group > process_group.block > call_block > block_exec > in_dir > > evaluate_call > handle > try > tryCatch > tryCatchList > tryCatchOne > doTryCatch > withCallingHandlers > withVisible > eval > eval > replicate > sapply > lapply > FUN > Wilks.lambda > &mldr;</h2>
-<h2 id=heading-3></h2>
-<h2 id=total-time-318-seconds>Total Time: 3.18 seconds</h2>
-<h2 id=percent-of-run-time-represented-478->Percent of run time represented: 47.8 %</h2>
-<p>{% endhighlight %}</p>
-<p>{% highlight r %}
-plotProfileCallGraph(readProfileData(tmp),
-score = &ldquo;total&rdquo;)
-{% endhighlight %}</p>
-<p><img src=/figure/source/2015-09-10-optimisation-test-case/Wilks1-1.png alt="plot of chunk Wilks1"></p>
+</code></pre></div><p>As we can see, we are using a few common R functions, like <code>lm</code>, matrix multiplication and <code>eigen</code>. Let&rsquo;s see where the bottlenecks are. As mentioned in the <a href=http://www.hep.by/gnu/r-patched/r-exts/R-exts_71.html#SEC71>documentation</a>, we will wrap our code in a call to replicate so that we can accurately investigate the call stack.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>set.seed</span>(<span style=color:#ae81ff>12345</span>)
+Y <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>matrix</span>(<span style=color:#a6e22e>rnorm</span>(<span style=color:#ae81ff>100</span><span style=color:#f92672>*</span><span style=color:#ae81ff>20</span>), nrow<span style=color:#f92672>=</span><span style=color:#ae81ff>100</span>)
+X <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>rnorm</span>(<span style=color:#ae81ff>100</span>)
+
+<span style=color:#a6e22e>library</span>(proftools)
+
+<span style=color:#a6e22e>Rprof</span>(tmp <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>tempfile</span>())
+res <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>replicate</span>(n <span style=color:#f92672>=</span> <span style=color:#ae81ff>1000</span>, <span style=color:#a6e22e>Wilks.lambda</span>(Y, X), simplify <span style=color:#f92672>=</span> <span style=color:#66d9ef>FALSE</span>)
+<span style=color:#a6e22e>Rprof</span>()
+<span style=color:#a6e22e>proftable</span>(tmp)
+</code></pre></div><pre tabindex=0><code>##  PctTime
+##  11.95  
+##   7.55  
+##   6.92  
+##   4.40  
+##   3.14  
+##   3.14  
+##   3.14  
+##   2.52  
+##   2.52  
+##   2.52  
+##  Call                                                                
+##  eigen                                                               
+##  lm &gt; model.frame.default &gt; .External2 &gt; na.omit &gt; na.omit.data.frame
+##  %*%                                                                 
+##  lm &gt; lm.fit                                                         
+##  as.vector &gt; apply                                                   
+##  as.vector &gt; apply &gt; mean.default                                    
+##  lm                                                                  
+##                                                                      
+##  lm &gt; model.frame.default                                            
+##  lm &gt; lm.fit &gt; structure                                             
+## 
+## Parent Call: local &gt; eval.parent &gt; eval &gt; eval &gt; eval &gt; eval &gt; &lt;Anonymous&gt; &gt; process_file &gt; withCallingHandlers &gt; process_group &gt; process_group.block &gt; call_block &gt; block_exec &gt; in_dir &gt; &lt;Anonymous&gt; &gt; evaluate_call &gt; handle &gt; try &gt; tryCatch &gt; tryCatchList &gt; tryCatchOne &gt; doTryCatch &gt; withCallingHandlers &gt; withVisible &gt; eval &gt; eval &gt; replicate &gt; sapply &gt; lapply &gt; FUN &gt; Wilks.lambda &gt; ...
+## 
+## Total Time: 3.18 seconds
+## Percent of run time represented: 47.8 %
+</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>plotProfileCallGraph</span>(<span style=color:#a6e22e>readProfileData</span>(tmp),
+                     score <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;total&#34;</span>)
+</code></pre></div><p><img src=Wilks1-1.png alt="plot of chunk Wilks1"></p>
 <p>Not surprisingly, <code>eigen</code> is taking up quite some time to run (but note that we are calling it twice). Moreover, <code>lm</code> is calling several other functions. This is because it tidies up the output.</p>
 <h3 id=first-attempt-at-optimising>First attempt at optimising</h3>
 <p>Since we only need the fitted values, we can replace our call to <code>lm</code> by a call to <code>lm.fit</code>.</p>
-<p>{% highlight r %}</p>
-<h1 id=compute-pcev-and-its-p-value---take-2>Compute PCEV and its p-value - Take 2</h1>
-<p>Wilks.lambda2 &lt;- function(Y, x) {
-N &lt;- dim(Y)[1]
-p &lt;- dim(Y)[2]
-bar.Y &lt;- as.vector(apply(Y, 2, mean))</p>
-<h1 id=estimte-the-two-variance-components-1>Estimte the two variance components</h1>
-<p>fit &lt;- lm.fit(cbind(rep_len(1, N), x), Y)
-Y.fit &lt;- fit$fitted.values
-Vr &lt;- t((Y - Y.fit)) %<em>% Y
-Vg &lt;- (t(Y.fit) %</em>% Y - N * bar.Y %*% t(bar.Y))
-res &lt;- Y-Y.fit</p>
-<h1 id=we-need-to-take-the-square-root-of-vr-1>We need to take the square root of Vr</h1>
-<p>temp &lt;- eigen(Vr,symmetric=T)
-Ur &lt;- temp$vectors
-diagD &lt;- temp$values
-value &lt;- 1/sqrt(diagD)
-root.Vr &lt;- Ur %<em>% diag(value) %</em>% t(Ur)
-m &lt;- root.Vr %<em>% Vg %</em>% root.Vr</p>
-<h1 id=pcev-and-wilks-are-eigen-components-of-m-1>PCEV and Wilks are eigen-components of m</h1>
-<p>temp1 &lt;- eigen(m,symmetric=T)
-PCEV &lt;- root.Vr %*% temp1$vectors
-d &lt;- temp1$values</p>
-<h1 id=wilks-is-an-f-test-1>Wilks is an F-test</h1>
-<p>wilks.lambda &lt;- ((N-p-1)/p) * d[1]
-df1 &lt;- p
-df2 &lt;- N-p-1
-p.value &lt;- pf(wilks.lambda, df1, df2, lower.tail = FALSE)</p>
-<p>return(list(&ldquo;environment&rdquo; = Vr,
-&ldquo;genetic&rdquo; = Vg,
-&ldquo;PCEV&rdquo;=PCEV,
-&ldquo;root.Vr&rdquo;=root.Vr,
-&ldquo;values&rdquo;=d,
-&ldquo;p.value&rdquo;=p.value))
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#75715e># Compute PCEV and its p-value - Take 2</span>
+Wilks.lambda2 <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>function</span>(Y, x) {
+  N <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>dim</span>(Y)[1]
+  p <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>dim</span>(Y)[2] 
+  bar.Y <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>as.vector</span>(<span style=color:#a6e22e>apply</span>(Y, <span style=color:#ae81ff>2</span>, mean))
+  <span style=color:#75715e># Estimte the two variance components</span>
+  fit <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>lm.fit</span>(<span style=color:#a6e22e>cbind</span>(<span style=color:#a6e22e>rep_len</span>(<span style=color:#ae81ff>1</span>, N), x), Y)
+  Y.fit <span style=color:#f92672>&lt;-</span> fit<span style=color:#f92672>$</span>fitted.values
+  Vr <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>t</span>((Y <span style=color:#f92672>-</span> Y.fit)) <span style=color:#f92672>%*%</span> Y
+  Vg <span style=color:#f92672>&lt;-</span> (<span style=color:#a6e22e>t</span>(Y.fit) <span style=color:#f92672>%*%</span> Y <span style=color:#f92672>-</span> N <span style=color:#f92672>*</span> bar.Y <span style=color:#f92672>%*%</span> <span style=color:#a6e22e>t</span>(bar.Y))
+  res <span style=color:#f92672>&lt;-</span> Y<span style=color:#f92672>-</span>Y.fit
+  <span style=color:#75715e># We need to take the square root of Vr</span>
+  temp <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>eigen</span>(Vr,symmetric<span style=color:#f92672>=</span>T)
+  Ur <span style=color:#f92672>&lt;-</span> temp<span style=color:#f92672>$</span>vectors
+  diagD <span style=color:#f92672>&lt;-</span> temp<span style=color:#f92672>$</span>values 
+  value <span style=color:#f92672>&lt;-</span> <span style=color:#ae81ff>1</span><span style=color:#f92672>/</span><span style=color:#a6e22e>sqrt</span>(diagD)
+  root.Vr <span style=color:#f92672>&lt;-</span> Ur <span style=color:#f92672>%*%</span> <span style=color:#a6e22e>diag</span>(value) <span style=color:#f92672>%*%</span> <span style=color:#a6e22e>t</span>(Ur)
+  m <span style=color:#f92672>&lt;-</span> root.Vr <span style=color:#f92672>%*%</span> Vg <span style=color:#f92672>%*%</span> root.Vr
+  <span style=color:#75715e># PCEV and Wilks are eigen-components of m</span>
+  temp1 <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>eigen</span>(m,symmetric<span style=color:#f92672>=</span>T)
+  PCEV <span style=color:#f92672>&lt;-</span> root.Vr <span style=color:#f92672>%*%</span> temp1<span style=color:#f92672>$</span>vectors
+  d <span style=color:#f92672>&lt;-</span> temp1<span style=color:#f92672>$</span>values
+  <span style=color:#75715e># Wilks is an F-test</span>
+  wilks.lambda <span style=color:#f92672>&lt;-</span> ((N<span style=color:#f92672>-</span>p<span style=color:#ae81ff>-1</span>)<span style=color:#f92672>/</span>p) <span style=color:#f92672>*</span> d[1]
+  df1 <span style=color:#f92672>&lt;-</span> p
+  df2 <span style=color:#f92672>&lt;-</span> N<span style=color:#f92672>-</span>p<span style=color:#ae81ff>-1</span>
+  p.value <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>pf</span>(wilks.lambda, df1, df2, lower.tail <span style=color:#f92672>=</span> <span style=color:#66d9ef>FALSE</span>)
+  
+  <span style=color:#a6e22e>return</span>(<span style=color:#a6e22e>list</span>(<span style=color:#e6db74>&#34;environment&#34;</span> <span style=color:#f92672>=</span> Vr, 
+              <span style=color:#e6db74>&#34;genetic&#34;</span> <span style=color:#f92672>=</span> Vg, 
+              <span style=color:#e6db74>&#34;PCEV&#34;</span><span style=color:#f92672>=</span>PCEV, 
+              <span style=color:#e6db74>&#34;root.Vr&#34;</span><span style=color:#f92672>=</span>root.Vr,
+              <span style=color:#e6db74>&#34;values&#34;</span><span style=color:#f92672>=</span>d, 
+              <span style=color:#e6db74>&#34;p.value&#34;</span><span style=color:#f92672>=</span>p.value))
 }
-{% endhighlight %}</p>
-<p>{% highlight r %}
-Rprof(tmp &lt;- tempfile())
-res &lt;- replicate(n = 1000, Wilks.lambda2(Y, X), simplify = FALSE)
-Rprof()
-proftable(tmp)
-{% endhighlight %}</p>
-<p>{% highlight text %}</p>
-<h2 id=pcttime-call>PctTime Call</h2>
-<h2 id=2410---fun--wilkslambda2--eigen>24.10 FUN > Wilks.lambda2 > eigen</h2>
-<h2 id=2289---fun--wilkslambda2-->22.89 FUN > Wilks.lambda2 > %*%</h2>
-<h2 id=843---fun--wilkslambda2--asvector--apply>8.43 FUN > Wilks.lambda2 > as.vector > apply</h2>
-<h2 id=602---fun--wilkslambda2--lmfit>6.02 FUN > Wilks.lambda2 > lm.fit</h2>
-<h2 id=361---fun--wilkslambda2--asvector--apply>3.61 FUN > Wilks.lambda2 > as.vector > apply</h2>
-<h2 id=361---fun--wilkslambda2--asvector--apply--meandefault>3.61 FUN > Wilks.lambda2 > as.vector > apply > mean.default</h2>
-<h2 id=241---fun--wilkslambda2--asvector--apply--unlist>2.41 FUN > Wilks.lambda2 > as.vector > apply > unlist</h2>
-<h2 id=241---fun--wilkslambda2--lmfit--colnames>2.41 FUN > Wilks.lambda2 > lm.fit > colnames</h2>
-<h2 id=241---fun--wilkslambda2--t>2.41 FUN > Wilks.lambda2 > t</h2>
-<h2 id=120>1.20</h2>
-<h2 id=heading-4></h2>
-<h2 id=parent-call-local--evalparent--eval--eval--eval--eval--anonymous--process_file--withcallinghandlers--process_group--process_groupblock--call_block--block_exec--in_dir--anonymous--evaluate_call--handle--try--trycatch--trycatchlist--trycatchone--dotrycatch--withcallinghandlers--withvisible--eval--eval--replicate--sapply--lapply-->Parent Call: local > eval.parent > eval > eval > eval > eval > > process_file > withCallingHandlers > process_group > process_group.block > call_block > block_exec > in_dir > > evaluate_call > handle > try > tryCatch > tryCatchList > tryCatchOne > doTryCatch > withCallingHandlers > withVisible > eval > eval > replicate > sapply > lapply > &mldr;</h2>
-<h2 id=heading-5></h2>
-<h2 id=total-time-166-seconds>Total Time: 1.66 seconds</h2>
-<h2 id=percent-of-run-time-represented-771->Percent of run time represented: 77.1 %</h2>
-<p>{% endhighlight %}</p>
-<p>{% highlight r %}
-plotProfileCallGraph(readProfileData(tmp),
-score = &ldquo;total&rdquo;)
-{% endhighlight %}</p>
-<p><img src=/figure/source/2015-09-10-optimisation-test-case/Wilks2-1.png alt="plot of chunk Wilks2"></p>
+</code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>Rprof</span>(tmp <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>tempfile</span>())
+res <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>replicate</span>(n <span style=color:#f92672>=</span> <span style=color:#ae81ff>1000</span>, <span style=color:#a6e22e>Wilks.lambda2</span>(Y, X), simplify <span style=color:#f92672>=</span> <span style=color:#66d9ef>FALSE</span>)
+<span style=color:#a6e22e>Rprof</span>()
+<span style=color:#a6e22e>proftable</span>(tmp)
+</code></pre></div><pre tabindex=0><code>##  PctTime Call                                                  
+##  24.10   FUN &gt; Wilks.lambda2 &gt; eigen                           
+##  22.89   FUN &gt; Wilks.lambda2 &gt; %*%                             
+##   8.43   FUN &gt; Wilks.lambda2 &gt; as.vector &gt; apply               
+##   6.02   FUN &gt; Wilks.lambda2 &gt; lm.fit                          
+##   3.61   FUN &gt; Wilks.lambda2 &gt; as.vector &gt; apply               
+##   3.61   FUN &gt; Wilks.lambda2 &gt; as.vector &gt; apply &gt; mean.default
+##   2.41   FUN &gt; Wilks.lambda2 &gt; as.vector &gt; apply &gt; unlist      
+##   2.41   FUN &gt; Wilks.lambda2 &gt; lm.fit &gt; colnames               
+##   2.41   FUN &gt; Wilks.lambda2 &gt; t                               
+##   1.20                                                         
+## 
+## Parent Call: local &gt; eval.parent &gt; eval &gt; eval &gt; eval &gt; eval &gt; &lt;Anonymous&gt; &gt; process_file &gt; withCallingHandlers &gt; process_group &gt; process_group.block &gt; call_block &gt; block_exec &gt; in_dir &gt; &lt;Anonymous&gt; &gt; evaluate_call &gt; handle &gt; try &gt; tryCatch &gt; tryCatchList &gt; tryCatchOne &gt; doTryCatch &gt; withCallingHandlers &gt; withVisible &gt; eval &gt; eval &gt; replicate &gt; sapply &gt; lapply &gt; ...
+## 
+## Total Time: 1.66 seconds
+## Percent of run time represented: 77.1 %
+</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>plotProfileCallGraph</span>(<span style=color:#a6e22e>readProfileData</span>(tmp),
+                     score <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;total&#34;</span>)
+</code></pre></div><p><img src=Wilks2-1.png alt="plot of chunk Wilks2"></p>
 <p>What we can notice now is that <code>as.vector</code> is being called quite often. Looking at the source code, we see that we can probably replace <code>apply(Y, 2, mean)</code> by the optimised function <code>colMeans</code>. Moreover, some of the matrix multiplications involve matrix transposition; for this purpose, it is better to use the optimised functions <code>crossprod</code> and <code>tcrossprod</code>:</p>
-<p>{% highlight r %}</p>
-<h1 id=compute-pcev-and-its-p-value---take-3>Compute PCEV and its p-value - Take 3</h1>
-<p>Wilks.lambda3 &lt;- function(Y, x) {
-N &lt;- dim(Y)[1]
-p &lt;- dim(Y)[2]
-bar.Y &lt;- colMeans(Y)</p>
-<h1 id=estimte-the-two-variance-components-2>Estimte the two variance components</h1>
-<p>fit &lt;- lm.fit(cbind(rep_len(1, N), x), Y)
-Y.fit &lt;- fit$fitted.values
-res &lt;- Y - Y.fit
-Vr &lt;- crossprod(res, Y)
-Vg &lt;- crossprod(Y.fit, Y) - N * tcrossprod(bar.Y)</p>
-<h1 id=we-need-to-take-the-square-root-of-vr-2>We need to take the square root of Vr</h1>
-<p>temp &lt;- eigen(Vr,symmetric=T)
-Ur &lt;- temp$vectors
-diagD &lt;- temp$values
-value &lt;- 1/sqrt(diagD)
-root.Vr &lt;- tcrossprod(Ur %<em>% diag(value), Ur)
-m &lt;- root.Vr %</em>% Vg %*% root.Vr</p>
-<h1 id=pcev-and-wilks-are-eigen-components-of-m-2>PCEV and Wilks are eigen-components of m</h1>
-<p>temp1 &lt;- eigen(m,symmetric=T)
-PCEV &lt;- root.Vr %*% temp1$vectors
-d &lt;- temp1$values</p>
-<h1 id=wilks-is-an-f-test-2>Wilks is an F-test</h1>
-<p>wilks.lambda &lt;- ((N-p-1)/p) * d[1]
-df1 &lt;- p
-df2 &lt;- N-p-1
-p.value &lt;- pf(wilks.lambda, df1, df2, lower.tail = FALSE)</p>
-<p>return(list(&ldquo;environment&rdquo; = Vr,
-&ldquo;genetic&rdquo; = Vg,
-&ldquo;PCEV&rdquo;=PCEV,
-&ldquo;root.Vr&rdquo;=root.Vr,
-&ldquo;values&rdquo;=d,
-&ldquo;p.value&rdquo;=p.value))
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#75715e># Compute PCEV and its p-value - Take 3</span>
+Wilks.lambda3 <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>function</span>(Y, x) {
+  N <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>dim</span>(Y)[1]
+  p <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>dim</span>(Y)[2] 
+  bar.Y <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>colMeans</span>(Y)
+  <span style=color:#75715e># Estimte the two variance components</span>
+  fit <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>lm.fit</span>(<span style=color:#a6e22e>cbind</span>(<span style=color:#a6e22e>rep_len</span>(<span style=color:#ae81ff>1</span>, N), x), Y)
+  Y.fit <span style=color:#f92672>&lt;-</span> fit<span style=color:#f92672>$</span>fitted.values
+  res <span style=color:#f92672>&lt;-</span> Y <span style=color:#f92672>-</span> Y.fit
+  Vr <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>crossprod</span>(res, Y)
+  Vg <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>crossprod</span>(Y.fit, Y) <span style=color:#f92672>-</span> N <span style=color:#f92672>*</span> <span style=color:#a6e22e>tcrossprod</span>(bar.Y)
+  <span style=color:#75715e># We need to take the square root of Vr</span>
+  temp <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>eigen</span>(Vr,symmetric<span style=color:#f92672>=</span>T)
+  Ur <span style=color:#f92672>&lt;-</span> temp<span style=color:#f92672>$</span>vectors
+  diagD <span style=color:#f92672>&lt;-</span> temp<span style=color:#f92672>$</span>values 
+  value <span style=color:#f92672>&lt;-</span> <span style=color:#ae81ff>1</span><span style=color:#f92672>/</span><span style=color:#a6e22e>sqrt</span>(diagD)
+  root.Vr <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>tcrossprod</span>(Ur <span style=color:#f92672>%*%</span> <span style=color:#a6e22e>diag</span>(value), Ur)
+  m <span style=color:#f92672>&lt;-</span> root.Vr <span style=color:#f92672>%*%</span> Vg <span style=color:#f92672>%*%</span> root.Vr
+  <span style=color:#75715e># PCEV and Wilks are eigen-components of m</span>
+  temp1 <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>eigen</span>(m,symmetric<span style=color:#f92672>=</span>T)
+  PCEV <span style=color:#f92672>&lt;-</span> root.Vr <span style=color:#f92672>%*%</span> temp1<span style=color:#f92672>$</span>vectors
+  d <span style=color:#f92672>&lt;-</span> temp1<span style=color:#f92672>$</span>values
+  <span style=color:#75715e># Wilks is an F-test</span>
+  wilks.lambda <span style=color:#f92672>&lt;-</span> ((N<span style=color:#f92672>-</span>p<span style=color:#ae81ff>-1</span>)<span style=color:#f92672>/</span>p) <span style=color:#f92672>*</span> d[1]
+  df1 <span style=color:#f92672>&lt;-</span> p
+  df2 <span style=color:#f92672>&lt;-</span> N<span style=color:#f92672>-</span>p<span style=color:#ae81ff>-1</span>
+  p.value <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>pf</span>(wilks.lambda, df1, df2, lower.tail <span style=color:#f92672>=</span> <span style=color:#66d9ef>FALSE</span>)
+  
+  <span style=color:#a6e22e>return</span>(<span style=color:#a6e22e>list</span>(<span style=color:#e6db74>&#34;environment&#34;</span> <span style=color:#f92672>=</span> Vr, 
+              <span style=color:#e6db74>&#34;genetic&#34;</span> <span style=color:#f92672>=</span> Vg, 
+              <span style=color:#e6db74>&#34;PCEV&#34;</span><span style=color:#f92672>=</span>PCEV, 
+              <span style=color:#e6db74>&#34;root.Vr&#34;</span><span style=color:#f92672>=</span>root.Vr,
+              <span style=color:#e6db74>&#34;values&#34;</span><span style=color:#f92672>=</span>d, 
+              <span style=color:#e6db74>&#34;p.value&#34;</span><span style=color:#f92672>=</span>p.value))
 }
-{% endhighlight %}</p>
-<p>{% highlight r %}
-Rprof(tmp &lt;- tempfile())
-res &lt;- replicate(n = 1000, Wilks.lambda3(Y, X), simplify = FALSE)
-Rprof()
-proftable(tmp)
-{% endhighlight %}</p>
-<p>{% highlight text %}</p>
-<h2 id=pcttime-call-1>PctTime Call</h2>
-<h2 id=3673---eigen>36.73 eigen</h2>
-<h2 id=1429---crossprod>14.29 crossprod</h2>
-<h2 id=1429---lmfit>14.29 lm.fit</h2>
-<h2 id=408---lmfit--structure>4.08 lm.fit > structure</h2>
-<h2 id=408---tcrossprod>4.08 tcrossprod</h2>
-<h2 id=408---tcrossprod-->4.08 tcrossprod > %*%</h2>
-<h2 id=204>2.04</h2>
-<h2 id=204--->2.04 %*%</h2>
-<h2 id=204---eigen--rev>2.04 eigen > rev</h2>
-<h2 id=204---eigen--rev--revdefault>2.04 eigen > rev > rev.default</h2>
-<h2 id=heading-6></h2>
-<h2 id=parent-call-local--evalparent--eval--eval--eval--eval--anonymous--process_file--withcallinghandlers--process_group--process_groupblock--call_block--block_exec--in_dir--anonymous--evaluate_call--handle--try--trycatch--trycatchlist--trycatchone--dotrycatch--withcallinghandlers--withvisible--eval--eval--replicate--sapply--lapply--fun--wilkslambda3-->Parent Call: local > eval.parent > eval > eval > eval > eval > > process_file > withCallingHandlers > process_group > process_group.block > call_block > block_exec > in_dir > > evaluate_call > handle > try > tryCatch > tryCatchList > tryCatchOne > doTryCatch > withCallingHandlers > withVisible > eval > eval > replicate > sapply > lapply > FUN > Wilks.lambda3 > &mldr;</h2>
-<h2 id=heading-7></h2>
-<h2 id=total-time-098-seconds>Total Time: 0.98 seconds</h2>
-<h2 id=percent-of-run-time-represented-857->Percent of run time represented: 85.7 %</h2>
-<p>{% endhighlight %}</p>
-<p>{% highlight r %}
-plotProfileCallGraph(readProfileData(tmp),
-score = &ldquo;total&rdquo;)
-{% endhighlight %}</p>
-<p><img src=/figure/source/2015-09-10-optimisation-test-case/Wilks3-1.png alt="plot of chunk Wilks3"></p>
+</code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>Rprof</span>(tmp <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>tempfile</span>())
+res <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>replicate</span>(n <span style=color:#f92672>=</span> <span style=color:#ae81ff>1000</span>, <span style=color:#a6e22e>Wilks.lambda3</span>(Y, X), simplify <span style=color:#f92672>=</span> <span style=color:#66d9ef>FALSE</span>)
+<span style=color:#a6e22e>Rprof</span>()
+<span style=color:#a6e22e>proftable</span>(tmp)
+</code></pre></div><pre tabindex=0><code>##  PctTime Call                     
+##  36.73   eigen                    
+##  14.29   crossprod                
+##  14.29   lm.fit                   
+##   4.08   lm.fit &gt; structure       
+##   4.08   tcrossprod               
+##   4.08   tcrossprod &gt; %*%         
+##   2.04                            
+##   2.04   %*%                      
+##   2.04   eigen &gt; rev              
+##   2.04   eigen &gt; rev &gt; rev.default
+## 
+## Parent Call: local &gt; eval.parent &gt; eval &gt; eval &gt; eval &gt; eval &gt; &lt;Anonymous&gt; &gt; process_file &gt; withCallingHandlers &gt; process_group &gt; process_group.block &gt; call_block &gt; block_exec &gt; in_dir &gt; &lt;Anonymous&gt; &gt; evaluate_call &gt; handle &gt; try &gt; tryCatch &gt; tryCatchList &gt; tryCatchOne &gt; doTryCatch &gt; withCallingHandlers &gt; withVisible &gt; eval &gt; eval &gt; replicate &gt; sapply &gt; lapply &gt; FUN &gt; Wilks.lambda3 &gt; ...
+## 
+## Total Time: 0.98 seconds
+## Percent of run time represented: 85.7 %
+</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>plotProfileCallGraph</span>(<span style=color:#a6e22e>readProfileData</span>(tmp),
+                     score <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;total&#34;</span>)
+</code></pre></div><p><img src=Wilks3-1.png alt="plot of chunk Wilks3"></p>
 <p>This is getting much better.</p>
 <h3 id=second-attempt-at-optimising---looking-at-the-source-code>Second attempt at optimising - Looking at the source code</h3>
 <p>It seems the next thing we could do is try to improve the function <code>eigen</code>. Looking at the graph of calls, we see that <code>eigen</code> actually calls quite a lot of helper functions to look at the data type. It is also calling <code>ncol</code> and <code>nrow</code>, which gives quantities we already know about. Looking at the source code reveals that the main work is being done by an internal function, <code>La_rs</code>. Therefore, by calling it directly, we can avoid all the type checking.</p>
-<p>{% highlight r %}</p>
-<h1 id=compute-pcev-and-its-p-value---take-4>Compute PCEV and its p-value - Take 4</h1>
-<p>Wilks.lambda4 &lt;- function(Y, x) {
-N &lt;- dim(Y)[1]
-p &lt;- dim(Y)[2]
-bar.Y &lt;- colMeans(Y)</p>
-<h1 id=estimte-the-two-variance-components-3>Estimte the two variance components</h1>
-<p>fit &lt;- lm.fit(cbind(rep_len(1, N), x), Y)
-Y.fit &lt;- fit$fitted.values
-res &lt;- Y - Y.fit
-Vr &lt;- crossprod(res, Y)
-Vg &lt;- crossprod(Y.fit, Y) - N * tcrossprod(bar.Y)</p>
-<h1 id=we-need-to-take-the-square-root-of-vr-3>We need to take the square root of Vr</h1>
-<p>temp &lt;- .Internal(La_rs(Vr, FALSE))
-Ur &lt;- temp$vectors
-diagD &lt;- temp$values
-value &lt;- 1/sqrt(diagD)
-root.Vr &lt;- tcrossprod(Ur %<em>% diag(value), Ur)
-m &lt;- root.Vr %</em>% Vg %*% root.Vr</p>
-<h1 id=pcev-and-wilks-are-eigen-components-of-m-3>PCEV and Wilks are eigen-components of m</h1>
-<p>temp1 &lt;- .Internal(La_rs(m, FALSE))
-PCEV &lt;- root.Vr %*% temp1$vectors
-d &lt;- temp1$values</p>
-<h1 id=wilks-is-an-f-test-3>Wilks is an F-test</h1>
-<p>wilks.lambda &lt;- ((N-p-1)/p) * d[1]
-df1 &lt;- p
-df2 &lt;- N-p-1
-p.value &lt;- pf(wilks.lambda, df1, df2, lower.tail = FALSE)</p>
-<p>return(list(&ldquo;environment&rdquo; = Vr,
-&ldquo;genetic&rdquo; = Vg,
-&ldquo;PCEV&rdquo;=PCEV,
-&ldquo;root.Vr&rdquo;=root.Vr,
-&ldquo;values&rdquo;=d,
-&ldquo;p.value&rdquo;=p.value))
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#75715e># Compute PCEV and its p-value - Take 4</span>
+Wilks.lambda4 <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>function</span>(Y, x) {
+  N <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>dim</span>(Y)[1]
+  p <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>dim</span>(Y)[2] 
+  bar.Y <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>colMeans</span>(Y)
+  <span style=color:#75715e># Estimte the two variance components</span>
+  fit <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>lm.fit</span>(<span style=color:#a6e22e>cbind</span>(<span style=color:#a6e22e>rep_len</span>(<span style=color:#ae81ff>1</span>, N), x), Y)
+  Y.fit <span style=color:#f92672>&lt;-</span> fit<span style=color:#f92672>$</span>fitted.values
+  res <span style=color:#f92672>&lt;-</span> Y <span style=color:#f92672>-</span> Y.fit
+  Vr <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>crossprod</span>(res, Y)
+  Vg <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>crossprod</span>(Y.fit, Y) <span style=color:#f92672>-</span> N <span style=color:#f92672>*</span> <span style=color:#a6e22e>tcrossprod</span>(bar.Y)
+  <span style=color:#75715e># We need to take the square root of Vr</span>
+  temp <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>.Internal</span>(<span style=color:#a6e22e>La_rs</span>(Vr, <span style=color:#66d9ef>FALSE</span>))
+  Ur <span style=color:#f92672>&lt;-</span> temp<span style=color:#f92672>$</span>vectors
+  diagD <span style=color:#f92672>&lt;-</span> temp<span style=color:#f92672>$</span>values 
+  value <span style=color:#f92672>&lt;-</span> <span style=color:#ae81ff>1</span><span style=color:#f92672>/</span><span style=color:#a6e22e>sqrt</span>(diagD)
+  root.Vr <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>tcrossprod</span>(Ur <span style=color:#f92672>%*%</span> <span style=color:#a6e22e>diag</span>(value), Ur)
+  m <span style=color:#f92672>&lt;-</span> root.Vr <span style=color:#f92672>%*%</span> Vg <span style=color:#f92672>%*%</span> root.Vr
+  <span style=color:#75715e># PCEV and Wilks are eigen-components of m</span>
+  temp1 <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>.Internal</span>(<span style=color:#a6e22e>La_rs</span>(m, <span style=color:#66d9ef>FALSE</span>))
+  PCEV <span style=color:#f92672>&lt;-</span> root.Vr <span style=color:#f92672>%*%</span> temp1<span style=color:#f92672>$</span>vectors
+  d <span style=color:#f92672>&lt;-</span> temp1<span style=color:#f92672>$</span>values
+  <span style=color:#75715e># Wilks is an F-test</span>
+  wilks.lambda <span style=color:#f92672>&lt;-</span> ((N<span style=color:#f92672>-</span>p<span style=color:#ae81ff>-1</span>)<span style=color:#f92672>/</span>p) <span style=color:#f92672>*</span> d[1]
+  df1 <span style=color:#f92672>&lt;-</span> p
+  df2 <span style=color:#f92672>&lt;-</span> N<span style=color:#f92672>-</span>p<span style=color:#ae81ff>-1</span>
+  p.value <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>pf</span>(wilks.lambda, df1, df2, lower.tail <span style=color:#f92672>=</span> <span style=color:#66d9ef>FALSE</span>)
+  
+  <span style=color:#a6e22e>return</span>(<span style=color:#a6e22e>list</span>(<span style=color:#e6db74>&#34;environment&#34;</span> <span style=color:#f92672>=</span> Vr, 
+              <span style=color:#e6db74>&#34;genetic&#34;</span> <span style=color:#f92672>=</span> Vg, 
+              <span style=color:#e6db74>&#34;PCEV&#34;</span><span style=color:#f92672>=</span>PCEV, 
+              <span style=color:#e6db74>&#34;root.Vr&#34;</span><span style=color:#f92672>=</span>root.Vr,
+              <span style=color:#e6db74>&#34;values&#34;</span><span style=color:#f92672>=</span>d, 
+              <span style=color:#e6db74>&#34;p.value&#34;</span><span style=color:#f92672>=</span>p.value))
 }
-{% endhighlight %}</p>
-<p>{% highlight r %}
-Rprof(tmp &lt;- tempfile())
-res &lt;- replicate(n = 1000, Wilks.lambda4(Y, X), simplify = FALSE)
-Rprof()
-proftable(tmp)
-{% endhighlight %}</p>
-<p>{% highlight text %}</p>
-<h2 id=pcttime-call-2>PctTime Call</h2>
-<h2 id=3333---wilkslambda4>33.33 Wilks.lambda4</h2>
-<h2 id=1778---wilkslambda4--crossprod>17.78 Wilks.lambda4 > crossprod</h2>
-<h2 id=1111---wilkslambda4-->11.11 Wilks.lambda4 > %*%</h2>
-<h2 id=1111---wilkslambda4--lmfit>11.11 Wilks.lambda4 > lm.fit</h2>
-<h2 id=444---wilkslambda4--tcrossprod>4.44 Wilks.lambda4 > tcrossprod</h2>
-<h2 id=222>2.22</h2>
-<h2 id=222---wilkslambda4--colmeans>2.22 Wilks.lambda4 > colMeans</h2>
-<h2 id=222---wilkslambda4--lmfit--c>2.22 Wilks.lambda4 > lm.fit > c</h2>
-<h2 id=222---wilkslambda4--lmfit--colnames>2.22 Wilks.lambda4 > lm.fit > colnames</h2>
-<h2 id=222---wilkslambda4--lmfit--integer>2.22 Wilks.lambda4 > lm.fit > integer</h2>
-<h2 id=heading-8></h2>
-<h2 id=parent-call-local--evalparent--eval--eval--eval--eval--anonymous--process_file--withcallinghandlers--process_group--process_groupblock--call_block--block_exec--in_dir--anonymous--evaluate_call--handle--try--trycatch--trycatchlist--trycatchone--dotrycatch--withcallinghandlers--withvisible--eval--eval--replicate--sapply--lapply--fun-->Parent Call: local > eval.parent > eval > eval > eval > eval > > process_file > withCallingHandlers > process_group > process_group.block > call_block > block_exec > in_dir > > evaluate_call > handle > try > tryCatch > tryCatchList > tryCatchOne > doTryCatch > withCallingHandlers > withVisible > eval > eval > replicate > sapply > lapply > FUN > &mldr;</h2>
-<h2 id=heading-9></h2>
-<h2 id=total-time-09-seconds>Total Time: 0.9 seconds</h2>
-<h2 id=percent-of-run-time-represented-889->Percent of run time represented: 88.9 %</h2>
-<p>{% endhighlight %}</p>
-<p>{% highlight r %}
-plotProfileCallGraph(readProfileData(tmp),
-score = &ldquo;total&rdquo;)
-{% endhighlight %}</p>
-<p><img src=/figure/source/2015-09-10-optimisation-test-case/Wilks4-1.png alt="plot of chunk Wilks4"></p>
+</code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>Rprof</span>(tmp <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>tempfile</span>())
+res <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>replicate</span>(n <span style=color:#f92672>=</span> <span style=color:#ae81ff>1000</span>, <span style=color:#a6e22e>Wilks.lambda4</span>(Y, X), simplify <span style=color:#f92672>=</span> <span style=color:#66d9ef>FALSE</span>)
+<span style=color:#a6e22e>Rprof</span>()
+<span style=color:#a6e22e>proftable</span>(tmp)
+</code></pre></div><pre tabindex=0><code>##  PctTime Call                             
+##  33.33   Wilks.lambda4                    
+##  17.78   Wilks.lambda4 &gt; crossprod        
+##  11.11   Wilks.lambda4 &gt; %*%              
+##  11.11   Wilks.lambda4 &gt; lm.fit           
+##   4.44   Wilks.lambda4 &gt; tcrossprod       
+##   2.22                                    
+##   2.22   Wilks.lambda4 &gt; colMeans         
+##   2.22   Wilks.lambda4 &gt; lm.fit &gt; c       
+##   2.22   Wilks.lambda4 &gt; lm.fit &gt; colnames
+##   2.22   Wilks.lambda4 &gt; lm.fit &gt; integer 
+## 
+## Parent Call: local &gt; eval.parent &gt; eval &gt; eval &gt; eval &gt; eval &gt; &lt;Anonymous&gt; &gt; process_file &gt; withCallingHandlers &gt; process_group &gt; process_group.block &gt; call_block &gt; block_exec &gt; in_dir &gt; &lt;Anonymous&gt; &gt; evaluate_call &gt; handle &gt; try &gt; tryCatch &gt; tryCatchList &gt; tryCatchOne &gt; doTryCatch &gt; withCallingHandlers &gt; withVisible &gt; eval &gt; eval &gt; replicate &gt; sapply &gt; lapply &gt; FUN &gt; ...
+## 
+## Total Time: 0.9 seconds
+## Percent of run time represented: 88.9 %
+</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>plotProfileCallGraph</span>(<span style=color:#a6e22e>readProfileData</span>(tmp),
+                     score <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;total&#34;</span>)
+</code></pre></div><p><img src=Wilks4-1.png alt="plot of chunk Wilks4"></p>
 <p>This looks quite good, there isn&rsquo;t much left to improve, except perhaps the call to <code>lm.fit</code>. We will replace it by an explicit QR decomposition, which calls Fortran routines.</p>
-<p>{% highlight r %}</p>
-<h1 id=compute-pcev-and-its-p-value---final-take>Compute PCEV and its p-value - Final take</h1>
-<p>Wilks.lambda5 &lt;- function(Y, x) {
-N &lt;- dim(Y)[1]
-p &lt;- dim(Y)[2]
-bar.Y &lt;- .Internal(colMeans(Y, N, p, FALSE))</p>
-<h1 id=estimte-the-two-variance-components-4>Estimte the two variance components</h1>
-<p>qr &lt;- .Fortran(.F_dqrdc2, qr = cbind(rep_len(1, nrow(Y)), x), N, N, 2L,
-as.double(1e-07), rank = integer(1L), qraux = double(2L),
-pivot = as.integer(seq_len(2L)), double(2L * 2L))[c(1, 6, 7, 8)]
-Y.fit &lt;- .Fortran(.F_dqrxb, as.double(qr$qr), N, qr$rank, as.double(qr$qraux),
-Y, p, xb = Y)$xb
-res &lt;- Y - Y.fit
-Vr &lt;- crossprod(res, Y)
-Vg &lt;- crossprod(Y.fit, Y) - N * tcrossprod(bar.Y)</p>
-<h1 id=we-need-to-take-the-square-root-of-vr-4>We need to take the square root of Vr</h1>
-<p>temp &lt;- .Internal(La_rs(Vr, FALSE))
-Ur &lt;- temp$vectors
-diagD &lt;- temp$values
-value &lt;- 1/sqrt(diagD)
-root.Vr &lt;- tcrossprod(Ur %<em>% .Internal(diag(value, p, p)), Ur)
-m &lt;- root.Vr %</em>% Vg %*% root.Vr</p>
-<h1 id=pcev-and-wilks-are-eigen-components-of-m-4>PCEV and Wilks are eigen-components of m</h1>
-<p>temp1 &lt;- .Internal(La_rs(m, FALSE))</p>
-<h1 id=we-only-need-the-first-eigenvector>We only need the first eigenvector</h1>
-<p>PCEV &lt;- root.Vr %*% temp1$vectors[,1]
-d &lt;- temp1$values</p>
-<h1 id=wilks-is-an-f-test-4>Wilks is an F-test</h1>
-<p>wilks.lambda &lt;- ((N-p-1)/p) * d[1]
-df1 &lt;- p
-df2 &lt;- N-p-1
-p.value &lt;- .Call(stats:::C_pf, wilks.lambda, df1, df2, FALSE, FALSE)</p>
-<p>return(list(&ldquo;environment&rdquo; = Vr,
-&ldquo;genetic&rdquo; = Vg,
-&ldquo;PCEV&rdquo;=PCEV,
-&ldquo;root.Vr&rdquo;=root.Vr,
-&ldquo;values&rdquo;=d,
-&ldquo;p.value&rdquo;=p.value))
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#75715e># Compute PCEV and its p-value - Final take</span>
+Wilks.lambda5 <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>function</span>(Y, x) {
+  N <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>dim</span>(Y)[1]
+  p <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>dim</span>(Y)[2] 
+  bar.Y <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>.Internal</span>(<span style=color:#a6e22e>colMeans</span>(Y, N, p, <span style=color:#66d9ef>FALSE</span>))
+  <span style=color:#75715e># Estimte the two variance components</span>
+  qr <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>.Fortran</span>(.F_dqrdc2, qr <span style=color:#f92672>=</span> <span style=color:#a6e22e>cbind</span>(<span style=color:#a6e22e>rep_len</span>(<span style=color:#ae81ff>1</span>, <span style=color:#a6e22e>nrow</span>(Y)), x), N, N, <span style=color:#ae81ff>2L</span>, 
+                 <span style=color:#a6e22e>as.double</span>(<span style=color:#ae81ff>1e-07</span>), rank <span style=color:#f92672>=</span> <span style=color:#a6e22e>integer</span>(<span style=color:#ae81ff>1L</span>), qraux <span style=color:#f92672>=</span> <span style=color:#a6e22e>double</span>(<span style=color:#ae81ff>2L</span>), 
+                 pivot <span style=color:#f92672>=</span> <span style=color:#a6e22e>as.integer</span>(<span style=color:#a6e22e>seq_len</span>(<span style=color:#ae81ff>2L</span>)), <span style=color:#a6e22e>double</span>(<span style=color:#ae81ff>2L</span> <span style=color:#f92672>*</span> <span style=color:#ae81ff>2L</span>))<span style=color:#a6e22e>[c</span>(<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>6</span>, <span style=color:#ae81ff>7</span>, <span style=color:#ae81ff>8</span>)]
+  Y.fit <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>.Fortran</span>(.F_dqrxb, <span style=color:#a6e22e>as.double</span>(qr<span style=color:#f92672>$</span>qr), N, qr<span style=color:#f92672>$</span>rank, <span style=color:#a6e22e>as.double</span>(qr<span style=color:#f92672>$</span>qraux), 
+                    Y, p, xb <span style=color:#f92672>=</span> Y)<span style=color:#f92672>$</span>xb
+  res <span style=color:#f92672>&lt;-</span> Y <span style=color:#f92672>-</span> Y.fit
+  Vr <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>crossprod</span>(res, Y)
+  Vg <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>crossprod</span>(Y.fit, Y) <span style=color:#f92672>-</span> N <span style=color:#f92672>*</span> <span style=color:#a6e22e>tcrossprod</span>(bar.Y)
+  <span style=color:#75715e># We need to take the square root of Vr</span>
+  temp <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>.Internal</span>(<span style=color:#a6e22e>La_rs</span>(Vr, <span style=color:#66d9ef>FALSE</span>))
+  Ur <span style=color:#f92672>&lt;-</span> temp<span style=color:#f92672>$</span>vectors
+  diagD <span style=color:#f92672>&lt;-</span> temp<span style=color:#f92672>$</span>values 
+  value <span style=color:#f92672>&lt;-</span> <span style=color:#ae81ff>1</span><span style=color:#f92672>/</span><span style=color:#a6e22e>sqrt</span>(diagD)
+  root.Vr <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>tcrossprod</span>(Ur <span style=color:#f92672>%*%</span> <span style=color:#a6e22e>.Internal</span>(<span style=color:#a6e22e>diag</span>(value, p, p)), Ur)
+  m <span style=color:#f92672>&lt;-</span> root.Vr <span style=color:#f92672>%*%</span> Vg <span style=color:#f92672>%*%</span> root.Vr
+  <span style=color:#75715e># PCEV and Wilks are eigen-components of m</span>
+  temp1 <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>.Internal</span>(<span style=color:#a6e22e>La_rs</span>(m, <span style=color:#66d9ef>FALSE</span>))
+  <span style=color:#75715e># We only need the first eigenvector</span>
+  PCEV <span style=color:#f92672>&lt;-</span> root.Vr <span style=color:#f92672>%*%</span> temp1<span style=color:#f92672>$</span>vectors[,<span style=color:#ae81ff>1</span>]
+  d <span style=color:#f92672>&lt;-</span> temp1<span style=color:#f92672>$</span>values
+  <span style=color:#75715e># Wilks is an F-test</span>
+  wilks.lambda <span style=color:#f92672>&lt;-</span> ((N<span style=color:#f92672>-</span>p<span style=color:#ae81ff>-1</span>)<span style=color:#f92672>/</span>p) <span style=color:#f92672>*</span> d[1]
+  df1 <span style=color:#f92672>&lt;-</span> p
+  df2 <span style=color:#f92672>&lt;-</span> N<span style=color:#f92672>-</span>p<span style=color:#ae81ff>-1</span>
+  p.value <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>.Call</span>(stats<span style=color:#f92672>:::</span>C_pf, wilks.lambda, df1, df2, <span style=color:#66d9ef>FALSE</span>, <span style=color:#66d9ef>FALSE</span>)
+  
+  <span style=color:#a6e22e>return</span>(<span style=color:#a6e22e>list</span>(<span style=color:#e6db74>&#34;environment&#34;</span> <span style=color:#f92672>=</span> Vr, 
+              <span style=color:#e6db74>&#34;genetic&#34;</span> <span style=color:#f92672>=</span> Vg, 
+              <span style=color:#e6db74>&#34;PCEV&#34;</span><span style=color:#f92672>=</span>PCEV, 
+              <span style=color:#e6db74>&#34;root.Vr&#34;</span><span style=color:#f92672>=</span>root.Vr,
+              <span style=color:#e6db74>&#34;values&#34;</span><span style=color:#f92672>=</span>d, 
+              <span style=color:#e6db74>&#34;p.value&#34;</span><span style=color:#f92672>=</span>p.value))
 }
-{% endhighlight %}</p>
-<p>{% highlight r %}
-Rprof(tmp &lt;- tempfile())
-res &lt;- replicate(n = 1000, Wilks.lambda5(Y, X), simplify = FALSE)
-Rprof()
-proftable(tmp)
-{% endhighlight %}</p>
-<p>{% highlight text %}</p>
-<h2 id=pcttime-1>PctTime</h2>
-<h2 id=4706>47.06</h2>
-<h2 id=2647>26.47</h2>
-<h2 id=882>8.82</h2>
-<h2 id=588>5.88</h2>
-<h2 id=294>2.94</h2>
-<h2 id=294-1>2.94</h2>
-<h2 id=294-2>2.94</h2>
-<h2 id=294-3>2.94</h2>
-<h2 id=call-1>Call</h2>
-<h2 id=handle--try--trycatch--trycatchlist--trycatchone--dotrycatch--withvisible--replicate--sapply--lapply--fun--wilkslambda5>handle > try > tryCatch > tryCatchList > tryCatchOne > doTryCatch > withVisible > replicate > sapply > lapply > FUN > Wilks.lambda5</h2>
-<h2 id=handle--try--trycatch--trycatchlist--trycatchone--dotrycatch--withvisible--replicate--sapply--lapply--fun--wilkslambda5--crossprod>handle > try > tryCatch > tryCatchList > tryCatchOne > doTryCatch > withVisible > replicate > sapply > lapply > FUN > Wilks.lambda5 > crossprod</h2>
-<h2 id=handle--try--trycatch--trycatchlist--trycatchone--dotrycatch--withvisible--replicate--sapply--lapply--fun--wilkslambda5--tcrossprod>handle > try > tryCatch > tryCatchList > tryCatchOne > doTryCatch > withVisible > replicate > sapply > lapply > FUN > Wilks.lambda5 > tcrossprod</h2>
-<h2 id=handle--try--trycatch--trycatchlist--trycatchone--dotrycatch--withvisible--replicate--sapply--lapply--fun--wilkslambda5-->handle > try > tryCatch > tryCatchList > tryCatchOne > doTryCatch > withVisible > replicate > sapply > lapply > FUN > Wilks.lambda5 > %*%</h2>
-<h2 id=handle--try--trycatch--trycatchlist--trycatchone--dotrycatch--withvisible--replicate--sapply--lapply>handle > try > tryCatch > tryCatchList > tryCatchOne > doTryCatch > withVisible > replicate > sapply > lapply</h2>
-<h2 id=handle--try--trycatch--trycatchlist--trycatchone--dotrycatch--withvisible--replicate--sapply--lapply--fun--wilkslambda5----get--asnamespace--getnamespace>handle > try > tryCatch > tryCatchList > tryCatchOne > doTryCatch > withVisible > replicate > sapply > lapply > FUN > Wilks.lambda5 > ::: > get > asNamespace > getNamespace</h2>
-<h2 id=handle--try--trycatch--trycatchlist--trycatchone--dotrycatch--withvisible--replicate--sapply--lapply--fun--wilkslambda5--cbind>handle > try > tryCatch > tryCatchList > tryCatchOne > doTryCatch > withVisible > replicate > sapply > lapply > FUN > Wilks.lambda5 > cbind</h2>
-<h2 id=set_hooks--sethook>set_hooks > setHook</h2>
-<h2 id=heading-10></h2>
-<h2 id=parent-call-local--evalparent--eval--eval--eval--eval--anonymous--process_file--withcallinghandlers--process_group--process_groupblock--call_block--block_exec--in_dir--anonymous--evaluate_call-->Parent Call: local > eval.parent > eval > eval > eval > eval > > process_file > withCallingHandlers > process_group > process_group.block > call_block > block_exec > in_dir > > evaluate_call > &mldr;</h2>
-<h2 id=heading-11></h2>
-<h2 id=total-time-068-seconds>Total Time: 0.68 seconds</h2>
-<h2 id=percent-of-run-time-represented-100->Percent of run time represented: 100 %</h2>
-<p>{% endhighlight %}</p>
-<p>{% highlight r %}
-plotProfileCallGraph(readProfileData(tmp),
-score = &ldquo;total&rdquo;)
-{% endhighlight %}</p>
-<p><img src=/figure/source/2015-09-10-optimisation-test-case/Wilks5-1.png alt="plot of chunk Wilks5"></p>
+</code></pre></div><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>Rprof</span>(tmp <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>tempfile</span>())
+res <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>replicate</span>(n <span style=color:#f92672>=</span> <span style=color:#ae81ff>1000</span>, <span style=color:#a6e22e>Wilks.lambda5</span>(Y, X), simplify <span style=color:#f92672>=</span> <span style=color:#66d9ef>FALSE</span>)
+<span style=color:#a6e22e>Rprof</span>()
+<span style=color:#a6e22e>proftable</span>(tmp)
+</code></pre></div><pre tabindex=0><code>##  PctTime
+##  47.06  
+##  26.47  
+##   8.82  
+##   5.88  
+##   2.94  
+##   2.94  
+##   2.94  
+##   2.94  
+##  Call                                                                                                                                                                        
+##  handle &gt; try &gt; tryCatch &gt; tryCatchList &gt; tryCatchOne &gt; doTryCatch &gt; withVisible &gt; replicate &gt; sapply &gt; lapply &gt; FUN &gt; Wilks.lambda5                                         
+##  handle &gt; try &gt; tryCatch &gt; tryCatchList &gt; tryCatchOne &gt; doTryCatch &gt; withVisible &gt; replicate &gt; sapply &gt; lapply &gt; FUN &gt; Wilks.lambda5 &gt; crossprod                             
+##  handle &gt; try &gt; tryCatch &gt; tryCatchList &gt; tryCatchOne &gt; doTryCatch &gt; withVisible &gt; replicate &gt; sapply &gt; lapply &gt; FUN &gt; Wilks.lambda5 &gt; tcrossprod                            
+##  handle &gt; try &gt; tryCatch &gt; tryCatchList &gt; tryCatchOne &gt; doTryCatch &gt; withVisible &gt; replicate &gt; sapply &gt; lapply &gt; FUN &gt; Wilks.lambda5 &gt; %*%                                   
+##  handle &gt; try &gt; tryCatch &gt; tryCatchList &gt; tryCatchOne &gt; doTryCatch &gt; withVisible &gt; replicate &gt; sapply &gt; lapply                                                               
+##  handle &gt; try &gt; tryCatch &gt; tryCatchList &gt; tryCatchOne &gt; doTryCatch &gt; withVisible &gt; replicate &gt; sapply &gt; lapply &gt; FUN &gt; Wilks.lambda5 &gt; ::: &gt; get &gt; asNamespace &gt; getNamespace
+##  handle &gt; try &gt; tryCatch &gt; tryCatchList &gt; tryCatchOne &gt; doTryCatch &gt; withVisible &gt; replicate &gt; sapply &gt; lapply &gt; FUN &gt; Wilks.lambda5 &gt; cbind                                 
+##  set_hooks &gt; setHook                                                                                                                                                         
+## 
+## Parent Call: local &gt; eval.parent &gt; eval &gt; eval &gt; eval &gt; eval &gt; &lt;Anonymous&gt; &gt; process_file &gt; withCallingHandlers &gt; process_group &gt; process_group.block &gt; call_block &gt; block_exec &gt; in_dir &gt; &lt;Anonymous&gt; &gt; evaluate_call &gt; ...
+## 
+## Total Time: 0.68 seconds
+## Percent of run time represented: 100 %
+</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>plotProfileCallGraph</span>(<span style=color:#a6e22e>readProfileData</span>(tmp),
+                     score <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;total&#34;</span>)
+</code></pre></div><p><img src=Wilks5-1.png alt="plot of chunk Wilks5"></p>
 <p>We have also replaced the call to <code>pf</code> by a call to a C routine. Finally, note that the <code>diag</code> function, even though it is used only once, is a very flexible function that behaves quite differently depending on its input. Therefore, we can speed it up by calling the appropriate subroutine; this is what we did above.</p>
 <h3 id=benchmarking>Benchmarking</h3>
 <p>Let&rsquo;s do a timing comparison between the five different approaches:</p>
-<p>{% highlight r %}
-compare &lt;- microbenchmark(Wilks.lambda(Y, X),
-Wilks.lambda2(Y, X),
-Wilks.lambda3(Y, X),
-Wilks.lambda4(Y, X),
-Wilks.lambda5(Y, X), times = 1000)
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r>compare <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>microbenchmark</span>(<span style=color:#a6e22e>Wilks.lambda</span>(Y, X), 
+                          <span style=color:#a6e22e>Wilks.lambda2</span>(Y, X), 
+                          <span style=color:#a6e22e>Wilks.lambda3</span>(Y, X), 
+                          <span style=color:#a6e22e>Wilks.lambda4</span>(Y, X), 
+                          <span style=color:#a6e22e>Wilks.lambda5</span>(Y, X), times <span style=color:#f92672>=</span> <span style=color:#ae81ff>1000</span>)
 compare
-{% endhighlight %}</p>
-<p>{% highlight text %}</p>
-<h2 id=unit-microseconds>Unit: microseconds</h2>
-<h2 id=expr------min--------lq------mean----median--------uq>expr min lq mean median uq</h2>
-<h2 id=wilkslambday-x-2713097-28407870-29957128-28795495-29294545>Wilks.lambda(Y, X) 2713.097 2840.7870 2995.7128 2879.5495 2929.4545</h2>
-<h2 id=wilkslambda2y-x-1081445-11302465-12070996-11499700-11743330>Wilks.lambda2(Y, X) 1081.445 1130.2465 1207.0996 1149.9700 1174.3330</h2>
-<h2 id=wilkslambda3y-x--751484--7796130--8352625--7966150--8196835>Wilks.lambda3(Y, X) 751.484 779.6130 835.2625 796.6150 819.6835</h2>
-<h2 id=wilkslambda4y-x--641140--6686805--7140665--6863100--7088290>Wilks.lambda4(Y, X) 641.140 668.6805 714.0665 686.3100 708.8290</h2>
-<h2 id=wilkslambda5y-x--537176--5734980--6326647--5933795--6127735>Wilks.lambda5(Y, X) 537.176 573.4980 632.6647 593.3795 612.7735</h2>
-<h2 id=max-neval>max neval</h2>
-<h2 id=8589677--1000>8589.677 1000</h2>
-<h2 id=4597671--1000>4597.671 1000</h2>
-<h2 id=4056642--1000>4056.642 1000</h2>
-<h2 id=8361569--1000>8361.569 1000</h2>
-<h2 id=6253913--1000>6253.913 1000</h2>
-<p>{% endhighlight %}</p>
-<p>{% highlight r %}
-autoplot(compare)
-{% endhighlight %}</p>
-<p><img src=/figure/source/2015-09-10-optimisation-test-case/WilksComp-1.png alt="plot of chunk WilksComp"></p>
+</code></pre></div><pre tabindex=0><code>## Unit: microseconds
+##                 expr      min        lq      mean    median        uq
+##   Wilks.lambda(Y, X) 2713.097 2840.7870 2995.7128 2879.5495 2929.4545
+##  Wilks.lambda2(Y, X) 1081.445 1130.2465 1207.0996 1149.9700 1174.3330
+##  Wilks.lambda3(Y, X)  751.484  779.6130  835.2625  796.6150  819.6835
+##  Wilks.lambda4(Y, X)  641.140  668.6805  714.0665  686.3100  708.8290
+##  Wilks.lambda5(Y, X)  537.176  573.4980  632.6647  593.3795  612.7735
+##       max neval
+##  8589.677  1000
+##  4597.671  1000
+##  4056.642  1000
+##  8361.569  1000
+##  6253.913  1000
+</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>autoplot</span>(compare)
+</code></pre></div><p><img src=WilksComp-1.png alt="plot of chunk WilksComp"></p>
 <p>We see that the final approach provides about a five-fold speed increase over the initial approach. This means we can do five times more permutations for the same amount of computing time!</p>
 <p>However, we can also see an instance of the law of <a href=https://en.wikipedia.org/wiki/Diminishing_returns>diminishing returns</a>: the more optimisation we did, the smaller the speed increase. This goes to show that we probably want to set a limit on how much time we spend trying to optimise code.</p>
 <h3 id=concluding-remarks>Concluding remarks</h3>
@@ -440,6 +402,10 @@ autoplot(compare)
 </ul>
 </footer>
 </div>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js></script>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js></script>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js></script>
+<script>hljs.configure({languages:[]}),hljs.initHighlightingOnLoad()</script>
 <script src=/blog/js/math-code.js></script>
 <script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>

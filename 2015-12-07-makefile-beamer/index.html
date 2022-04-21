@@ -6,6 +6,7 @@
 <title>Makefile and Beamer presentations - Blog—Max Turgeon</title>
 <meta property="og:title" content="Makefile and Beamer presentations - Blog—Max Turgeon">
 <link href=https://maxturgeon.ca/blog/icon.png rel=icon type=image/x-icon>
+<link href=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css rel=stylesheet type=text/css>
 <link rel=stylesheet href=/blog/css/fonts.css media=all>
 <link rel=stylesheet href=/blog/css/main.css media=all>
 </head>
@@ -37,11 +38,9 @@
 <p>Another possibility is to have <em>three</em> Latex files: one with the text, and two that only contain headers (one with option <code>handout</code> and one without). This is usually what I do.</p>
 <p>Where the Makefile can become useful is in <em>automating</em> the compilation of both the handout and the slides. Moreover, if for example you only change the header file for the handout, you don&rsquo;t want to have to recompile the slides.</p>
 <p>The setting is going to be as follows: say you have a presentation in a file <code>talk.tex</code>. You also have two separate files for the headers: <code>talk_slides.tex</code> and <code>talk_handout.tex</code>. The latter looks something like:</p>
-<p>{% highlight latex %}
-\documentclass[handout]{beamer}
-\input{talk.tex}
-{% endhighlight %}</p>
-<h3 id=makefile>Makefile</h3>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-latex data-lang=latex><span style=color:#66d9ef>\documentclass</span><span style=color:#a6e22e>[handout]</span>{beamer}
+<span style=color:#66d9ef>\input</span>{talk.tex}
+</code></pre></div><h3 id=makefile>Makefile</h3>
 <p>Now let&rsquo;s talk about the Makefile. In general, there are three components to it:</p>
 <ul>
 <li>targets;</li>
@@ -50,65 +49,61 @@
 </ul>
 <p>The point is that, once you have a Makefile in your directory, you simply use the function <code>make</code> to run the instructions.</p>
 <p>The syntax of the Makefile is thus as follows:</p>
-<p>{% highlight bash %}
-targets: dependencies
-instructions
-{% endhighlight %}</p>
-<p>Note that you need a hard tab at the beginning of the instructions, or otherwise you will get a missing operator error (although you can circumvent this <a href=https://stackoverflow.com/a/14109796/2836971>using semi-colons if you want</a>).</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>targets: dependencies
+  instructions
+</code></pre></div><p>Note that you need a hard tab at the beginning of the instructions, or otherwise you will get a missing operator error (although you can circumvent this <a href=https://stackoverflow.com/a/14109796/2836971>using semi-colons if you want</a>).</p>
 <p>Let&rsquo;s look at one example: one target we are interested in is <code>talk_handout.pdf</code>, the output when compiling <code>talk_handout.tex</code> with <code>pdflatex</code>. We want to recompile it when either <code>talk_handout.tex</code> or <code>talk.tex</code> is changed. Therefore in the Makefile, we would write</p>
-<p>{% highlight bash %}
-talk_handout.pdf: talk_handout.tex talk.tex
-pdflatex talk_handout
-{% endhighlight %}</p>
-<p>And of course you would have something similar for the target <code>talk_slides.pdf</code>.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>talk_handout.pdf: talk_handout.tex talk.tex
+  pdflatex talk_handout
+</code></pre></div><p>And of course you would have something similar for the target <code>talk_slides.pdf</code>.</p>
 <h3 id=special-targets>Special targets</h3>
 <p>There is two important special targets that I want to discuss: <code>all</code> and <code>.PHONY</code>. By default, the function <code>make</code> will build the first target when you call it without an argument, and to build a specific target you would write <code>make target</code>. But what if you want to build multiple targets at the same time? Instead of running separate commands <code>make target1</code>, <code>make target2</code>, etc., you can use the special target <code>all</code>, whose dependencies are all the other targets you would like to build at the same time. For example, with our Beamer presentation, you would have</p>
-<p>{% highlight bash %}
-all: talk_handout.pdf talk_slides.pdf
-{% endhighlight %}</p>
-<p>Next, <code>.PHONY</code>. When you compile Latex files, you get several auxiliary files which can useful to speed up a future compilation. But sometimes you also want to remove them; the Makefile can also help you automating this. You can create a target <code>clean</code>, with or without dependencies, and with the instructions to remove these auxiliary files:</p>
-<p>{% highlight bash %}
-clean:
-rm *.aux *.blg *.out *.bbl *.log
-{% endhighlight %}</p>
-<p>You can then clean your directory by simply calling <code>make clean</code>.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>all: talk_handout.pdf talk_slides.pdf
+</code></pre></div><p>Next, <code>.PHONY</code>. When you compile Latex files, you get several auxiliary files which can useful to speed up a future compilation. But sometimes you also want to remove them; the Makefile can also help you automating this. You can create a target <code>clean</code>, with or without dependencies, and with the instructions to remove these auxiliary files:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>clean: 
+  rm *.aux *.blg *.out *.bbl *.log
+</code></pre></div><p>You can then clean your directory by simply calling <code>make clean</code>.</p>
 <p>The issue, though, is that the <code>clean</code> target is special, in that it doesn&rsquo;t correspond to a file in your directory. To make sure <code>make</code> knows this, you can make <code>clean</code> a dependency of the special target <code>.PHONY</code>.</p>
 <p>Therefore, our Makefile for the Beamer presentation is now</p>
-<p>{% highlight bash %}
-all: talk_handout.pdf talk_slides.pdf</p>
-<p>.PHONY: clean
-clean:
-rm *.aux *.blg *.out *.bbl *.log</p>
-<p>talk_handout.pdf: talk_handout.tex talk.tex
-pdflatex talk_handout</p>
-<p>talk_slides.pdf: talk_slides.tex talk.tex
-pdflatex talk_slides
-{% endhighlight %}</p>
-<p>Voila! This is all you need for this project. Save the above script in a file named <code>Makefile</code> or <code>makefile</code>, and you simply run the command <code>make</code> to recompile your pdf documents whenever you change something.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>all: talk_handout.pdf talk_slides.pdf
+
+.PHONY: clean
+clean: 
+  rm *.aux *.blg *.out *.bbl *.log
+  
+talk_handout.pdf: talk_handout.tex talk.tex
+  pdflatex talk_handout
+  
+talk_slides.pdf: talk_slides.tex talk.tex
+  pdflatex talk_slides
+</code></pre></div><p>Voila! This is all you need for this project. Save the above script in a file named <code>Makefile</code> or <code>makefile</code>, and you simply run the command <code>make</code> to recompile your pdf documents whenever you change something.</p>
 <h3 id=more-advanced-concepts>More advanced concepts</h3>
 <p>The above Makefile is unnecessary long and also repetitive: for example the word <code>talk</code> appears in multiple places, and if we want to change it (e.g. we want to reuse this Makefile for another presentation), we need to change it everywhere. The solution is simply to create a variable that will hold the name of the presentation. Therefore to reuse the Makefile we only need to change one line:</p>
-<p>{% highlight bash %}
-FILE = talk</p>
-<p>all: $(FILE)_handout.pdf $(FILE)_slides.pdf</p>
-<p>.PHONY: clean
-clean:
-rm *.aux *.blg *.out *.bbl *.log</p>
-<p>$(FILE)_handout.pdf: $(FILE)_handout.tex $(FILE).tex
-pdflatex $(FILE)_handout</p>
-<p>$(FILE)_slides.pdf: $(FILE)_slides.tex $(FILE).tex
-pdflatex $(FILE)_slides
-{% endhighlight %}</p>
-<p>Moreover, since we are essentially using the same instructions for both <code>talk_slides.pdf</code> and <code>talk_handout.pdf</code>, it would be nice if we only had to write it once. For this purpose, we can use the special macro <code>$@</code>, which stands for the target name. We can then rewrite our Makefile as</p>
-<p>{% highlight bash %}
-FILE = talk</p>
-<p>all: $(FILE)_handout.pdf $(FILE)_slides.pdf</p>
-<p>.PHONY: clean
-clean:
-rm *.aux *.blg *.out *.bbl *.log</p>
-<p>$(FILE)_handout.pdf $(FILE)_slides.pdf: $(FILE)_slides.tex $(FILE)_handout.tex $(FILE).tex
-pdflatex $@
-{% endhighlight %}</p>
-<p>So we have two targets on the same line, and only one set of instructions. One possible issue is that now <code>talk_slides.tex</code> is a dependency for <code>talk_handout.pdf</code> and vice-versa, and therefore both the slides and the handout will be recompiled whenever there is a change. This is not too problematic, since most changes will be made to <code>talk.tex</code> which is already a dependency for both the slides and the handout.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>FILE <span style=color:#f92672>=</span> talk
+
+all: <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_handout.pdf <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_slides.pdf
+
+.PHONY: clean
+clean: 
+  rm *.aux *.blg *.out *.bbl *.log
+  
+<span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_handout.pdf: <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_handout.tex <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>.tex
+  pdflatex <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_handout
+  
+<span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_slides.pdf: <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_slides.tex <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>.tex
+  pdflatex <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_slides
+</code></pre></div><p>Moreover, since we are essentially using the same instructions for both <code>talk_slides.pdf</code> and <code>talk_handout.pdf</code>, it would be nice if we only had to write it once. For this purpose, we can use the special macro <code>$@</code>, which stands for the target name. We can then rewrite our Makefile as</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>FILE <span style=color:#f92672>=</span> talk
+
+all: <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_handout.pdf <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_slides.pdf
+
+.PHONY: clean
+clean: 
+  rm *.aux *.blg *.out *.bbl *.log
+  
+<span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_handout.pdf <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_slides.pdf: <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_slides.tex <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>_handout.tex <span style=color:#66d9ef>$(</span>FILE<span style=color:#66d9ef>)</span>.tex
+  pdflatex $@
+</code></pre></div><p>So we have two targets on the same line, and only one set of instructions. One possible issue is that now <code>talk_slides.tex</code> is a dependency for <code>talk_handout.pdf</code> and vice-versa, and therefore both the slides and the handout will be recompiled whenever there is a change. This is not too problematic, since most changes will be made to <code>talk.tex</code> which is already a dependency for both the slides and the handout.</p>
 <p><strong>Edit (2015/12/08)</strong>: This actually doesn&rsquo;t work, because the target is a PDF document and <code>pdflatex</code> is expecting a Latex file (or a file without an extension). If someone knows how to fix this, you can post the solution in the comments below!</p>
 <p>There is much more to learn about Makefiles, and I think the easiest way is to try it out and whenever I need something new, either look at the <a href=http://www.gnu.org/software/make/manual/make.html>official documentation</a> or <a href=http://stackoverflow.com/questions/tagged/makefile>stackoverflow</a>.</p>
 <h3 id=workflow>Workflow</h3>
@@ -120,28 +115,34 @@ pdflatex $@
 <li>Finally, I want to do all this (creating the directory and the files) by using a single script.</li>
 </ul>
 <p>This single script is as follows:</p>
-<p>{% highlight bash %}</p>
-<h1 id=first-argument-is-the-name-of-the-talk>First argument is the name of the talk</h1>
-<h1 id=other-arguments-are-ignored>other arguments are ignored</h1>
-<p>TALK=$1</p>
-<p>mkdir $TALK
-cd $TALK/</p>
-<h1 id=create-the-two-header-files>Create the two header files</h1>
-<p>echo -e &ldquo;\documentclass[handout]{beamer}\n\input{$TALK.tex}&rdquo; > $TALK_handout.tex</p>
-<p>echo -e &ldquo;\documentclass{beamer}\n\input{$TALK.tex}&rdquo; > $TALK_slides.tex</p>
-<h1 id=create-the-main-file>Create the main file</h1>
-<h1 id=note-the-path-corresponds-to-where-my-template-is-located>Note: the path corresponds to where my template is located</h1>
-<p>cp ~/.config/texstudio/templates/user/template_beamer.tex $TALK.tex</p>
-<h1 id=create-the-makefile>Create the Makefile</h1>
-<p>echo -e &ldquo;FILE = $TALK&rdquo;'</p>
-<p>all: $(FILE)_handout.pdf $(FILE)_slides.pdf</p>
-<p>.PHONY: clean
-clean:
-\trm *.aux *.blg *.out *.bbl *.log</p>
-<p>$(FILE)_handout.pdf $(FILE)_slides.pdf: $(FILE)_slides.tex $(FILE)_handout.tex $(FILE).tex
-\tpdflatex $@' > Makefile
-{% endhighlight %}</p>
-<p>Note that the functionality of this script is highly dependent on which type of shell you use. But a particular point to keep in mind is that, when creating the Makefile, I&rsquo;m using both single and double quotes. This is because I want most of the variable names to be interpreted literally, <em>except the first line</em>, which will change depending on the name of the presentation.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#75715e># First argument is the name of the talk</span>
+<span style=color:#75715e># other arguments are ignored</span>
+TALK<span style=color:#f92672>=</span>$1
+
+mkdir $TALK
+cd $TALK/
+
+<span style=color:#75715e># Create the two header files</span>
+echo -e <span style=color:#e6db74>&#34;\documentclass[handout]{beamer}\n\input{</span>$TALK<span style=color:#e6db74>.tex}&#34;</span> &gt; $TALK<span style=color:#ae81ff>\_</span>handout.tex
+
+echo -e <span style=color:#e6db74>&#34;\documentclass{beamer}\n\input{</span>$TALK<span style=color:#e6db74>.tex}&#34;</span> &gt; $TALK<span style=color:#ae81ff>\_</span>slides.tex
+
+<span style=color:#75715e># Create the main file</span>
+<span style=color:#75715e># Note: the path corresponds to where my template is located</span>
+cp ~/.config/texstudio/templates/user/template_beamer.tex $TALK.tex
+
+<span style=color:#75715e># Create the Makefile</span>
+echo -e <span style=color:#e6db74>&#34;FILE = </span>$TALK<span style=color:#e6db74>&#34;</span><span style=color:#e6db74>&#39;
+</span><span style=color:#e6db74>
+</span><span style=color:#e6db74>all: $(FILE)_handout.pdf $(FILE)_slides.pdf
+</span><span style=color:#e6db74>
+</span><span style=color:#e6db74>.PHONY: clean
+</span><span style=color:#e6db74>clean: 
+</span><span style=color:#e6db74>\trm *.aux *.blg *.out *.bbl *.log
+</span><span style=color:#e6db74>  
+</span><span style=color:#e6db74>$(FILE)_handout.pdf $(FILE)_slides.pdf: $(FILE)_slides.tex $(FILE)_handout.tex $(FILE).tex
+</span><span style=color:#e6db74>\tpdflatex $@&#39;</span> &gt; Makefile
+</code></pre></div><p>Note that the functionality of this script is highly dependent on which type of shell you use. But a particular point to keep in mind is that, when creating the Makefile, I&rsquo;m using both single and double quotes. This is because I want most of the variable names to be interpreted literally, <em>except the first line</em>, which will change depending on the name of the presentation.</p>
 <p>Now, I can put this script in a file called <code>talkInit.sh</code>, put the file somewhere my interpreter can find, and then everytime I have a presentation to prepare, I simply type <code>talkInit talk</code> in the directory I want and everything should work fine!</p>
 <p>If you have questions or comments, please feel free to add them below!</p>
 </div>
@@ -158,6 +159,10 @@ clean:
 </ul>
 </footer>
 </div>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js></script>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js></script>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js></script>
+<script>hljs.configure({languages:[]}),hljs.initHighlightingOnLoad()</script>
 <script src=/blog/js/math-code.js></script>
 <script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 </body>

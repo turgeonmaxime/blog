@@ -6,6 +6,7 @@
 <title>US Presidential Inaugural Addresses - Blog—Max Turgeon</title>
 <meta property="og:title" content="US Presidential Inaugural Addresses - Blog—Max Turgeon">
 <link href=https://maxturgeon.ca/blog/icon.png rel=icon type=image/x-icon>
+<link href=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css rel=stylesheet type=text/css>
 <link rel=stylesheet href=/blog/css/fonts.css media=all>
 <link rel=stylesheet href=/blog/css/main.css media=all>
 </head>
@@ -30,106 +31,100 @@
 <p>Earlier this week, on January 20th 2017, Donald J. Trump was inaugurated as the 45th president of the USA. He also gave what seemed like a very short inaugural address, and so I was curious to see how short it really was compared to previous addresses. It was also an opportunity to have a quick look at other properties of his speech.</p>
 <h2 id=data-extraction>Data extraction</h2>
 <p>The data was extracted from the website of <a href=https://www.presidency.ucsb.edu/>The American Presidency Project</a> at the University of California&ndash;Santa Barbara. They have lots of interesting information, and in particular they have the transcripts of <strong>all</strong> <a href=https://www.presidency.ucsb.edu/inaugurals.php>inaugural addresses</a> ever delivered. So using Chrome&rsquo;s developper tools, I found a quick and dirty way of extracting the text from all these speeches. I&rsquo;m using the <a href="https://cran.r-project.org/package=rvest"><code>rvest</code> package</a>. Also, I&rsquo;m indexing each speech by the year of its corresponding inauguration.</p>
-<p>{% highlight r %}
-library(rvest)
-library(magrittr)
-library(dplyr)
-webpage &lt;- &ldquo;<a href=http://www.presidency.ucsb.edu/inaugurals.php%22>http://www.presidency.ucsb.edu/inaugurals.php"</a></p>
-<p>years &lt;- read_html(webpage) %>%
-html_nodes(&ldquo;table.ver11 a&rdquo;) %>%
-html_text() %>%
-substr(start = nchar(.) - 3, stop = nchar(.)) %>%
-as.numeric</p>
-<p>urls &lt;- read_html(webpage) %>%
-html_nodes(&ldquo;table.ver11 a&rdquo;) %>%
-html_attr(&ldquo;href&rdquo;)</p>
-<p>address_data &lt;- data.frame(&ldquo;Year&rdquo; = years,
-&ldquo;URL&rdquo; = urls)</p>
-<h1 id=scrape-text---->Scrape text&mdash;-</h1>
-<h1 id=recall-that-dplyrmutate-needs-a-window-function>Recall that dplyr::mutate needs a window function</h1>
-<p>extract_text &lt;- function(url_vect) {
-sapply(seq_along(url_vect), function(i) {
-read_html(urls[i]) %>%
-html_node(".displaytext&rdquo;) %>%
-html_text()
-})
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>library</span>(rvest)
+<span style=color:#a6e22e>library</span>(magrittr)
+<span style=color:#a6e22e>library</span>(dplyr)
+webpage <span style=color:#f92672>&lt;-</span> <span style=color:#e6db74>&#34;http://www.presidency.ucsb.edu/inaugurals.php&#34;</span>
+
+years <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>read_html</span>(webpage) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>html_nodes</span>(<span style=color:#e6db74>&#34;table.ver11 a&#34;</span>) <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>html_text</span>() <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>substr</span>(start <span style=color:#f92672>=</span> <span style=color:#a6e22e>nchar</span>(.) <span style=color:#f92672>-</span> <span style=color:#ae81ff>3</span>, stop <span style=color:#f92672>=</span> <span style=color:#a6e22e>nchar</span>(.)) <span style=color:#f92672>%&gt;%</span>
+  as.numeric 
+
+urls <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>read_html</span>(webpage) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>html_nodes</span>(<span style=color:#e6db74>&#34;table.ver11 a&#34;</span>) <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>html_attr</span>(<span style=color:#e6db74>&#34;href&#34;</span>)
+
+address_data <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>data.frame</span>(<span style=color:#e6db74>&#34;Year&#34;</span> <span style=color:#f92672>=</span> years,
+                           <span style=color:#e6db74>&#34;URL&#34;</span> <span style=color:#f92672>=</span> urls)
+
+<span style=color:#75715e># Scrape text----</span>
+<span style=color:#75715e># Recall that dplyr::mutate needs a window function</span>
+extract_text <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>function</span>(url_vect) {
+  <span style=color:#a6e22e>sapply</span>(<span style=color:#a6e22e>seq_along</span>(url_vect), <span style=color:#a6e22e>function</span>(i) {
+    <span style=color:#a6e22e>read_html</span>(urls[i]) <span style=color:#f92672>%&gt;%</span> 
+      <span style=color:#a6e22e>html_node</span>(<span style=color:#e6db74>&#34;.displaytext&#34;</span>) <span style=color:#f92672>%&gt;%</span> 
+      <span style=color:#a6e22e>html_text</span>()
+  })
 }
-address_data %&lt;>% mutate(&ldquo;Text&rdquo; = extract_text(URL))
-{% endhighlight %}</p>
-<p>Now we will look at the frequency of certain words, so we need to parse the text and extract individual words. Fortunately, this can easily be done with Julia Silge and Dave Robinson&rsquo;s <a href="https://cran.r-project.org/package=tidytext"><code>tidytext</code></a> package. The main advantage of their package is that we stay within the <a href=https://blog.rstudio.org/2016/09/15/tidyverse-1-0-0/>tidyverse</a>, and therefore we can easily use packages like <code>dplyr</code> and <code>ggplot2</code> with the output.</p>
-<p>{% highlight r %}
-library(tidytext)</p>
-<h1 id=tokenize-each-text>Tokenize each text</h1>
-<p>address_tokenized &lt;- address_data %>%
-unnest_tokens(Token, Text)
-{% endhighlight %}</p>
-<p>We will be using <code>address_tokenized</code> for the rest of the analysis.</p>
+address_data <span style=color:#f92672>%&lt;&gt;%</span> <span style=color:#a6e22e>mutate</span>(<span style=color:#e6db74>&#34;Text&#34;</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>extract_text</span>(URL))
+</code></pre></div><p>Now we will look at the frequency of certain words, so we need to parse the text and extract individual words. Fortunately, this can easily be done with Julia Silge and Dave Robinson&rsquo;s <a href="https://cran.r-project.org/package=tidytext"><code>tidytext</code></a> package. The main advantage of their package is that we stay within the <a href=https://blog.rstudio.org/2016/09/15/tidyverse-1-0-0/>tidyverse</a>, and therefore we can easily use packages like <code>dplyr</code> and <code>ggplot2</code> with the output.</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>library</span>(tidytext)
+<span style=color:#75715e># Tokenize each text</span>
+address_tokenized <span style=color:#f92672>&lt;-</span> address_data <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>unnest_tokens</span>(Token, Text)
+</code></pre></div><p>We will be using <code>address_tokenized</code> for the rest of the analysis.</p>
 <h2 id=was-it-really-short>Was it really short?</h2>
 <p>First, we will look at the raw count of words, which should give us an idea of the length of the address itself.</p>
-<p>{% highlight r %}
-library(ggplot2)</p>
-<h1 id=plot-word-count-per-year>Plot word count per year</h1>
-<p>address_tokenized %>%
-group_by(Year) %>%
-summarise(Count = n()) %>%
-ggplot(aes(Year, Count)) + geom_point() + geom_line()
-{% endhighlight %}</p>
-<p><img src=/figure/source/2017-01-20-trump-inauguration/unnamed-chunk-3-1.png alt="Total number of words for each inaugural address"></p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>library</span>(ggplot2)
+<span style=color:#75715e># Plot word count per year</span>
+address_tokenized <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>group_by</span>(Year) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>summarise</span>(Count <span style=color:#f92672>=</span> <span style=color:#a6e22e>n</span>()) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>ggplot</span>(<span style=color:#a6e22e>aes</span>(Year, Count)) <span style=color:#f92672>+</span> <span style=color:#a6e22e>geom_point</span>() <span style=color:#f92672>+</span> <span style=color:#a6e22e>geom_line</span>()
+</code></pre></div><p><img src=unnamed-chunk-3-1.png alt="Total number of words for each inaugural address"></p>
 <p>Indeed, Trump&rsquo;s address was on the short side; in fact, in was the shortest since <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=6575">Carter&rsquo;s address</a>. But is was only the 15th shortest address, essentially as long as Kennedy&rsquo;s famous address (<a href="http://www.presidency.ucsb.edu/ws/index.php?pid=8032">&ldquo;ask not what your country can do for you&ndash;ask what you can do for your country&rdquo;</a>).</p>
 <p>(For those who are interested: the shortest speech is <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=25801">Washington&rsquo;s second address</a>, and the longest was by POTUS number 9, <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=25813">William Henry Harrison</a>. Famously, Harrison died 31 days later due to complications from pneumonia.)</p>
 <p>Another interesting way of looking at this data is to look at how many <em>unique</em> words there are for every 1000 words (to adjust for the length of the speech itself). This can perhaps be construed as a measure of the vocabulary size of each President. A more accurate <a href=https://academic.oup.com/biomet/article-abstract/63/3/435/270845/Estimating-the-number-of-unseen-species-How-many>estimate of the vocabulary size</a> of a person is possible, but it typically requires a much larger corpus than what inaugural addresses can offer.</p>
-<p>{% highlight r %}
-unique_count &lt;- address_tokenized %>%
-group_by(Year) %>%
-count(Token) %>%
-summarise(Count = n())</p>
-<p>total_count &lt;- address_tokenized %>%
-group_by(Year) %>%
-summarise(Total = n())</p>
-<p>inner_join(unique_count, total_count) %>%
-ggplot(aes(Year, 1000 * Count/Total)) +
-geom_point() + geom_line() + ylab(&ldquo;Count per 1000 words&rdquo;)
-{% endhighlight %}</p>
-<p><img src=/figure/source/2017-01-20-trump-inauguration/unnamed-chunk-4-1.png alt="Number of unique words per 1000 words for each inaugural address"></p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r>unique_count <span style=color:#f92672>&lt;-</span> address_tokenized <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>group_by</span>(Year) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>count</span>(Token) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>summarise</span>(Count <span style=color:#f92672>=</span> <span style=color:#a6e22e>n</span>())
+
+total_count <span style=color:#f92672>&lt;-</span> address_tokenized <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>group_by</span>(Year) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>summarise</span>(Total <span style=color:#f92672>=</span> <span style=color:#a6e22e>n</span>())
+
+<span style=color:#a6e22e>inner_join</span>(unique_count, total_count) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>ggplot</span>(<span style=color:#a6e22e>aes</span>(Year, <span style=color:#ae81ff>1000</span> <span style=color:#f92672>*</span> Count<span style=color:#f92672>/</span>Total)) <span style=color:#f92672>+</span> 
+    <span style=color:#a6e22e>geom_point</span>() <span style=color:#f92672>+</span> <span style=color:#a6e22e>geom_line</span>() <span style=color:#f92672>+</span> <span style=color:#a6e22e>ylab</span>(<span style=color:#e6db74>&#34;Count per 1000 words&#34;</span>)
+</code></pre></div><p><img src=unnamed-chunk-4-1.png alt="Number of unique words per 1000 words for each inaugural address"></p>
 <p>Using this (very rough) metric, it would appear that Trump showed a broader choice of vocabulary than any President since <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=16607">FDR&rsquo;s fourth inaugural address</a> in 1945. Note that that largest value, from Washington&rsquo;s second inaugural address, is misleading, since his speech was only 133 words long.</p>
 <h2 id=make-america-great-again>Make America Great Again</h2>
 <p>You&rsquo;ve heard it, you&rsquo;ve read it, perhaps you&rsquo;ve loathed it or instead <a href=https://youtu.be/B-Ir153t7Eg>lurved it</a>: Trump&rsquo;s campaign slogan. We have heard so many times, in fact, that I was wondering if the words &ldquo;Great&rdquo; and &ldquo;America&rdquo; appeared more often in Trump&rsquo;s address than any other. The results, some surprising, appear below.</p>
 <h3 id=america>America</h3>
 <p>Let&rsquo;s start with the word &ldquo;America&rdquo;:</p>
-<p>{% highlight r %}
-address_tokenized %>%
-group_by(Year) %>%
-count(Token, wt = (Token == &ldquo;america&rdquo;)) %>%
-summarise(Count = sum(n)) %>%
-ggplot(aes(Year, Count)) + geom_point() + geom_line()
-{% endhighlight %}</p>
-<p><img src=/figure/source/2017-01-20-trump-inauguration/unnamed-chunk-5-1.png alt="Number of times the word &lsquo;America&rsquo; appeared in each inaugural address"></p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r>address_tokenized <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>group_by</span>(Year) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>count</span>(Token, wt <span style=color:#f92672>=</span> (Token <span style=color:#f92672>==</span> <span style=color:#e6db74>&#34;america&#34;</span>)) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>summarise</span>(Count <span style=color:#f92672>=</span> <span style=color:#a6e22e>sum</span>(n)) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>ggplot</span>(<span style=color:#a6e22e>aes</span>(Year, Count)) <span style=color:#f92672>+</span> <span style=color:#a6e22e>geom_point</span>() <span style=color:#f92672>+</span> <span style=color:#a6e22e>geom_line</span>()
+</code></pre></div><p><img src=unnamed-chunk-5-1.png alt="Number of times the word &lsquo;America&rsquo; appeared in each inaugural address"></p>
 <p>There is an interesting trend over time. John Adams was the first president to use the word &ldquo;America&rdquo; in his <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=25802">inaugural address</a>. And the first president to say it more than five times was Harding. But Trump has definitely said it multiple times, 15 in fact, the most of any president except Clinton in his <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=46366">1993 inaugural address</a>. But given that Clinton&rsquo;s address was slightly longer, we can probably agree that Trump takes this round.</p>
 <p>Another surprisi[ng fact: it would be unimaginable today to hear <em>any</em> presidential speech that doesn&rsquo;t conclude with some variation on &ldquo;God bless America&rdquo;. Still, before Eisenhower&rsquo;s <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=9600">first inaugural address</a>, 30 out of 41 addresses did not contain the word &ldquo;America&rdquo;; since then, it has always appeared at least twice.</p>
 <h3 id=great>Great</h3>
 <p>Now let&rsquo;s look at the word &ldquo;Great&rdquo;:</p>
-<p>{% highlight r %}
-address_tokenized %>%
-group_by(Year) %>%
-count(Token, wt = (Token == &ldquo;great&rdquo;)) %>%
-summarise(Count = sum(n)) %>%
-ggplot(aes(Year, Count)) + geom_point() + geom_line()
-{% endhighlight %}</p>
-<p><img src=/figure/source/2017-01-20-trump-inauguration/unnamed-chunk-6-1.png alt="Number of times the word &lsquo;Great&rsquo; appeared in each inaugural address"></p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r>address_tokenized <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>group_by</span>(Year) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>count</span>(Token, wt <span style=color:#f92672>=</span> (Token <span style=color:#f92672>==</span> <span style=color:#e6db74>&#34;great&#34;</span>)) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>summarise</span>(Count <span style=color:#f92672>=</span> <span style=color:#a6e22e>sum</span>(n)) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>ggplot</span>(<span style=color:#a6e22e>aes</span>(Year, Count)) <span style=color:#f92672>+</span> <span style=color:#a6e22e>geom_point</span>() <span style=color:#f92672>+</span> <span style=color:#a6e22e>geom_line</span>()
+</code></pre></div><p><img src=unnamed-chunk-6-1.png alt="Number of times the word &lsquo;Great&rsquo; appeared in each inaugural address"></p>
 <p>So in fact, Trump is not the president who has uttered the word &ldquo;great&rdquo; the most! This honour goes to Monroe, on the <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=25808">last inaugural address</a> of the <a href=https://en.wikipedia.org/wiki/Era_of_Good_Feelings>Era of Good Feelings</a>. But Monroe&rsquo;s address was more than three times longer than Trump&rsquo;s, so to get a clearer picture, let&rsquo;s look at one many times per 1000 words the word &ldquo;great&rdquo; appears in each inaugural address.</p>
-<p>{% highlight r %}
-great_count &lt;- address_tokenized %>%
-group_by(Year) %>%
-count(Token, wt = (Token == &ldquo;great&rdquo;)) %>%
-summarise(Count = sum(n))</p>
-<p>total_count &lt;- address_tokenized %>%
-group_by(Year) %>%
-summarise(Total = n())</p>
-<p>inner_join(great_count, total_count) %>%
-ggplot(aes(Year, 1000 * Count/Total)) +
-geom_point() + geom_line() + ylab(&ldquo;Count per 1000 words&rdquo;)
-{% endhighlight %}</p>
-<p><img src=/figure/source/2017-01-20-trump-inauguration/unnamed-chunk-7-1.png alt="Number of times per 1000 words the word &lsquo;Great&rsquo; appeared in each inaugural address"></p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r>great_count <span style=color:#f92672>&lt;-</span> address_tokenized <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>group_by</span>(Year) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>count</span>(Token, wt <span style=color:#f92672>=</span> (Token <span style=color:#f92672>==</span> <span style=color:#e6db74>&#34;great&#34;</span>)) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>summarise</span>(Count <span style=color:#f92672>=</span> <span style=color:#a6e22e>sum</span>(n)) 
+
+total_count <span style=color:#f92672>&lt;-</span> address_tokenized <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>group_by</span>(Year) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>summarise</span>(Total <span style=color:#f92672>=</span> <span style=color:#a6e22e>n</span>())
+
+<span style=color:#a6e22e>inner_join</span>(great_count, total_count) <span style=color:#f92672>%&gt;%</span>
+  <span style=color:#a6e22e>ggplot</span>(<span style=color:#a6e22e>aes</span>(Year, <span style=color:#ae81ff>1000</span> <span style=color:#f92672>*</span> Count<span style=color:#f92672>/</span>Total)) <span style=color:#f92672>+</span> 
+    <span style=color:#a6e22e>geom_point</span>() <span style=color:#f92672>+</span> <span style=color:#a6e22e>geom_line</span>() <span style=color:#f92672>+</span> <span style=color:#a6e22e>ylab</span>(<span style=color:#e6db74>&#34;Count per 1000 words&#34;</span>)
+</code></pre></div><p><img src=unnamed-chunk-7-1.png alt="Number of times per 1000 words the word &lsquo;Great&rsquo; appeared in each inaugural address"></p>
 <p>Therefore, after adjusting for total word count, Trump is still not the at the top. But now, instead of Monroe, we find Wilson&rsquo;s <a href="http://www.presidency.ucsb.edu/ws/index.php?pid=25831">1913 inaugural address</a>.</p>
 <h2 id=conclusion>Conclusion</h2>
 <p>After looking at all this, we get a sense that, even though Trump&rsquo;s speech was on the short side, it was far from the shortest overall. Moreover, we saw that Trump used the word America more than any President before him (I will let you draw your own conclusions), but the word Great appears quite frequently in inaugural addresses, and Trump&rsquo;s had only the sixth highest frequency (after adjusting for the length of the speech).</p>
@@ -149,5 +144,9 @@ geom_point() + geom_line() + ylab(&ldquo;Count per 1000 words&rdquo;)
 </ul>
 </footer>
 </div>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js></script>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js></script>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js></script>
+<script>hljs.configure({languages:[]}),hljs.initHighlightingOnLoad()</script>
 </body>
 </html>
