@@ -1,69 +1,33 @@
-<!DOCTYPE html>
-<html lang="en-ca">
-  <head>
-    <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.74.1" />
-
-
+<!doctype html><html lang=en-ca>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=generator content="Hugo 0.91.2">
 <title>Principal components of explained variance - Blog—Max Turgeon</title>
 <meta property="og:title" content="Principal components of explained variance - Blog—Max Turgeon">
-
-
-  <link href='https://maxturgeon.ca/blog/icon.png' rel='icon' type='image/x-icon'/>
-
-
-
-  
-
-
-
-
-
-
-
-<link rel="stylesheet" href="/blog/css/fonts.css" media="all">
-<link rel="stylesheet" href="/blog/css/main.css" media="all">
-
-
-
-  </head>
-  <body>
-    <div class="wrapper">
-      <header class="header">
-        <nav class="nav">
-  <a href="/blog/" class="nav-logo">
-    <img src="/blog/avatar.jpeg"
-         width="50"
-         height="50"
-         alt="Max Turgeon">
-  </a>
-
-  <ul class="nav-links">
-    
-    <li><a href="/blog">Home</a></li>
-    
-  </ul>
+<link href=https://maxturgeon.ca/blog/icon.png rel=icon type=image/x-icon>
+<link rel=stylesheet href=/blog/css/fonts.css media=all>
+<link rel=stylesheet href=/blog/css/main.css media=all>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/blog/ class=nav-logo>
+<img src=/blog/avatar.jpeg width=50 height=50 alt="Max Turgeon">
+</a>
+<ul class=nav-links>
+<li><a href=https://maxturgeon.ca/>Home</a></li>
+</ul>
 </nav>
-
-      </header>
-
-
-<main class="content" role="main">
-
-  <article class="article">
-    
-    <span class="article-duration">6 min read</span>
-    
-
-    <h1 class="article-title">Principal components of explained variance</h1>
-
-    
-    <span class="article-date">2015-08-06</span>
-    
-
-    <div class="article-content">
-      <p>I have been spending most of my time on a very interesting technique that has,
+</header>
+<main class=content role=main>
+<article class=article>
+<span class=article-duration>6 min read</span>
+<h1 class=article-title>Principal components of explained variance</h1>
+<span class=article-date>2015-08-06</span>
+<div class=article-content>
+<p>I have been spending most of my time on a very interesting technique that has,
 unfortunately, received little attention (I&rsquo;ll come back later about some
 possible reasons). The purpose of this post is to introduce this method and give
 motivation for its use.</p>
@@ -87,13 +51,13 @@ analyses both computationally long and inefficient.</p>
 </ol>
 <p>Several strategies can be used to deal with these issues: we can filter the
 variables, in the hope that we can retain most of the information while removing
-the noise; we can perform variable selection (e.g. <a href="https://en.wikipedia.org/wiki/Least_squares#Lasso_method">LASSO</a>, SCAD, <a href="https://en.wikipedia.org/wiki/Elastic_net_regularization">elastic net</a>); or
-we can perform dimension reduction. <a href="https://en.wikipedia.org/wiki/Principal_component_analysis">Principal component analysis</a> (PCA) is an
+the noise; we can perform variable selection (e.g. <a href=https://en.wikipedia.org/wiki/Least_squares#Lasso_method>LASSO</a>, SCAD, <a href=https://en.wikipedia.org/wiki/Elastic_net_regularization>elastic net</a>); or
+we can perform dimension reduction. <a href=https://en.wikipedia.org/wiki/Principal_component_analysis>Principal component analysis</a> (PCA) is an
 example of the latter.</p>
 <p>(The first two strategies look very similar, but the main difference lies in the
 dimensionality of the procedure: filtering is typically done one dimension at a
 time, while variable selection is performed on the \( p \)-dimensional space.)</p>
-<h3 id="principal-components-analysis">Principal components analysis</h3>
+<h3 id=principal-components-analysis>Principal components analysis</h3>
 <p>The main goal of PCA is to find a linear combination of the variables \( \bar{Y} =
 a_1 Y_1 + \cdots + a_p Y_p \) that &lsquo;&lsquo;best&rsquo;&rsquo; represents them. This is achieved by
 solving an <em>optimization problem</em>: the best linear combination is such that
@@ -111,14 +75,14 @@ reduce to dimension from \( p \) to just 1!</p>
 <p>While the first question can be assessed by looking at how much of the overall
 variance of the variables is retained by \( \bar{Y} \), the second question is a lot
 more subtle: it heavily depends on the problem at hand. (By the way, for a
-non-linear extension of PCA, you can have a look at <a href="https://en.wikipedia.org/wiki/Principal_component_analysis">kernel PCA</a>.)</p>
+non-linear extension of PCA, you can have a look at <a href=https://en.wikipedia.org/wiki/Principal_component_analysis>kernel PCA</a>.)</p>
 <p>However, there is another issue to keep in mind: what guarantee do we have that
 \( \bar{Y} \) is at all associated with the covariate \( X \)? The answer: <strong>none
 whatsoever</strong>. This is where the Principal Components of Explained Variance (PCEV)
 can be seen as a useful alternative.</p>
-<h3 id="principal-components-of-explained-variance">Principal Components of Explained Variance</h3>
+<h3 id=principal-components-of-explained-variance>Principal Components of Explained Variance</h3>
 <p>PCEV was first introduced in the context of family-based linkage analyses of
-complex traits by <a href="https://www.ncbi.nlm.nih.gov/pubmed/10077732">Ott and Rabinowitz</a>. Its purpose was to improve the power of
+complex traits by <a href=https://www.ncbi.nlm.nih.gov/pubmed/10077732>Ott and Rabinowitz</a>. Its purpose was to improve the power of
 analyses, in the context where researchers were usually performing PCA or using
 a univariate approach (analyzing one variable \( Y_i \) at a time).</p>
 <p>For the remainder of this post, we will group the variables into a vector
@@ -139,7 +103,7 @@ therefore we can take their ratio:</p>
 <p>(In genetics, this ratio is known as the <em>heritability</em>.)</p>
 <p>Whereas PCA seeks the linear combination \( \bar{Y} \) with the largest
 variance, PCEV looks for the linear combination which maximizes \( h^2(a) \).</p>
-<h3 id="winners-curse">Winner&rsquo;s curse?</h3>
+<h3 id=winners-curse>Winner&rsquo;s curse?</h3>
 <p>Unlike PCA, PCEV is likely to find a linear combination which is actually
 associated with our covariate of interest \(X\). Indeed, we are <strong>maximizing this
 association</strong>. Should this worry us? are we introducing some kind of bias?</p>
@@ -150,7 +114,7 @@ try to estimate the null distribution. As a special case, if there is only one
 covariate \( X \), we can actually derive an asymptotic distribution for the
 proportion of variance \( h^2(a) \). In other words, it is possible to perform
 correct inference with PCEV.</p>
-<h3 id="is-it-any-good">Is it any good?</h3>
+<h3 id=is-it-any-good>Is it any good?</h3>
 <p>I have spent a lot of time doing simulations and studying the overall behaviour
 of PCEV. I&rsquo;m currently writing up the results and hope to submit them soon for
 publication (I&rsquo;ll write a post about it when it&rsquo;ll get published), but overall
@@ -169,14 +133,14 @@ also higher than a univariate approach. I will share the details of these
 simulations at some other time.</p>
 </li>
 </ul>
-<h3 id="little-attention">Little attention</h3>
+<h3 id=little-attention>Little attention</h3>
 <p>PCEV has, unfortunately, received little attention in the scientific community. I think there are mainly three reasons:</p>
 <ol>
 <li>
 <p>It was originally introduced as Principal Components of Heritability (PCH), and therefore it had a strong genetic connotation. By changing the name, we hope we can make it visible to a broader audience.</p>
 </li>
 <li>
-<p>The original authors, as well as the people who extended their work, did not publish any software implementation of PCEV. Therefore, using it meant writing your own code from scratch. However, I am currently working on an <a href="https://github.com/GreenwoodLab/pcev">R package</a>. It is still in development, but it can already be used.</p>
+<p>The original authors, as well as the people who extended their work, did not publish any software implementation of PCEV. Therefore, using it meant writing your own code from scratch. However, I am currently working on an <a href=https://github.com/GreenwoodLab/pcev>R package</a>. It is still in development, but it can already be used.</p>
 </li>
 <li>
 <p>People have been using other methods for a long time, and it&rsquo;s hard to make them change their workflow. Hopefully, the paper can convince some of them of the advantages of PCEV.</p>
@@ -184,34 +148,21 @@ simulations at some other time.</p>
 </ol>
 <hr>
 <p>I hope you find this method interesting! I will probably publish more post about it, since my doctoral work centers on an extension of this framework.</p>
-    </div>
-  </article>
-
-  
-
-
+</div>
+</article>
 </main>
-
-      <footer class="footer">
-        <ul class="footer-links">
-          <li>
-            <a href="/blog/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
-          </li>
-          <li>
-            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/blog/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
-          </li>
-        </ul>
-      </footer>
-
-    </div>
-    
-
-    
-<script src="/blog/js/math-code.js"></script>
+<footer class=footer>
+<ul class=footer-links>
+<li>
+<a href=/blog/index.xml type=application/rss+xml target=_blank>RSS feed</a>
+</li>
+<li>
+<a href=https://gohugo.io/ class=footer-links-kudos>Made with <img src=/blog/images/hugo-logo.png alt="Img link to Hugo website" width=22 height=22></a>
+</li>
+</ul>
+</footer>
+</div>
+<script src=/blog/js/math-code.js></script>
 <script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
-
-    
-  </body>
+</body>
 </html>
-

@@ -1,43 +1,17 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>Multivariate analysis on Blog—Max Turgeon</title>
-    <link>https://maxturgeon.ca/blog/tags/multivariate-analysis/</link>
-    <description>Recent content in Multivariate analysis on Blog—Max Turgeon</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-ca</language>
-    <lastBuildDate>Thu, 06 Feb 2020 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://maxturgeon.ca/blog/tags/multivariate-analysis/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>Multivariate t distribution</title>
-      <link>https://maxturgeon.ca/blog/2020-02-06-multivariate-t-distribution/</link>
-      <pubDate>Thu, 06 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://maxturgeon.ca/blog/2020-02-06-multivariate-t-distribution/</guid>
-      <description>&lt;p&gt;I am currently teaching a graduate course in Multivariate Analysis (the course website can be found &lt;a href=&#34;https://www.maxturgeon.ca/w20-stat7200/&#34;&gt;here&lt;/a&gt;). A few weeks ago, I introduced the family of elliptical distributions. In this blog post, I want to discuss the multivariate &lt;em&gt;t&lt;/em&gt; distribution, how to generate samples, and highlight the issue of uncorrelatedness vs independence.&lt;/p&gt;
-&lt;h2 id=&#34;elliptical-distributions&#34;&gt;Elliptical distributions&lt;/h2&gt;
-&lt;p&gt;If we generate samples from a multivariate normal, we can easily see that the contour lines are &lt;em&gt;ellipses&lt;/em&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;7200&lt;/span&gt;)
-&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(mvtnorm)
-
-n &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;
-p &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-Sigma &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;matrix&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.5&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.5&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;), ncol &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p)
-Y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;data.frame&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;rmvnorm&lt;/span&gt;(n, sigma &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Sigma))
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# Plot the data&lt;/span&gt;
-&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(ggplot2)
-
-&lt;span style=&#34;color:#a6e22e&#34;&gt;ggplot&lt;/span&gt;(Y, &lt;span style=&#34;color:#a6e22e&#34;&gt;aes&lt;/span&gt;(X1, X2)) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
-  &lt;span style=&#34;color:#a6e22e&#34;&gt;geom_point&lt;/span&gt;(alpha &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  &lt;span style=&#34;color:#a6e22e&#34;&gt;geom_density_2d&lt;/span&gt;() &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  &lt;span style=&#34;color:#a6e22e&#34;&gt;theme_minimal&lt;/span&gt;()
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://maxturgeon.ca/blog/figure/source/2020-02-06-multivariate-t-distribution_files/figure-latex/unnamed-chunk-1-1.png&#34; alt=&#34;Elliptical contours of multivariate normal&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Elliptical distributions are a generalization of the multivariate normal distribution that retain this property that lines of constant density are ellipses.&lt;/p&gt;</description>
-    </item>
-    
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Multivariate analysis on Blog—Max Turgeon</title><link>https://maxturgeon.ca/blog/tags/multivariate-analysis/</link><description>Recent content in Multivariate analysis on Blog—Max Turgeon</description><generator>Hugo -- gohugo.io</generator><language>en-ca</language><lastBuildDate>Thu, 06 Feb 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://maxturgeon.ca/blog/tags/multivariate-analysis/index.xml" rel="self" type="application/rss+xml"/><item><title>Multivariate t distribution</title><link>https://maxturgeon.ca/blog/2020-02-06-multivariate-t-distribution/</link><pubDate>Thu, 06 Feb 2020 00:00:00 +0000</pubDate><guid>https://maxturgeon.ca/blog/2020-02-06-multivariate-t-distribution/</guid><description>&lt;p>I am currently teaching a graduate course in Multivariate Analysis (the course website can be found &lt;a href="https://www.maxturgeon.ca/w20-stat7200/">here&lt;/a>). A few weeks ago, I introduced the family of elliptical distributions. In this blog post, I want to discuss the multivariate &lt;em>t&lt;/em> distribution, how to generate samples, and highlight the issue of uncorrelatedness vs independence.&lt;/p>
+&lt;h2 id="elliptical-distributions">Elliptical distributions&lt;/h2>
+&lt;p>If we generate samples from a multivariate normal, we can easily see that the contour lines are &lt;em>ellipses&lt;/em>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-r" data-lang="r">&lt;span style="color:#a6e22e">set.seed&lt;/span>(&lt;span style="color:#ae81ff">7200&lt;/span>)
+&lt;span style="color:#a6e22e">library&lt;/span>(mvtnorm)
+n &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#ae81ff">10000&lt;/span>
+p &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>
+Sigma &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#a6e22e">matrix&lt;/span>(&lt;span style="color:#a6e22e">c&lt;/span>(&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">0.5&lt;/span>, &lt;span style="color:#ae81ff">0.5&lt;/span>, &lt;span style="color:#ae81ff">1&lt;/span>), ncol &lt;span style="color:#f92672">=&lt;/span> p)
+Y &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#a6e22e">data.frame&lt;/span>(&lt;span style="color:#a6e22e">rmvnorm&lt;/span>(n, sigma &lt;span style="color:#f92672">=&lt;/span> Sigma))
+&lt;span style="color:#75715e"># Plot the data&lt;/span>
+&lt;span style="color:#a6e22e">library&lt;/span>(ggplot2)
+&lt;span style="color:#a6e22e">ggplot&lt;/span>(Y, &lt;span style="color:#a6e22e">aes&lt;/span>(X1, X2)) &lt;span style="color:#f92672">+&lt;/span>
+&lt;span style="color:#a6e22e">geom_point&lt;/span>(alpha &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0.2&lt;/span>) &lt;span style="color:#f92672">+&lt;/span>
+&lt;span style="color:#a6e22e">geom_density_2d&lt;/span>() &lt;span style="color:#f92672">+&lt;/span>
+&lt;span style="color:#a6e22e">theme_minimal&lt;/span>()
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="unnamed-chunk-1-1.png" alt="Elliptical contours of multivariate normal">&lt;/p>
+&lt;p>Elliptical distributions are a generalization of the multivariate normal distribution that retain this property that lines of constant density are ellipses.&lt;/p></description></item></channel></rss>

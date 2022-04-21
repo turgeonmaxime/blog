@@ -1,213 +1,152 @@
-<!DOCTYPE html>
-<html lang="en-ca">
-  <head>
-    <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.74.1" />
-
-
+<!doctype html><html lang=en-ca>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=generator content="Hugo 0.91.2">
 <title>Multivariate t distribution - Blog—Max Turgeon</title>
 <meta property="og:title" content="Multivariate t distribution - Blog—Max Turgeon">
-
-
-  <link href='https://maxturgeon.ca/blog/icon.png' rel='icon' type='image/x-icon'/>
-
-
-
-  
-
-
-
-
-
-
-
-
-<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
-
-
-
-<link rel="stylesheet" href="/blog/css/fonts.css" media="all">
-<link rel="stylesheet" href="/blog/css/main.css" media="all">
-
-
-
-  </head>
-  <body>
-    <div class="wrapper">
-      <header class="header">
-        <nav class="nav">
-  <a href="/blog/" class="nav-logo">
-    <img src="/blog/avatar.jpeg"
-         width="50"
-         height="50"
-         alt="Max Turgeon">
-  </a>
-
-  <ul class="nav-links">
-    
-    <li><a href="/blog">Home</a></li>
-    
-  </ul>
+<link href=https://maxturgeon.ca/blog/icon.png rel=icon type=image/x-icon>
+<link href=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css rel=stylesheet type=text/css>
+<link rel=stylesheet href=/blog/css/fonts.css media=all>
+<link rel=stylesheet href=/blog/css/main.css media=all>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/blog/ class=nav-logo>
+<img src=/blog/avatar.jpeg width=50 height=50 alt="Max Turgeon">
+</a>
+<ul class=nav-links>
+<li><a href=https://maxturgeon.ca/>Home</a></li>
+</ul>
 </nav>
-
-      </header>
-
-
-<main class="content" role="main">
-
-  <article class="article">
-    
-    <span class="article-duration">4 min read</span>
-    
-
-    <h1 class="article-title">Multivariate t distribution</h1>
-
-    
-    <span class="article-date">2020-02-06</span>
-    
-
-    <div class="article-content">
-      <p>I am currently teaching a graduate course in Multivariate Analysis (the course website can be found <a href="https://www.maxturgeon.ca/w20-stat7200/">here</a>). A few weeks ago, I introduced the family of elliptical distributions. In this blog post, I want to discuss the multivariate <em>t</em> distribution, how to generate samples, and highlight the issue of uncorrelatedness vs independence.</p>
-<h2 id="elliptical-distributions">Elliptical distributions</h2>
+</header>
+<main class=content role=main>
+<article class=article>
+<span class=article-duration>4 min read</span>
+<h1 class=article-title>Multivariate t distribution</h1>
+<span class=article-date>2020-02-06</span>
+<div class=article-content>
+<p>I am currently teaching a graduate course in Multivariate Analysis (the course website can be found <a href=https://www.maxturgeon.ca/w20-stat7200/>here</a>). A few weeks ago, I introduced the family of elliptical distributions. In this blog post, I want to discuss the multivariate <em>t</em> distribution, how to generate samples, and highlight the issue of uncorrelatedness vs independence.</p>
+<h2 id=elliptical-distributions>Elliptical distributions</h2>
 <p>If we generate samples from a multivariate normal, we can easily see that the contour lines are <em>ellipses</em>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">set.seed</span>(<span style="color:#ae81ff">7200</span>)
-<span style="color:#a6e22e">library</span>(mvtnorm)
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>set.seed</span>(<span style=color:#ae81ff>7200</span>)
+<span style=color:#a6e22e>library</span>(mvtnorm)
 
-n <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">10000</span>
-p <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">2</span>
-Sigma <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">matrix</span>(<span style="color:#a6e22e">c</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0.5</span>, <span style="color:#ae81ff">0.5</span>, <span style="color:#ae81ff">1</span>), ncol <span style="color:#f92672">=</span> p)
-Y <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">data.frame</span>(<span style="color:#a6e22e">rmvnorm</span>(n, sigma <span style="color:#f92672">=</span> Sigma))
+n <span style=color:#f92672>&lt;-</span> <span style=color:#ae81ff>10000</span>
+p <span style=color:#f92672>&lt;-</span> <span style=color:#ae81ff>2</span>
+Sigma <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>matrix</span>(<span style=color:#a6e22e>c</span>(<span style=color:#ae81ff>1</span>, <span style=color:#ae81ff>0.5</span>, <span style=color:#ae81ff>0.5</span>, <span style=color:#ae81ff>1</span>), ncol <span style=color:#f92672>=</span> p)
+Y <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>data.frame</span>(<span style=color:#a6e22e>rmvnorm</span>(n, sigma <span style=color:#f92672>=</span> Sigma))
 
-<span style="color:#75715e"># Plot the data</span>
-<span style="color:#a6e22e">library</span>(ggplot2)
+<span style=color:#75715e># Plot the data</span>
+<span style=color:#a6e22e>library</span>(ggplot2)
 
-<span style="color:#a6e22e">ggplot</span>(Y, <span style="color:#a6e22e">aes</span>(X1, X2)) <span style="color:#f92672">+</span> 
-  <span style="color:#a6e22e">geom_point</span>(alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.2</span>) <span style="color:#f92672">+</span>
-  <span style="color:#a6e22e">geom_density_2d</span>() <span style="color:#f92672">+</span>
-  <span style="color:#a6e22e">theme_minimal</span>()
-</code></pre></div><p><img src="/figure/source/2020-02-06-multivariate-t-distribution_files/figure-latex/unnamed-chunk-1-1.png" alt="Elliptical contours of multivariate normal"></p>
+<span style=color:#a6e22e>ggplot</span>(Y, <span style=color:#a6e22e>aes</span>(X1, X2)) <span style=color:#f92672>+</span> 
+  <span style=color:#a6e22e>geom_point</span>(alpha <span style=color:#f92672>=</span> <span style=color:#ae81ff>0.2</span>) <span style=color:#f92672>+</span>
+  <span style=color:#a6e22e>geom_density_2d</span>() <span style=color:#f92672>+</span>
+  <span style=color:#a6e22e>theme_minimal</span>()
+</code></pre></div><p><img src=unnamed-chunk-1-1.png alt="Elliptical contours of multivariate normal"></p>
 <p>Elliptical distributions are a generalization of the multivariate normal distribution that retain this property that lines of constant density are ellipses.</p>
-<p>There are many ways to formalise this definition. For example, let $$\mu\in\mathbb{R}^p$$ and $$\Lambda$$ be a $$p\times p$$ positive-definite matrix. If $$\mathbf{Y}$$ has density</p>
+<p>There are many ways to formalise this definition. For example, let <code>$\mu\in\mathbb{R}^p$</code> and <code>$\Lambda$</code> be a <code>$p\times p$</code> positive-definite matrix. If <code>$\mathbf{Y}$</code> has density</p>
 <p>$$f(\mathbf{Y}) = \lvert\Lambda\rvert^{-1/2}g\left((\mathbf{Y} - \mu)^T\Lambda^{-1}(\mathbf{Y} - \mu)\right),$$</p>
-<p>where $$g:[0, \infty)\to [0, \infty)$$ does not depend on $$\mu,\Lambda$$, we say that $$\mathbf{Y}$$ follows an <strong>elliptical distribution</strong> with location-scale parameters $$\mu,\Lambda$$, and we write $$\mathbf{Y}\sim E_p(\mu,\Lambda)$$.</p>
-<p>We can recover the multivariate normal distribution by taking $$g(u) = (2\pi)^{-p/2}\exp\left(-\frac{1}{2}u\right)$$.</p>
-<h2 id="multivariate-t-distribution">Multivariate <em>t</em> distribution</h2>
-<p>One very important example of elliptical distribution is the <em>multivariate t distribution</em>. Its density is defined as follows: if we let $$\nu &gt; 0$$, we have</p>
+<p>where <code>$g:[0, \infty)\to [0, \infty)$</code> does not depend on <code>$\mu,\Lambda$</code>, we say that <code>$\mathbf{Y}$</code> follows an <strong>elliptical distribution</strong> with location-scale parameters <code>$\mu,\Lambda$</code>, and we write <code>$\mathbf{Y}\sim E_p(\mu,\Lambda)$</code>.</p>
+<p>We can recover the multivariate normal distribution by taking <code>$g(u) = (2\pi)^{-p/2}\exp\left(-\frac{1}{2}u\right)$</code>.</p>
+<h2 id=multivariate-t-distribution>Multivariate <em>t</em> distribution</h2>
+<p>One very important example of elliptical distribution is the <em>multivariate t distribution</em>. Its density is defined as follows: if we let <code>$\nu > 0$</code>, we have</p>
 <p>$$f(\mathbf{Y}) = c_{p,\nu}\lvert\Lambda\vert^{-1/2}(1 + (\mathbf{Y} - \mu)^T\Lambda^{-1}(\mathbf{Y} - \mu)/\nu)^{-(\nu+p)/2},$$</p>
 <p>where</p>
 <p>$$c_{p,\nu} = \frac{(\nu\pi)^{-p/2} \Gamma\left(\frac{1}{2} (\nu + p)\right)}{\Gamma\left(\frac{1}{2}\nu\right)}.$$</p>
-<p>This clearly fits our definition of an elliptical distribution: simply take $$g(u) = c_{p,\nu}(1 + u)^{-(\nu+p)/2}$$.</p>
-<p>There is a different, equivalent way of defining the multivariate <em>t</em> distribution: let $$W$$ be such that $$\nu W^{-1}\sim\chi^2(\nu)$$, and let $$\mathbf{Z} \sim N(0, I_p)$$. Then we have</p>
+<p>This clearly fits our definition of an elliptical distribution: simply take $$g(u) = c_{p,\nu}(1 + u)^{-(\nu+p)/2}.$$</p>
+<p>There is a different, equivalent way of defining the multivariate <em>t</em> distribution: let <code>$W$</code> be such that <code>$\nu W^{-1}\sim\chi^2(\nu)$</code>, and let <code>$\mathbf{Z} \sim N(0, I_p)$</code>. Then we have</p>
 <p>$$\mu + \sqrt{W}\Lambda^{1/2}\mathbf{Z} \sim t_{p,\nu}(\mu, \Lambda).$$</p>
 <p>This representation readily gives us a way to generate samples from a <em>t</em> distribution.</p>
-<h2 id="generating-samples">Generating samples</h2>
-<p>So the equation above gives us a recipe for generating a sample $$\mathbf{Y}_1, \ldots, \mathbf{Y}_n$$: for $$i=1, \ldots, n$$:</p>
+<h2 id=generating-samples>Generating samples</h2>
+<p>So the equation above gives us a recipe for generating a sample <code>$\mathbf{Y}_1, \ldots, \mathbf{Y}_n$</code>: for <code>$i=1, \ldots, n$</code>:</p>
 <ol>
-<li>Generate $$X_i\sim \chi^2(\nu)$$ and set $$W_i = \nu/X_i$$;</li>
-<li>Generate $$\mathbf{Z}_i\sim N(0, I_p)$$ (e.g. by generating $$p$$ univariate standard normal variables);</li>
-<li>Set $$\mathbf{Y}_i = \mu + \sqrt{W_i}\Lambda^{1/2}\mathbf{Z}_i$$.</li>
+<li>Generate <code>$X_i\sim \chi^2(\nu)$</code> and set <code>$W_i = \nu/X_i$</code>;</li>
+<li>Generate <code>$\mathbf{Z}_i\sim N(0, I_p)$</code> (e.g. by generating <code>$p$</code> univariate standard normal variables);</li>
+<li>Set <code>$\mathbf{Y}_i = \mu + \sqrt{W_i}\Lambda^{1/2}\mathbf{Z}_i$</code>.</li>
 </ol>
 <p>We can easily implement this in <code>R</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">n <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">100</span>
-p <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">2</span> 
-nu <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">3</span>
-Lambda_sqrt <span style="color:#f92672">&lt;-</span> expm<span style="color:#f92672">::</span><span style="color:#a6e22e">sqrtm</span>(Sigma)
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r>n <span style=color:#f92672>&lt;-</span> <span style=color:#ae81ff>100</span>
+p <span style=color:#f92672>&lt;-</span> <span style=color:#ae81ff>2</span> 
+nu <span style=color:#f92672>&lt;-</span> <span style=color:#ae81ff>3</span>
+Lambda_sqrt <span style=color:#f92672>&lt;-</span> expm<span style=color:#f92672>::</span><span style=color:#a6e22e>sqrtm</span>(Sigma)
 
-data <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">replicate</span>(n, {
-  X <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rchisq</span>(<span style="color:#ae81ff">1</span>, df <span style="color:#f92672">=</span> nu)
-  W <span style="color:#f92672">&lt;-</span> nu<span style="color:#f92672">/</span>X
-  Z <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rnorm</span>(p)
-  Y <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">sqrt</span>(W) <span style="color:#f92672">*</span> Lambda_sqrt <span style="color:#f92672">%*%</span> Z
+data <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>replicate</span>(n, {
+  X <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>rchisq</span>(<span style=color:#ae81ff>1</span>, df <span style=color:#f92672>=</span> nu)
+  W <span style=color:#f92672>&lt;-</span> nu<span style=color:#f92672>/</span>X
+  Z <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>rnorm</span>(p)
+  Y <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>sqrt</span>(W) <span style=color:#f92672>*</span> Lambda_sqrt <span style=color:#f92672>%*%</span> Z
   
-  <span style="color:#a6e22e">return</span>(<span style="color:#a6e22e">drop</span>(Y))
+  <span style=color:#a6e22e>return</span>(<span style=color:#a6e22e>drop</span>(Y))
 })
 </code></pre></div><p>Of course, we can do this much more efficiently:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">W <span style="color:#f92672">&lt;-</span> nu<span style="color:#f92672">/</span><span style="color:#a6e22e">rchisq</span>(n, df <span style="color:#f92672">=</span> nu)
-Z <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">matrix</span>(<span style="color:#a6e22e">rnorm</span>(n<span style="color:#f92672">*</span>p), ncol <span style="color:#f92672">=</span> p)
-Y <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">sqrt</span>(W) <span style="color:#f92672">*</span> Z <span style="color:#f92672">%*%</span> Lambda_sqrt
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r>W <span style=color:#f92672>&lt;-</span> nu<span style=color:#f92672>/</span><span style=color:#a6e22e>rchisq</span>(n, df <span style=color:#f92672>=</span> nu)
+Z <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>matrix</span>(<span style=color:#a6e22e>rnorm</span>(n<span style=color:#f92672>*</span>p), ncol <span style=color:#f92672>=</span> p)
+Y <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>sqrt</span>(W) <span style=color:#f92672>*</span> Z <span style=color:#f92672>%*%</span> Lambda_sqrt
 </code></pre></div><p>Or yet another way is to use the function <code>mvtnorm::rmvt</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r">Y <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rmvt</span>(n, df <span style="color:#f92672">=</span> nu, sigma <span style="color:#f92672">=</span> Sigma)
-</code></pre></div><p>For more details on how to sample <em>t</em> variates in <code>R</code>, I recommend <a href="https://journal.r-project.org/archive/2013/RJ-2013-033/RJ-2013-033.pdf">this paper</a> by Marius Hofert.</p>
-<h2 id="uncorrelated-vs-independent">Uncorrelated vs Independent</h2>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r>Y <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>rmvt</span>(n, df <span style=color:#f92672>=</span> nu, sigma <span style=color:#f92672>=</span> Sigma)
+</code></pre></div><p>For more details on how to sample <em>t</em> variates in <code>R</code>, I recommend <a href=https://journal.r-project.org/archive/2013/RJ-2013-033/RJ-2013-033.pdf>this paper</a> by Marius Hofert.</p>
+<h2 id=uncorrelated-vs-independent>Uncorrelated vs Independent</h2>
 <p>Students of statistics are taught the different between correlation and dependence, or between uncorrelatedness and independence: two independent variables are uncorrelated, but the converse is <em>not</em> true in general. Of course, the big exception is the <em>normal distribution</em>: two normal variables are uncorrelated <strong>if and only if</strong> they are independent. And even though elliptical distributions behave similarly to the multivariate normal distribution, this property <strong>does not</strong> translate to the rest of the elliptical distributions. Indeed, we even have the following result:</p>
-<h3 id="proposition">Proposition</h3>
-<p><em>Within the class of elliptical distributions $$E_p(\mu,\Lambda)$$, the property that independence and uncorrelatedness are equivalent uniquely defines the multivariate normal distribution.</em></p>
-<p>This result is important! Because whereas I was able to generate a standard multivariate normal $$Z$$ by simply generating $$p$$ standard univariate normals, I cannot do the same for the uncorrelated (i.e. $$\Lambda = I_p$$ ) multivariate <em>t</em> distribution. We can clearly see how this wrong using a simulation:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-r" data-lang="r"><span style="color:#a6e22e">library</span>(tidyverse)
-B <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">10000</span>
-nu <span style="color:#f92672">&lt;-</span> <span style="color:#ae81ff">3</span>
+<h3 id=proposition>Proposition</h3>
+<p><em>Within the class of elliptical distributions <code>$E_p(\mu,\Lambda)$</code>, the property that independence and uncorrelatedness are equivalent uniquely defines the multivariate normal distribution.</em></p>
+<p>This result is important! Because whereas I was able to generate a standard multivariate normal <code>$Z$</code> by simply generating <code>$p$</code> standard univariate normals, I cannot do the same for the uncorrelated (i.e. <code>$\Lambda = I_p$</code> ) multivariate <em>t</em> distribution. We can clearly see how this wrong using a simulation:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-r data-lang=r><span style=color:#a6e22e>library</span>(tidyverse)
+B <span style=color:#f92672>&lt;-</span> <span style=color:#ae81ff>10000</span>
+nu <span style=color:#f92672>&lt;-</span> <span style=color:#ae81ff>3</span>
 
-<span style="color:#75715e"># Generate uncorrelated t distribution</span>
-mult_t <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">rmvt</span>(B, df <span style="color:#f92672">=</span> nu)
-<span style="color:#75715e"># Generate independent t distribution</span>
-indep_t <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">matrix</span>(<span style="color:#a6e22e">rt</span>(<span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>B, df <span style="color:#f92672">=</span> nu), ncol <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>)
+<span style=color:#75715e># Generate uncorrelated t distribution</span>
+mult_t <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>rmvt</span>(B, df <span style=color:#f92672>=</span> nu)
+<span style=color:#75715e># Generate independent t distribution</span>
+indep_t <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>matrix</span>(<span style=color:#a6e22e>rt</span>(<span style=color:#ae81ff>2</span><span style=color:#f92672>*</span>B, df <span style=color:#f92672>=</span> nu), ncol <span style=color:#f92672>=</span> <span style=color:#ae81ff>2</span>)
 
-<span style="color:#75715e"># Create a tibble for plotting</span>
-<span style="color:#a6e22e">colnames</span>(mult_t) <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">colnames</span>(indep_t) <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">c</span>(<span style="color:#e6db74">&#34;X&#34;</span>, <span style="color:#e6db74">&#34;Y&#34;</span>)
+<span style=color:#75715e># Create a tibble for plotting</span>
+<span style=color:#a6e22e>colnames</span>(mult_t) <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>colnames</span>(indep_t) <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>c</span>(<span style=color:#e6db74>&#34;X&#34;</span>, <span style=color:#e6db74>&#34;Y&#34;</span>)
 
-mult_t <span style="color:#f92672">&lt;-</span> mult_t <span style="color:#f92672">%&gt;%</span> 
-  <span style="color:#a6e22e">as_tibble</span>() <span style="color:#f92672">%&gt;%</span> 
-  <span style="color:#a6e22e">mutate</span>(Type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Joint T&#34;</span>)
+mult_t <span style=color:#f92672>&lt;-</span> mult_t <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>as_tibble</span>() <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>mutate</span>(Type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Joint T&#34;</span>)
 
-indep_t <span style="color:#f92672">&lt;-</span> indep_t <span style="color:#f92672">%&gt;%</span> 
-  <span style="color:#a6e22e">as_tibble</span>() <span style="color:#f92672">%&gt;%</span> 
-  <span style="color:#a6e22e">mutate</span>(Type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Indep T&#34;</span>)
+indep_t <span style=color:#f92672>&lt;-</span> indep_t <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>as_tibble</span>() <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>mutate</span>(Type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Indep T&#34;</span>)
 
-data_plot <span style="color:#f92672">&lt;-</span> <span style="color:#a6e22e">bind_rows</span>(
+data_plot <span style=color:#f92672>&lt;-</span> <span style=color:#a6e22e>bind_rows</span>(
   mult_t,
   indep_t
 )
 
-<span style="color:#75715e"># Plot the results</span>
-data_plot <span style="color:#f92672">%&gt;%</span> 
-  <span style="color:#a6e22e">ggplot</span>(<span style="color:#a6e22e">aes</span>(X, Y)) <span style="color:#f92672">+</span> 
-  <span style="color:#a6e22e">geom_point</span>(alpha <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.2</span>) <span style="color:#f92672">+</span>
-  <span style="color:#a6e22e">theme_minimal</span>() <span style="color:#f92672">+</span>
-  <span style="color:#a6e22e">facet_grid</span>(. <span style="color:#f92672">~</span> Type) <span style="color:#f92672">+</span>
-  <span style="color:#a6e22e">geom_density2d</span>()
-</code></pre></div><p>![Comparison of joint vs independent t distributions]({{ site.github.url }}/figure/source/2020-02-06-multivariate-t-distribution_files/figure-latex/unnamed-chunk-5-1.png)</p>
+<span style=color:#75715e># Plot the results</span>
+data_plot <span style=color:#f92672>%&gt;%</span> 
+  <span style=color:#a6e22e>ggplot</span>(<span style=color:#a6e22e>aes</span>(X, Y)) <span style=color:#f92672>+</span> 
+  <span style=color:#a6e22e>geom_point</span>(alpha <span style=color:#f92672>=</span> <span style=color:#ae81ff>0.2</span>) <span style=color:#f92672>+</span>
+  <span style=color:#a6e22e>theme_minimal</span>() <span style=color:#f92672>+</span>
+  <span style=color:#a6e22e>facet_grid</span>(. <span style=color:#f92672>~</span> Type) <span style=color:#f92672>+</span>
+  <span style=color:#a6e22e>geom_density2d</span>()
+</code></pre></div><p><img src=unnamed-chunk-5-1.png alt="Comparison of joint vs independent t distributions"></p>
 <p>As we can see from the left panel, by multiplying two marginal <em>t</em> distribution, we do not get an elliptical distribution; the contour lines are closer to diamonds.</p>
-    </div>
-  </article>
-
-  
-
-
+</div>
+</article>
 </main>
-
-      <footer class="footer">
-        <ul class="footer-links">
-          <li>
-            <a href="/blog/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
-          </li>
-          <li>
-            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/blog/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
-          </li>
-        </ul>
-      </footer>
-
-    </div>
-    
-
-
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-
-
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
-<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
-
-
-
-    
-<script src="/blog/js/math-code.js"></script>
+<footer class=footer>
+<ul class=footer-links>
+<li>
+<a href=/blog/index.xml type=application/rss+xml target=_blank>RSS feed</a>
+</li>
+<li>
+<a href=https://gohugo.io/ class=footer-links-kudos>Made with <img src=/blog/images/hugo-logo.png alt="Img link to Hugo website" width=22 height=22></a>
+</li>
+</ul>
+</footer>
+</div>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js></script>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js></script>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js></script>
+<script>hljs.configure({languages:[]}),hljs.initHighlightingOnLoad()</script>
+<script src=/blog/js/math-code.js></script>
 <script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
-
-    
-  </body>
+</body>
 </html>
-

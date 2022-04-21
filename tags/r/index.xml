@@ -1,134 +1,36 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>R on Blog—Max Turgeon</title>
-    <link>https://maxturgeon.ca/blog/tags/r/</link>
-    <description>Recent content in R on Blog—Max Turgeon</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-ca</language>
-    <lastBuildDate>Thu, 06 Feb 2020 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://maxturgeon.ca/blog/tags/r/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>Multivariate t distribution</title>
-      <link>https://maxturgeon.ca/blog/2020-02-06-multivariate-t-distribution/</link>
-      <pubDate>Thu, 06 Feb 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://maxturgeon.ca/blog/2020-02-06-multivariate-t-distribution/</guid>
-      <description>&lt;p&gt;I am currently teaching a graduate course in Multivariate Analysis (the course website can be found &lt;a href=&#34;https://www.maxturgeon.ca/w20-stat7200/&#34;&gt;here&lt;/a&gt;). A few weeks ago, I introduced the family of elliptical distributions. In this blog post, I want to discuss the multivariate &lt;em&gt;t&lt;/em&gt; distribution, how to generate samples, and highlight the issue of uncorrelatedness vs independence.&lt;/p&gt;
-&lt;h2 id=&#34;elliptical-distributions&#34;&gt;Elliptical distributions&lt;/h2&gt;
-&lt;p&gt;If we generate samples from a multivariate normal, we can easily see that the contour lines are &lt;em&gt;ellipses&lt;/em&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-r&#34; data-lang=&#34;r&#34;&gt;&lt;span style=&#34;color:#a6e22e&#34;&gt;set.seed&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;7200&lt;/span&gt;)
-&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(mvtnorm)
-
-n &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10000&lt;/span&gt;
-p &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;
-Sigma &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;matrix&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;c&lt;/span&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.5&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.5&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;), ncol &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; p)
-Y &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;-&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;data.frame&lt;/span&gt;(&lt;span style=&#34;color:#a6e22e&#34;&gt;rmvnorm&lt;/span&gt;(n, sigma &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Sigma))
-
-&lt;span style=&#34;color:#75715e&#34;&gt;# Plot the data&lt;/span&gt;
-&lt;span style=&#34;color:#a6e22e&#34;&gt;library&lt;/span&gt;(ggplot2)
-
-&lt;span style=&#34;color:#a6e22e&#34;&gt;ggplot&lt;/span&gt;(Y, &lt;span style=&#34;color:#a6e22e&#34;&gt;aes&lt;/span&gt;(X1, X2)) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; 
-  &lt;span style=&#34;color:#a6e22e&#34;&gt;geom_point&lt;/span&gt;(alpha &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;) &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  &lt;span style=&#34;color:#a6e22e&#34;&gt;geom_density_2d&lt;/span&gt;() &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt;
-  &lt;span style=&#34;color:#a6e22e&#34;&gt;theme_minimal&lt;/span&gt;()
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://maxturgeon.ca/blog/figure/source/2020-02-06-multivariate-t-distribution_files/figure-latex/unnamed-chunk-1-1.png&#34; alt=&#34;Elliptical contours of multivariate normal&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Elliptical distributions are a generalization of the multivariate normal distribution that retain this property that lines of constant density are ellipses.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Predictive model for the Oscars</title>
-      <link>https://maxturgeon.ca/blog/2018-02-25-oscar-prediction-model/</link>
-      <pubDate>Sun, 25 Feb 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://maxturgeon.ca/blog/2018-02-25-oscar-prediction-model/</guid>
-      <description>&lt;p&gt;A few years ago, as part of the graduate course &lt;em&gt;Data Analysis and Report Writing&lt;/em&gt; in the Department of Epidemiology, Biostatistics and Occupational Health at McGill University, we explored the topic of predictive modeling using a dataset containing movies, directors and actors who were nominated for an Academy Award. The goal was to select some variables and build a predictive model for the winner in four categories: Best Picture, Best Director, Best Actor, and Best Actress. As a movie fan, this was the dream assignment: I could combine my love of movies with my love of statistics! And it payed off: I was the only one in my class to correctly predict all four winners.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>First steps with Leaflet</title>
-      <link>https://maxturgeon.ca/blog/2017-07-05-leaflet-saskatoon/</link>
-      <pubDate>Wed, 05 Jul 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://maxturgeon.ca/blog/2017-07-05-leaflet-saskatoon/</guid>
-      <description>I should probably be working on my thesis, but instead I started reading through the introduction to the R package leaflet. And the following made me feel excited: Code for America has GeoJSON data on their Github page for several cities in the world. In particular, they have both Saskatoon and Montreal! I used the leaflet package to draw the boundaries of each neighbourhoods. You can see the results here. (I wasn&amp;rsquo;t able to host the maps directly on this webpage.</description>
-    </item>
-    
-    <item>
-      <title>Installing multiple R versions</title>
-      <link>https://maxturgeon.ca/blog/2017-04-01-multiple-r-versions/</link>
-      <pubDate>Sat, 01 Apr 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://maxturgeon.ca/blog/2017-04-01-multiple-r-versions/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;https://sahirbhatnagar.com/&#34;&gt;Sahir Bhatnagar&lt;/a&gt; and I are currently wrapping up the first version of our package &lt;a href=&#34;https://sahirbhatnagar.com/casebase/&#34;&gt;casebase&lt;/a&gt;. In short, it&amp;rsquo;s an R package for survival analysis, where we use case-base sampling to fit smooth-in-time hazards. (I could write a post on this package, but there&amp;rsquo;s no need: check out the &lt;a href=&#34;https://sahirbhatnagar.com/casebase/&#34;&gt;website&lt;/a&gt; and the four vignettes.) As part of our workflow, we perform continuous integration using &lt;a href=&#34;https://travis-ci.org/&#34;&gt;Travis CI&lt;/a&gt;, and we test our package against both the current and development versions of R. Recently, some tests began to fail against the development version, and so I had to install R-devel on my local machine in order to debug our code. This blog post is a summary of how I did it.&lt;/p&gt;
-&lt;p&gt;To be fair, this is already documented online, and I made use of these resources; see the &lt;a href=&#34;https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Installation&#34;&gt;official R installation docs&lt;/a&gt; and this &lt;a href=&#34;https://support.rstudio.com/hc/en-us/articles/215488098-Installing-multiple-versions-of-R&#34;&gt;RStudio support post&lt;/a&gt;. I&amp;rsquo;m writing yet another post simply as a reference for myself and my colleagues. But I also ran into a compilation error that I wanted to document here. That error was &amp;ldquo;caused&amp;rdquo; by following closely the (amazing) book &lt;a href=&#34;http://r-pkgs.had.co.nz/&#34;&gt;&lt;em&gt;R packages&lt;/em&gt;&lt;/a&gt; by &lt;a href=&#34;http://hadley.nz/&#34;&gt;Hadley Wickham&lt;/a&gt;. Stick around to learn what the problem was!&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>US Presidential Inaugural Addresses</title>
-      <link>https://maxturgeon.ca/blog/2017-01-20-trump-inauguration/</link>
-      <pubDate>Fri, 20 Jan 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://maxturgeon.ca/blog/2017-01-20-trump-inauguration/</guid>
-      <description>&lt;p&gt;Earlier this week, on January 20th 2017, Donald J. Trump was inaugurated as the 45th president of the USA. He also gave what seemed like a very short inaugural address, and so I was curious to see how short it really was compared to previous addresses. It was also an opportunity to have a quick look at other properties of his speech.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>The Instability of Forward and Backward Selection</title>
-      <link>https://maxturgeon.ca/blog/2016-05-29-forward-backward-selection/</link>
-      <pubDate>Sun, 29 May 2016 00:00:00 +0000</pubDate>
-      
-      <guid>https://maxturgeon.ca/blog/2016-05-29-forward-backward-selection/</guid>
-      <description>&lt;p&gt;Classical statistics often assumes that the analyst knows which variables are important and which variables are not. Of course, this is a strong assumption, and therefore many variable selection procedures have been developed to address this problem. In this blog post, I want to focus on two subset selection methods, and I want to address their instability. In other words, I want to discuss how &lt;strong&gt;small changes&lt;/strong&gt; in the data can lead to &lt;strong&gt;completely different solutions&lt;/strong&gt;.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Removing all R CMD check warnings</title>
-      <link>https://maxturgeon.ca/blog/2016-04-08-check-warnings/</link>
-      <pubDate>Fri, 08 Apr 2016 00:00:00 +0000</pubDate>
-      
-      <guid>https://maxturgeon.ca/blog/2016-04-08-check-warnings/</guid>
-      <description>&lt;p&gt;Making R packages is an important aspect of the statistician&amp;rsquo;s work. Or at least it should be: it is quite annoying when a new method appears in the literature but no implementation is readily available.&lt;/p&gt;
-&lt;p&gt;A favourite mantra of mine when making R packages is the following: &lt;strong&gt;an R package is more than the sum of its functions&lt;/strong&gt;. A functioning R package needs to be able to interact properly with the R environment (through the &lt;code&gt;NAMESPACE&lt;/code&gt;); a good R package also needs great documentation; a great R package will also include a vignette to guide new users and explain how all the functions interact with one another.&lt;/p&gt;
-&lt;p&gt;The main reference for how to make R packages is &lt;a href=&#34;https://cran.r-project.org/doc/manuals/r-release/R-exts.html&#34;&gt;&lt;em&gt;Writing R extensions&lt;/em&gt;&lt;/a&gt;. Everything you need to know is there, if you know what you are looking for. Another, very useful reference is Hadley Wickam&amp;rsquo;s &lt;a href=&#34;http://r-pkgs.had.co.nz/&#34;&gt;book on R packages&lt;/a&gt;. This book explains the different components of an R package, and it also serves as an introduction to his &lt;a href=&#34;https://cran.r-project.org/package=devtools&#34;&gt;&lt;code&gt;devtools&lt;/code&gt; package&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;In what follows, I don&amp;rsquo;t want to go over how to make an R package; the above references do a better job than I could hope to do. Rather, I want to share my experience about some of the most annoying part of making an R package: passing the &lt;code&gt;R CMD check&lt;/code&gt;. Removing the errors is the most important part, and what kind of errors you get really depends on the package (the log file is typically quite useful in figuring out what triggered the errors). On the other hand, you also want to minimize the number of warnings and notes, and most warnings you probably want to remove altogether.&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Test case: Optimising PCEV</title>
-      <link>https://maxturgeon.ca/blog/2015-09-11-optimisation-test-case/</link>
-      <pubDate>Fri, 11 Sep 2015 00:00:00 +0000</pubDate>
-      
-      <guid>https://maxturgeon.ca/blog/2015-09-11-optimisation-test-case/</guid>
-      <description>&lt;p&gt;I will give an example of code optimisation in R, using Noam Ross&amp;rsquo;s &lt;code&gt;proftable&lt;/code&gt; function and Luke Tierney&amp;rsquo;s &lt;code&gt;proftools&lt;/code&gt; package, which I discuss in my [tutorial on optimisation]({{ site.github.url }}/optimisation/). The code we will optimise comes from the main function of our &lt;a href=&#34;https://github.com/GreenwoodLab/pcev&#34;&gt;PCEV package&lt;/a&gt;. A few months ago, while testing the method using simulations, I had to speed up my code because it was way to slow, and the result of this optimisation is given below.&lt;/p&gt;
-&lt;p&gt;For background, recall that PCEV is a dimension-reduction technique, akin to PCA, but where the components are obtained by maximising the proportion of variance explained by a set of covariates. For more information, see this [blog post]({{ site.github.url }}/pcev/).&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Tutorial: Optimising R code</title>
-      <link>https://maxturgeon.ca/blog/2015-09-10-optimisation/</link>
-      <pubDate>Thu, 10 Sep 2015 00:00:00 +0000</pubDate>
-      
-      <guid>https://maxturgeon.ca/blog/2015-09-10-optimisation/</guid>
-      <description>&lt;p&gt;The R language is very good for statistical computations, due to its strong functional capabilities, its open source philosophy, and its extended package ecosystem. However, it can also be quite slow, because of some &lt;a href=&#34;http://adv-r.had.co.nz/Performance.html#language-performance&#34;&gt;design choices&lt;/a&gt; (e.g. lazy evaluation and extreme dynamic typing).&lt;/p&gt;
-&lt;p&gt;This tutorial is mainly based on Hadley Wickam&amp;rsquo;s book &lt;a href=&#34;http://adv-r.had.co.nz/&#34;&gt;Advanced R&lt;/a&gt;.&lt;/p&gt;
-&lt;h3 id=&#34;before-optimising&#34;&gt;Before optimising&amp;hellip;&lt;/h3&gt;
-&lt;p&gt;First of all, before we start optimising our R code, we need to ask ourselves a few questions:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Is my code doing what I want it to do?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Do I really need to make my code faster?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Is considerable speed up even possible?&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;</description>
-    </item>
-    
-  </channel>
-</rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>R on Blog—Max Turgeon</title><link>https://maxturgeon.ca/blog/tags/r/</link><description>Recent content in R on Blog—Max Turgeon</description><generator>Hugo -- gohugo.io</generator><language>en-ca</language><lastBuildDate>Thu, 06 Feb 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://maxturgeon.ca/blog/tags/r/index.xml" rel="self" type="application/rss+xml"/><item><title>Multivariate t distribution</title><link>https://maxturgeon.ca/blog/2020-02-06-multivariate-t-distribution/</link><pubDate>Thu, 06 Feb 2020 00:00:00 +0000</pubDate><guid>https://maxturgeon.ca/blog/2020-02-06-multivariate-t-distribution/</guid><description>&lt;p>I am currently teaching a graduate course in Multivariate Analysis (the course website can be found &lt;a href="https://www.maxturgeon.ca/w20-stat7200/">here&lt;/a>). A few weeks ago, I introduced the family of elliptical distributions. In this blog post, I want to discuss the multivariate &lt;em>t&lt;/em> distribution, how to generate samples, and highlight the issue of uncorrelatedness vs independence.&lt;/p>
+&lt;h2 id="elliptical-distributions">Elliptical distributions&lt;/h2>
+&lt;p>If we generate samples from a multivariate normal, we can easily see that the contour lines are &lt;em>ellipses&lt;/em>:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-r" data-lang="r">&lt;span style="color:#a6e22e">set.seed&lt;/span>(&lt;span style="color:#ae81ff">7200&lt;/span>)
+&lt;span style="color:#a6e22e">library&lt;/span>(mvtnorm)
+n &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#ae81ff">10000&lt;/span>
+p &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#ae81ff">2&lt;/span>
+Sigma &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#a6e22e">matrix&lt;/span>(&lt;span style="color:#a6e22e">c&lt;/span>(&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">0.5&lt;/span>, &lt;span style="color:#ae81ff">0.5&lt;/span>, &lt;span style="color:#ae81ff">1&lt;/span>), ncol &lt;span style="color:#f92672">=&lt;/span> p)
+Y &lt;span style="color:#f92672">&amp;lt;-&lt;/span> &lt;span style="color:#a6e22e">data.frame&lt;/span>(&lt;span style="color:#a6e22e">rmvnorm&lt;/span>(n, sigma &lt;span style="color:#f92672">=&lt;/span> Sigma))
+&lt;span style="color:#75715e"># Plot the data&lt;/span>
+&lt;span style="color:#a6e22e">library&lt;/span>(ggplot2)
+&lt;span style="color:#a6e22e">ggplot&lt;/span>(Y, &lt;span style="color:#a6e22e">aes&lt;/span>(X1, X2)) &lt;span style="color:#f92672">+&lt;/span>
+&lt;span style="color:#a6e22e">geom_point&lt;/span>(alpha &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#ae81ff">0.2&lt;/span>) &lt;span style="color:#f92672">+&lt;/span>
+&lt;span style="color:#a6e22e">geom_density_2d&lt;/span>() &lt;span style="color:#f92672">+&lt;/span>
+&lt;span style="color:#a6e22e">theme_minimal&lt;/span>()
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="unnamed-chunk-1-1.png" alt="Elliptical contours of multivariate normal">&lt;/p>
+&lt;p>Elliptical distributions are a generalization of the multivariate normal distribution that retain this property that lines of constant density are ellipses.&lt;/p></description></item><item><title>Predictive model for the Oscars</title><link>https://maxturgeon.ca/blog/2018-02-25-oscar-prediction-model/</link><pubDate>Sun, 25 Feb 2018 00:00:00 +0000</pubDate><guid>https://maxturgeon.ca/blog/2018-02-25-oscar-prediction-model/</guid><description>&lt;p>A few years ago, as part of the graduate course &lt;em>Data Analysis and Report Writing&lt;/em> in the Department of Epidemiology, Biostatistics and Occupational Health at McGill University, we explored the topic of predictive modeling using a dataset containing movies, directors and actors who were nominated for an Academy Award. The goal was to select some variables and build a predictive model for the winner in four categories: Best Picture, Best Director, Best Actor, and Best Actress. As a movie fan, this was the dream assignment: I could combine my love of movies with my love of statistics! And it payed off: I was the only one in my class to correctly predict all four winners.&lt;/p></description></item><item><title>First steps with Leaflet</title><link>https://maxturgeon.ca/blog/2017-07-05-leaflet-saskatoon/</link><pubDate>Wed, 05 Jul 2017 00:00:00 +0000</pubDate><guid>https://maxturgeon.ca/blog/2017-07-05-leaflet-saskatoon/</guid><description>I should probably be working on my thesis, but instead I started reading through the introduction to the R package leaflet. And the following made me feel excited: Code for America has GeoJSON data on their Github page for several cities in the world. In particular, they have both Saskatoon and Montreal! I used the leaflet package to draw the boundaries of each neighbourhoods. You can see the results here. (I wasn&amp;rsquo;t able to host the maps directly on this webpage.</description></item><item><title>Installing multiple R versions</title><link>https://maxturgeon.ca/blog/2017-04-01-multiple-r-versions/</link><pubDate>Sat, 01 Apr 2017 00:00:00 +0000</pubDate><guid>https://maxturgeon.ca/blog/2017-04-01-multiple-r-versions/</guid><description>&lt;p>&lt;a href="https://sahirbhatnagar.com/">Sahir Bhatnagar&lt;/a> and I are currently wrapping up the first version of our package &lt;a href="https://sahirbhatnagar.com/casebase/">casebase&lt;/a>. In short, it&amp;rsquo;s an R package for survival analysis, where we use case-base sampling to fit smooth-in-time hazards. (I could write a post on this package, but there&amp;rsquo;s no need: check out the &lt;a href="https://sahirbhatnagar.com/casebase/">website&lt;/a> and the four vignettes.) As part of our workflow, we perform continuous integration using &lt;a href="https://travis-ci.org/">Travis CI&lt;/a>, and we test our package against both the current and development versions of R. Recently, some tests began to fail against the development version, and so I had to install R-devel on my local machine in order to debug our code. This blog post is a summary of how I did it.&lt;/p>
+&lt;p>To be fair, this is already documented online, and I made use of these resources; see the &lt;a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Installation">official R installation docs&lt;/a> and this &lt;a href="https://support.rstudio.com/hc/en-us/articles/215488098-Installing-multiple-versions-of-R">RStudio support post&lt;/a>. I&amp;rsquo;m writing yet another post simply as a reference for myself and my colleagues. But I also ran into a compilation error that I wanted to document here. That error was &amp;ldquo;caused&amp;rdquo; by following closely the (amazing) book &lt;a href="http://r-pkgs.had.co.nz/">&lt;em>R packages&lt;/em>&lt;/a> by &lt;a href="http://hadley.nz/">Hadley Wickham&lt;/a>. Stick around to learn what the problem was!&lt;/p></description></item><item><title>US Presidential Inaugural Addresses</title><link>https://maxturgeon.ca/blog/2017-01-20-trump-inauguration/</link><pubDate>Fri, 20 Jan 2017 00:00:00 +0000</pubDate><guid>https://maxturgeon.ca/blog/2017-01-20-trump-inauguration/</guid><description>&lt;p>Earlier this week, on January 20th 2017, Donald J. Trump was inaugurated as the 45th president of the USA. He also gave what seemed like a very short inaugural address, and so I was curious to see how short it really was compared to previous addresses. It was also an opportunity to have a quick look at other properties of his speech.&lt;/p></description></item><item><title>The Instability of Forward and Backward Selection</title><link>https://maxturgeon.ca/blog/2016-05-29-forward-backward-selection/</link><pubDate>Sun, 29 May 2016 00:00:00 +0000</pubDate><guid>https://maxturgeon.ca/blog/2016-05-29-forward-backward-selection/</guid><description>&lt;p>Classical statistics often assumes that the analyst knows which variables are important and which variables are not. Of course, this is a strong assumption, and therefore many variable selection procedures have been developed to address this problem. In this blog post, I want to focus on two subset selection methods, and I want to address their instability. In other words, I want to discuss how &lt;strong>small changes&lt;/strong> in the data can lead to &lt;strong>completely different solutions&lt;/strong>.&lt;/p></description></item><item><title>Removing all R CMD check warnings</title><link>https://maxturgeon.ca/blog/2016-04-08-check-warnings/</link><pubDate>Fri, 08 Apr 2016 00:00:00 +0000</pubDate><guid>https://maxturgeon.ca/blog/2016-04-08-check-warnings/</guid><description>&lt;p>Making R packages is an important aspect of the statistician&amp;rsquo;s work. Or at least it should be: it is quite annoying when a new method appears in the literature but no implementation is readily available.&lt;/p>
+&lt;p>A favourite mantra of mine when making R packages is the following: &lt;strong>an R package is more than the sum of its functions&lt;/strong>. A functioning R package needs to be able to interact properly with the R environment (through the &lt;code>NAMESPACE&lt;/code>); a good R package also needs great documentation; a great R package will also include a vignette to guide new users and explain how all the functions interact with one another.&lt;/p>
+&lt;p>The main reference for how to make R packages is &lt;a href="https://cran.r-project.org/doc/manuals/r-release/R-exts.html">&lt;em>Writing R extensions&lt;/em>&lt;/a>. Everything you need to know is there, if you know what you are looking for. Another, very useful reference is Hadley Wickam&amp;rsquo;s &lt;a href="http://r-pkgs.had.co.nz/">book on R packages&lt;/a>. This book explains the different components of an R package, and it also serves as an introduction to his &lt;a href="https://cran.r-project.org/package=devtools">&lt;code>devtools&lt;/code> package&lt;/a>.&lt;/p>
+&lt;p>In what follows, I don&amp;rsquo;t want to go over how to make an R package; the above references do a better job than I could hope to do. Rather, I want to share my experience about some of the most annoying part of making an R package: passing the &lt;code>R CMD check&lt;/code>. Removing the errors is the most important part, and what kind of errors you get really depends on the package (the log file is typically quite useful in figuring out what triggered the errors). On the other hand, you also want to minimize the number of warnings and notes, and most warnings you probably want to remove altogether.&lt;/p></description></item><item><title>Test case: Optimising PCEV</title><link>https://maxturgeon.ca/blog/2015-09-11-optimisation-test-case/</link><pubDate>Fri, 11 Sep 2015 00:00:00 +0000</pubDate><guid>https://maxturgeon.ca/blog/2015-09-11-optimisation-test-case/</guid><description>&lt;p>I will give an example of code optimisation in R, using Noam Ross&amp;rsquo;s &lt;code>proftable&lt;/code> function and Luke Tierney&amp;rsquo;s &lt;code>proftools&lt;/code> package, which I discuss in my [tutorial on optimisation]({{ site.github.url }}/optimisation/). The code we will optimise comes from the main function of our &lt;a href="https://github.com/GreenwoodLab/pcev">PCEV package&lt;/a>. A few months ago, while testing the method using simulations, I had to speed up my code because it was way to slow, and the result of this optimisation is given below.&lt;/p>
+&lt;p>For background, recall that PCEV is a dimension-reduction technique, akin to PCA, but where the components are obtained by maximising the proportion of variance explained by a set of covariates. For more information, see this [blog post]({{ site.github.url }}/pcev/).&lt;/p></description></item><item><title>Tutorial: Optimising R code</title><link>https://maxturgeon.ca/blog/2015-09-10-optimisation/</link><pubDate>Thu, 10 Sep 2015 00:00:00 +0000</pubDate><guid>https://maxturgeon.ca/blog/2015-09-10-optimisation/</guid><description>&lt;p>The R language is very good for statistical computations, due to its strong functional capabilities, its open source philosophy, and its extended package ecosystem. However, it can also be quite slow, because of some &lt;a href="http://adv-r.had.co.nz/Performance.html#language-performance">design choices&lt;/a> (e.g. lazy evaluation and extreme dynamic typing).&lt;/p>
+&lt;p>This tutorial is mainly based on Hadley Wickam&amp;rsquo;s book &lt;a href="http://adv-r.had.co.nz/">Advanced R&lt;/a>.&lt;/p>
+&lt;h3 id="before-optimising">Before optimising&amp;hellip;&lt;/h3>
+&lt;p>First of all, before we start optimising our R code, we need to ask ourselves a few questions:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Is my code doing what I want it to do?&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Do I really need to make my code faster?&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Is considerable speed up even possible?&lt;/p>
+&lt;/li>
+&lt;/ol></description></item></channel></rss>

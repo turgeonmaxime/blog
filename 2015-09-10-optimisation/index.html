@@ -1,71 +1,35 @@
-<!DOCTYPE html>
-<html lang="en-ca">
-  <head>
-    <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Hugo 0.74.1" />
-
-
+<!doctype html><html lang=en-ca>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=generator content="Hugo 0.91.2">
 <title>Tutorial: Optimising R code - Blog—Max Turgeon</title>
 <meta property="og:title" content="Tutorial: Optimising R code - Blog—Max Turgeon">
-
-
-  <link href='https://maxturgeon.ca/blog/icon.png' rel='icon' type='image/x-icon'/>
-
-
-
-  
-
-
-
-
-
-
-
-<link rel="stylesheet" href="/blog/css/fonts.css" media="all">
-<link rel="stylesheet" href="/blog/css/main.css" media="all">
-
-
-
-  </head>
-  <body>
-    <div class="wrapper">
-      <header class="header">
-        <nav class="nav">
-  <a href="/blog/" class="nav-logo">
-    <img src="/blog/avatar.jpeg"
-         width="50"
-         height="50"
-         alt="Max Turgeon">
-  </a>
-
-  <ul class="nav-links">
-    
-    <li><a href="/blog">Home</a></li>
-    
-  </ul>
+<link href=https://maxturgeon.ca/blog/icon.png rel=icon type=image/x-icon>
+<link rel=stylesheet href=/blog/css/fonts.css media=all>
+<link rel=stylesheet href=/blog/css/main.css media=all>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/blog/ class=nav-logo>
+<img src=/blog/avatar.jpeg width=50 height=50 alt="Max Turgeon">
+</a>
+<ul class=nav-links>
+<li><a href=https://maxturgeon.ca/>Home</a></li>
+</ul>
 </nav>
-
-      </header>
-
-
-<main class="content" role="main">
-
-  <article class="article">
-    
-    <span class="article-duration">21 min read</span>
-    
-
-    <h1 class="article-title">Tutorial: Optimising R code</h1>
-
-    
-    <span class="article-date">2015-09-10</span>
-    
-
-    <div class="article-content">
-      <p>The R language is very good for statistical computations, due to its strong functional capabilities, its open source philosophy, and its extended package ecosystem. However, it can also be quite slow, because of some <a href="http://adv-r.had.co.nz/Performance.html#language-performance">design choices</a> (e.g. lazy evaluation and extreme dynamic typing).</p>
-<p>This tutorial is mainly based on Hadley Wickam&rsquo;s book <a href="http://adv-r.had.co.nz/">Advanced R</a>.</p>
-<h3 id="before-optimising">Before optimising&hellip;</h3>
+</header>
+<main class=content role=main>
+<article class=article>
+<span class=article-duration>21 min read</span>
+<h1 class=article-title>Tutorial: Optimising R code</h1>
+<span class=article-date>2015-09-10</span>
+<div class=article-content>
+<p>The R language is very good for statistical computations, due to its strong functional capabilities, its open source philosophy, and its extended package ecosystem. However, it can also be quite slow, because of some <a href=http://adv-r.had.co.nz/Performance.html#language-performance>design choices</a> (e.g. lazy evaluation and extreme dynamic typing).</p>
+<p>This tutorial is mainly based on Hadley Wickam&rsquo;s book <a href=http://adv-r.had.co.nz/>Advanced R</a>.</p>
+<h3 id=before-optimising>Before optimising&mldr;</h3>
 <p>First of all, before we start optimising our R code, we need to ask ourselves a few questions:</p>
 <ol>
 <li>
@@ -85,23 +49,23 @@
 <p>When writing code, we have a specific task in mind, and this has to be our main focus. To make our lives simpler, it is important to write simple, understandable code to start with; it is considerably easier to debug simple code than complex code. Only when we are certain that our code is correct can we turn to the next point.</p>
 <p>An R script that will be used only once does not necessarily need to be optimised, and writing your code quickly will probably be more important than writing code that <em>runs</em> quickly.</p>
 <p>Finally, when your code is bug-free and you do need to make it faster, you need to identify the bottle-necks, the places where your code spends the most time, and you need a way to compare the speed of multiple expressions. These two things are known as <em>profiling</em> and <em>benchmarking</em>; we will treat them both in what follows.</p>
-<h3 id="benchmarking">Benchmarking</h3>
+<h3 id=benchmarking>Benchmarking</h3>
 <p>There are a few ways to time your code. The simplest is to use the function <code>system.time()</code>:</p>
 <p>{% highlight r %}
 system.time(x &lt;- runif(10^6))
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="utilisateur-----système------écoulé">utilisateur     système      écoulé</h2>
-<h2 id="010--------001--------011">0.10        0.01        0.11</h2>
+<h2 id=utilisateur-----système------écoulé>utilisateur système écoulé</h2>
+<h2 id=010--------001--------011>0.10 0.01 0.11</h2>
 <p>{% endhighlight %}</p>
 <p>However, this timing will depend on your OS, it will generally differ from one run to the other, and therefore it is not clear how to use it to compare two or more expressions. Nonetheless, it is probably the way to go when you want to time expressions that take a long time to run.</p>
 <p>For comparisons, we will use the <code>microbenchmark</code> package. Its <code>microbenchmark</code> function will run a series of expressions multiple times and return a distribution of running times. It can also be used with <code>ggplot2</code> to output a nice graphical display of the comparisons.</p>
 <p>{% highlight r %}
 library(microbenchmark); library(ggplot2)</p>
-<h1 id="create-a-dataframe-with-random-values">Create a dataframe with random values</h1>
+<h1 id=create-a-dataframe-with-random-values>Create a dataframe with random values</h1>
 <p>data &lt;- data.frame(&ldquo;column1&rdquo; = runif(1000),
 &ldquo;column2&rdquo; = rnorm(1000))</p>
-<h1 id="extract-the-first-entry-of-the-666th-row">Extract the first entry of the 666th row</h1>
+<h1 id=extract-the-first-entry-of-the-666th-row>Extract the first entry of the 666th row</h1>
 <p>compare &lt;- microbenchmark::microbenchmark( &ldquo;extract1&rdquo; = {
 data[666, 1]
 }, &ldquo;extract2&rdquo; = {
@@ -110,21 +74,21 @@ data[[1]][666]
 <p>compare
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="unit-microseconds">Unit: microseconds</h2>
-<h2 id="expr----min------lq-----mean--median------uq----max-neval">expr    min      lq     mean  median      uq    max neval</h2>
-<h2 id="extract1-22021-229945-2474206-232465-237395-98219---100">extract1 22.021 22.9945 24.74206 23.2465 23.7395 98.219   100</h2>
-<h2 id="extract2-10384-113535-1313219-123750-128605-57486---100">extract2 10.384 11.3535 13.13219 12.3750 12.8605 57.486   100</h2>
+<h2 id=unit-microseconds>Unit: microseconds</h2>
+<h2 id=expr----min------lq-----mean--median------uq----max-neval>expr min lq mean median uq max neval</h2>
+<h2 id=extract1-22021-229945-2474206-232465-237395-98219---100>extract1 22.021 22.9945 24.74206 23.2465 23.7395 98.219 100</h2>
+<h2 id=extract2-10384-113535-1313219-123750-128605-57486---100>extract2 10.384 11.3535 13.13219 12.3750 12.8605 57.486 100</h2>
 <p>{% endhighlight %}</p>
 <p>{% highlight r %}
 ggplot2::autoplot(compare)
 {% endhighlight %}</p>
-<p><img src="/figure/source/2015-09-11-optimisation/unnamed-chunk-4-1.png" alt="plot of chunk unnamed-chunk-4"></p>
+<p><img src=/figure/source/2015-09-11-optimisation/unnamed-chunk-4-1.png alt="plot of chunk unnamed-chunk-4"></p>
 <p>So we compared two ways of extracting an element in the data frame: first, we think of <code>data</code> as being matrix-like and extract based on its row and column position; or we remember that data frames are actually <em>lists</em> and extract the element by using the list methods. As we can see, the latter is about twice faster than the former. However, by looking at the units (i.e. microseconds), we see that the difference is quite minimal and unlikely to improve your code (unless you perform this operation millions of times).</p>
 <p>The <code>microbenchmark</code> function is the main tool we will use below to benchmark snippets of code and, most importantly, compare different implementations of a same idea.</p>
-<h3 id="before-going-into-profiling">Before going into profiling&hellip;</h3>
+<h3 id=before-going-into-profiling>Before going into profiling&mldr;</h3>
 <p>As I mentionned above, R has the reputation of being slow. However, we have to keep in mind that most of the time, slow R code can be made faster by simply coding in a way that is more natural for R. And to understand what is natural, we need to understand a bit more about how R works.</p>
-<h4 id="r-is-an-interpreted-language">R is an interpreted language</h4>
-<p>This means that the R interpreter translates our script into small chunks of pre-compiled code. The <a href="https://www.r-project.org/">most common implementation of R</a> is coded using about 50% of C code and 25% of FORTRAN code.</p>
+<h4 id=r-is-an-interpreted-language>R is an interpreted language</h4>
+<p>This means that the R interpreter translates our script into small chunks of pre-compiled code. The <a href=https://www.r-project.org/>most common implementation of R</a> is coded using about 50% of C code and 25% of FORTRAN code.</p>
 <p>Vectorization is a way of coding in R which tries to make the best use of the pre-compiled code. The main idea is to code in such a way that our computations are done on <em>vectors</em> instead of <em>numbers</em>. We will look at two examples.</p>
 <p>First, let&rsquo;s say we want to compute the sum of all pairs of positive integers from 1 to 100. We could do this using a double loop, or in a <em>vectorized</em> way, using the <code>outer</code> function:</p>
 <p>{% highlight r %}
@@ -141,18 +105,18 @@ outer(numbers, numbers, <code>+</code>)
 <p>compare
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="unit-microseconds-1">Unit: microseconds</h2>
-<h2 id="expr------min--------lq-------mean----median--------uq------max">expr      min        lq       mean    median        uq      max</h2>
-<h2 id="2loops-3030975-30931255-332446216-31596165-32316265-5304771">2loops 3030.975 3093.1255 3324.46216 3159.6165 3231.6265 5304.771</h2>
-<h2 id="vect---79854---824825---9566377---921305--1041775--162883">vect   79.854   82.4825   95.66377   92.1305  104.1775  162.883</h2>
-<h2 id="neval">neval</h2>
-<h2 id="100">100</h2>
-<h2 id="100-1">100</h2>
+<h2 id=unit-microseconds-1>Unit: microseconds</h2>
+<h2 id=expr------min--------lq-------mean----median--------uq------max>expr min lq mean median uq max</h2>
+<h2 id=2loops-3030975-30931255-332446216-31596165-32316265-5304771>2loops 3030.975 3093.1255 3324.46216 3159.6165 3231.6265 5304.771</h2>
+<h2 id=vect---79854---824825---9566377---921305--1041775--162883>vect 79.854 82.4825 95.66377 92.1305 104.1775 162.883</h2>
+<h2 id=neval>neval</h2>
+<h2 id=100>100</h2>
+<h2 id=100-1>100</h2>
 <p>{% endhighlight %}</p>
 <p>{% highlight r %}
 ggplot2::autoplot(compare)
 {% endhighlight %}</p>
-<p><img src="/figure/source/2015-09-11-optimisation/unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5"></p>
+<p><img src=/figure/source/2015-09-11-optimisation/unnamed-chunk-5-1.png alt="plot of chunk unnamed-chunk-5"></p>
 <p>There is a 40-fold difference between the two expressions!</p>
 <p>As a second example, let&rsquo;s compute the mean across all rows of a matrix. We will do it using three different approaches: a for loop, using the <code>apply</code> function, and using the <code>rowMeans</code> function:</p>
 <p>{% highlight r %}
@@ -169,41 +133,41 @@ rowMeans(mat)
 <p>compare
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="unit-microseconds-2">Unit: microseconds</h2>
-<h2 id="expr-----min-------lq------mean--median-------uq------max-neval">expr     min       lq      mean  median       uq      max neval</h2>
-<h2 id="loop-746423-7664940-85105493-788150-8644910-3047323---100">loop 746.423 766.4940 851.05493 788.150 864.4910 3047.323   100</h2>
-<h2 id="apply-863475-8837845-92321638-899168-9459720-1084456---100">apply 863.475 883.7845 923.21638 899.168 945.9720 1084.456   100</h2>
-<h2 id="rowmeans--18150--192530--2251806--22703--244285---34650---100">rowMeans  18.150  19.2530  22.51806  22.703  24.4285   34.650   100</h2>
+<h2 id=unit-microseconds-2>Unit: microseconds</h2>
+<h2 id=expr-----min-------lq------mean--median-------uq------max-neval>expr min lq mean median uq max neval</h2>
+<h2 id=loop-746423-7664940-85105493-788150-8644910-3047323---100>loop 746.423 766.4940 851.05493 788.150 864.4910 3047.323 100</h2>
+<h2 id=apply-863475-8837845-92321638-899168-9459720-1084456---100>apply 863.475 883.7845 923.21638 899.168 945.9720 1084.456 100</h2>
+<h2 id=rowmeans--18150--192530--2251806--22703--244285---34650---100>rowMeans 18.150 19.2530 22.51806 22.703 24.4285 34.650 100</h2>
 <p>{% endhighlight %}</p>
 <p>{% highlight r %}
 ggplot2::autoplot(compare)
 {% endhighlight %}</p>
-<p><img src="/figure/source/2015-09-11-optimisation/unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6"></p>
+<p><img src=/figure/source/2015-09-11-optimisation/unnamed-chunk-6-1.png alt="plot of chunk unnamed-chunk-6"></p>
 <p>Again, we see close to a 40-fold difference.</p>
 <p>What vectorization does is essentially moving the for loop from R to C. Moreover, the function <code>apply</code> is simply a wrapper for a loop, and this is why it is usually as fast as a loop (in this example, it is actually <em>slower</em> than a loop, because we are not recording the results of the loop but apply is).</p>
 <p>Let&rsquo;s look at another example:</p>
 <p>{% highlight r %}</p>
-<h1 id="create-a-vector-of-values">Create a vector of values</h1>
+<h1 id=create-a-vector-of-values>Create a vector of values</h1>
 <p>categories &lt;- c(&ldquo;Low&rdquo;, &ldquo;Middle&rdquo;, &ldquo;High&rdquo;)</p>
 <p>values &lt;- sample(categories, size = 1000, replace = TRUE)</p>
-<h1 id="change-the-vector-of-values-to-numeric">Change the vector of values to numeric</h1>
-<h1 id="1-using-a-loop">1. Using a loop</h1>
+<h1 id=change-the-vector-of-values-to-numeric>Change the vector of values to numeric</h1>
+<h1 id=1-using-a-loop>1. Using a loop</h1>
 <p>values_num1 &lt;- rep_len(NA, length(values))
 for (i in 1:length(values_num1)) {
 if (values[i] == &ldquo;Low&rdquo;) values_num1[i] &lt;- 0
 if (values[i] == &ldquo;Middle&rdquo;) values_num1[i] &lt;- 1
 if (values[i] == &ldquo;High&rdquo;) values_num1[i] &lt;- 2
 }</p>
-<h1 id="2-using-vectorization">2. Using vectorization</h1>
+<h1 id=2-using-vectorization>2. Using vectorization</h1>
 <p>values_num2 &lt;- 1 * as.numeric(values == &ldquo;Middle&rdquo;) +
 2 * as.numeric(values == &ldquo;High&rdquo;)</p>
 <p>identical(values_num1, values_num2)
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="1-true">[1] TRUE</h2>
+<h2 id=1-true>[1] TRUE</h2>
 <p>{% endhighlight %}</p>
 <p>{% highlight r %}</p>
-<h1 id="compare-the-two-implementations">Compare the two implementations</h1>
+<h1 id=compare-the-two-implementations>Compare the two implementations</h1>
 <p>library(ggplot2); library(microbenchmark)</p>
 <p>compare &lt;- microbenchmark(&ldquo;loop&rdquo; = {
 values_num1 &lt;- rep_len(NA, length(values))
@@ -218,19 +182,19 @@ values_num2 &lt;- 1 * as.numeric(values == &ldquo;Middle&rdquo;) + 2 * as.numeri
 <p>compare
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="unit-microseconds-3">Unit: microseconds</h2>
-<h2 id="expr------min-------lq------mean---median-------uq------max">expr      min       lq      mean   median       uq      max</h2>
-<h2 id="loop-3991204-4023503-41988841-4053097-4149492-5594456">loop 3991.204 4023.503 4198.8841 4053.097 4149.492 5594.456</h2>
-<h2 id="vectorized--105098--106666--1104647--111180--113387--131265">vectorized  105.098  106.666  110.4647  111.180  113.387  131.265</h2>
-<h2 id="neval-1">neval</h2>
-<h2 id="100-2">100</h2>
-<h2 id="100-3">100</h2>
+<h2 id=unit-microseconds-3>Unit: microseconds</h2>
+<h2 id=expr------min-------lq------mean---median-------uq------max>expr min lq mean median uq max</h2>
+<h2 id=loop-3991204-4023503-41988841-4053097-4149492-5594456>loop 3991.204 4023.503 4198.8841 4053.097 4149.492 5594.456</h2>
+<h2 id=vectorized--105098--106666--1104647--111180--113387--131265>vectorized 105.098 106.666 110.4647 111.180 113.387 131.265</h2>
+<h2 id=neval-1>neval</h2>
+<h2 id=100-2>100</h2>
+<h2 id=100-3>100</h2>
 <p>{% endhighlight %}</p>
 <p>{% highlight r %}
 autoplot(compare)
 {% endhighlight %}</p>
-<p><img src="/figure/source/2015-09-11-optimisation/compareTwoImpl-1.png" alt="plot of chunk compareTwoImpl"></p>
-<h4 id="r-is-a-dynamic-language">R is a dynamic language</h4>
+<p><img src=/figure/source/2015-09-11-optimisation/compareTwoImpl-1.png alt="plot of chunk compareTwoImpl"></p>
+<h4 id=r-is-a-dynamic-language>R is a dynamic language</h4>
 <p>Unlike C/C++, objects in R can change quite a lot during a computation: data frames can become matrices, we can flatten lists and create atomic vectors, the class of an object can be modified multiple times, etc. This flexibility, however, usually comes with a computational cost. For example, most functions you can find in packages will perform &ldquo;input checking&rdquo; to control the behaviour. Understanding R coercion rules can sometimes lead to faster (and more predictable) code.</p>
 <p>For example, the function <code>sapply</code> will apply a function to each element of a list and try to simplify the input to an array. However, if simplification is not possible, it will output a list <strong>without any warning</strong>. For this reason, it is preferable to use <code>vapply</code>, which takes one more argument: an example of desired output.</p>
 <p>{% highlight r %}
@@ -238,18 +202,18 @@ foo &lt;- list(c(1,2,3,4), c(1,1,2,3,4))</p>
 <p>sapply(foo, Filter, f = function(t) t == 1)
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="1">[[1]]</h2>
-<h2 id="1-1">[1] 1</h2>
-<h2 id="heading"></h2>
-<h2 id="2">[[2]]</h2>
-<h2 id="1-1-1">[1] 1 1</h2>
+<h2 id=1>[[1]]</h2>
+<h2 id=1-1>[1] 1</h2>
+<h2 id=heading></h2>
+<h2 id=2>[[2]]</h2>
+<h2 id=1-1-1>[1] 1 1</h2>
 <p>{% endhighlight %}</p>
 <p>{% highlight r %}
 vapply(foo, Filter, f = function(t) t == 1, 1L)
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="error-in-vapplyfoo-filter-f--functiont-t--1-1l-values-must-be-type-integer">Error in vapply(foo, Filter, f = function(t) t == 1, 1L): values must be type &lsquo;integer&rsquo;,</h2>
-<h2 id="but-funx1-result-is-type-double">but FUN(X[[1]]) result is type &lsquo;double&rsquo;</h2>
+<h2 id=error-in-vapplyfoo-filter-f--functiont-t--1-1l-values-must-be-type-integer>Error in vapply(foo, Filter, f = function(t) t == 1, 1L): values must be type &lsquo;integer&rsquo;,</h2>
+<h2 id=but-funx1-result-is-type-double>but FUN(X[[1]]) result is type &lsquo;double&rsquo;</h2>
 <p>{% endhighlight %}</p>
 <p>Because we are telling <code>vapply</code> what type of output we expect, this can actually lead to faster code:</p>
 <p>{% highlight r %}
@@ -264,15 +228,15 @@ vapply(fits, coef, c(1.0, 1.0))
 <p>compare
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="unit-microseconds-4">Unit: microseconds</h2>
-<h2 id="expr-----min-------lq-----mean--median-------uq------max-neval">expr     min       lq     mean  median       uq      max neval</h2>
-<h2 id="sapply-596619-6211735-6506462-638453-6825425--919996---100">sapply 596.619 621.1735 650.6462 638.453 682.5425  919.996   100</h2>
-<h2 id="vapply-516375-5404710-5839992-562221-5946660-2332687---100">vapply 516.375 540.4710 583.9992 562.221 594.6660 2332.687   100</h2>
+<h2 id=unit-microseconds-4>Unit: microseconds</h2>
+<h2 id=expr-----min-------lq-----mean--median-------uq------max-neval>expr min lq mean median uq max neval</h2>
+<h2 id=sapply-596619-6211735-6506462-638453-6825425--919996---100>sapply 596.619 621.1735 650.6462 638.453 682.5425 919.996 100</h2>
+<h2 id=vapply-516375-5404710-5839992-562221-5946660-2332687---100>vapply 516.375 540.4710 583.9992 562.221 594.6660 2332.687 100</h2>
 <p>{% endhighlight %}</p>
 <p>{% highlight r %}
 autoplot(compare)
 {% endhighlight %}</p>
-<p><img src="/figure/source/2015-09-11-optimisation/unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9"></p>
+<p><img src=/figure/source/2015-09-11-optimisation/unnamed-chunk-9-1.png alt="plot of chunk unnamed-chunk-9"></p>
 <p>For this example, the efficiency gain is minimal. As another example, imagine you want to make sure that when you select columns of a matrix, you still get a matrix and not an atomic vector (when subsetting, R will by default coerce a matrix with one row or one column to a vector). You can coerce the result to a matrix, or use the (little known) <code>drop</code> argument of the function <code>[</code>:</p>
 <p>{% highlight r %}
 mat &lt;- matrix(rnorm(20*100), nrow=100, ncol=20)</p>
@@ -284,23 +248,23 @@ mat[,1,drop=FALSE]
 <p>compare
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="unit-microseconds-5">Unit: microseconds</h2>
-<h2 id="expr----min-----lq-----mean--median-----uq----max-neval">expr    min     lq     mean  median     uq    max neval</h2>
-<h2 id="coerce-12001-12314-1409449-125650-12913-54198---100">coerce 12.001 12.314 14.09449 12.5650 12.913 54.198   100</h2>
-<h2 id="drop--2424--2751--308146--30085--3239-11422---100">drop  2.424  2.751  3.08146  3.0085  3.239 11.422   100</h2>
+<h2 id=unit-microseconds-5>Unit: microseconds</h2>
+<h2 id=expr----min-----lq-----mean--median-----uq----max-neval>expr min lq mean median uq max neval</h2>
+<h2 id=coerce-12001-12314-1409449-125650-12913-54198---100>coerce 12.001 12.314 14.09449 12.5650 12.913 54.198 100</h2>
+<h2 id=drop--2424--2751--308146--30085--3239-11422---100>drop 2.424 2.751 3.08146 3.0085 3.239 11.422 100</h2>
 <p>{% endhighlight %}</p>
 <p>{% highlight r %}
 autoplot(compare)
 {% endhighlight %}</p>
-<p><img src="/figure/source/2015-09-11-optimisation/unnamed-chunk-10-1.png" alt="plot of chunk unnamed-chunk-10"></p>
+<p><img src=/figure/source/2015-09-11-optimisation/unnamed-chunk-10-1.png alt="plot of chunk unnamed-chunk-10"></p>
 <p>There is an 8-fold difference between the two methods. We would still need to check if the two methods give the same result:</p>
 <p>{% highlight r %}
 identical(as.matrix(mat[,1]), mat[,1,drop=FALSE])
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="1-true-1">[1] TRUE</h2>
+<h2 id=1-true-1>[1] TRUE</h2>
 <p>{% endhighlight %}</p>
-<h4 id="memory-allocation">Memory allocation</h4>
+<h4 id=memory-allocation>Memory allocation</h4>
 <p>Somewhat related to the dynamism of R is the fact that memory can be frequently re-allocated during your computations, and this can lead to decrease in performance. For example, it is better to pre-allocate a vector for the results of a computation than use a <code>for</code> loop to continually grow the results:</p>
 <p>{% highlight r %}
 compare &lt;- microbenchmark(&ldquo;preallocate&rdquo; = {
@@ -317,18 +281,18 @@ results &lt;- c(results, runif(1))
 <p>compare
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="unit-milliseconds">Unit: milliseconds</h2>
-<h2 id="expr-------min--------lq------mean----median--------uq">expr       min        lq      mean    median        uq</h2>
-<h2 id="preallocate--5361208--5454148--5795674--5547454--5586745">preallocate  53.61208  54.54148  57.95674  55.47454  55.86745</h2>
-<h2 id="growing-34049902-34488623-37549227-39102795-39507053">growing 340.49902 344.88623 375.49227 391.02795 395.07053</h2>
-<h2 id="max-neval">max neval</h2>
-<h2 id="1115387---100">111.5387   100</h2>
-<h2 id="4126016---100">412.6016   100</h2>
+<h2 id=unit-milliseconds>Unit: milliseconds</h2>
+<h2 id=expr-------min--------lq------mean----median--------uq>expr min lq mean median uq</h2>
+<h2 id=preallocate--5361208--5454148--5795674--5547454--5586745>preallocate 53.61208 54.54148 57.95674 55.47454 55.86745</h2>
+<h2 id=growing-34049902-34488623-37549227-39102795-39507053>growing 340.49902 344.88623 375.49227 391.02795 395.07053</h2>
+<h2 id=max-neval>max neval</h2>
+<h2 id=1115387---100>111.5387 100</h2>
+<h2 id=4126016---100>412.6016 100</h2>
 <p>{% endhighlight %}</p>
 <p>{% highlight r %}
 autoplot(compare)
 {% endhighlight %}</p>
-<p><img src="/figure/source/2015-09-11-optimisation/unnamed-chunk-12-1.png" alt="plot of chunk unnamed-chunk-12"></p>
+<p><img src=/figure/source/2015-09-11-optimisation/unnamed-chunk-12-1.png alt="plot of chunk unnamed-chunk-12"></p>
 <p>Of course, this is a silly example, because we could simply use the vectorised form <code>runif(10000)</code>:</p>
 <p>{% highlight r %}
 compare &lt;- microbenchmark(&ldquo;preallocate&rdquo; = {
@@ -346,13 +310,13 @@ results = runif(10000)
 })</p>
 <p>autoplot(compare)
 {% endhighlight %}</p>
-<p><img src="/figure/source/2015-09-11-optimisation/unnamed-chunk-13-1.png" alt="plot of chunk unnamed-chunk-13"></p>
-<p>For other examples of what to do and what not to do, I recommend the book <a href="http://www.burns-stat.com/pages/Tutor/R_inferno.pdf">R Inferno</a>. For example, memory allocation is discussed in Circle 2 and vectorisation, in Circle 3.</p>
-<h3 id="profiling-your-code">Profiling your code</h3>
-<p>We will now assume that our code is correct (i.e. debugged) and that we are looking for bottlenecks. This process is called <em>profiling</em>. We will see three slightly different ways of profiling your R code: the method available in base R through the functions <code>Rprof</code> and <code>summaryRprof</code>, the <code>proftable</code> function from <a href="http://www.noamross.net/blog/2013/5/2/improved-r-profiling-summaries.html">Noam Ross</a>, and the <code>proftools</code> <a href="https://cran.r-project.org/web/packages/proftools/index.html">package</a> by Luke Tierney.</p>
+<p><img src=/figure/source/2015-09-11-optimisation/unnamed-chunk-13-1.png alt="plot of chunk unnamed-chunk-13"></p>
+<p>For other examples of what to do and what not to do, I recommend the book <a href=http://www.burns-stat.com/pages/Tutor/R_inferno.pdf>R Inferno</a>. For example, memory allocation is discussed in Circle 2 and vectorisation, in Circle 3.</p>
+<h3 id=profiling-your-code>Profiling your code</h3>
+<p>We will now assume that our code is correct (i.e. debugged) and that we are looking for bottlenecks. This process is called <em>profiling</em>. We will see three slightly different ways of profiling your R code: the method available in base R through the functions <code>Rprof</code> and <code>summaryRprof</code>, the <code>proftable</code> function from <a href=http://www.noamross.net/blog/2013/5/2/improved-r-profiling-summaries.html>Noam Ross</a>, and the <code>proftools</code> <a href=https://cran.r-project.org/web/packages/proftools/index.html>package</a> by Luke Tierney.</p>
 <p>The main concept behind code profiling in R is that, while the code is running, we randomly sample time points at which we check which functions are being called. This is done by the function <code>Rprof</code>, which records this information in a text file. We can then call the function <code>summaryRprof</code>, which gives a summary of this information. Let&rsquo;s look at an example:</p>
 <p>{% highlight r %}</p>
-<h1 id="this-example-is-taken-from-the-mass-package">This example is taken from the MASS package</h1>
+<h1 id=this-example-is-taken-from-the-mass-package>This example is taken from the MASS package</h1>
 <p>library(MASS)</p>
 <p>Iris &lt;- data.frame(rbind(iris3[,,1], iris3[,,2], iris3[,,3]),
 Sp = rep(c(&ldquo;s&rdquo;,&ldquo;c&rdquo;,&ldquo;v&rdquo;), rep(50,3)))
@@ -360,9 +324,9 @@ train &lt;- sample(1:150, 75)
 table(Iris$Sp[train])
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="heading-1"></h2>
-<h2 id="c--s--v">c  s  v</h2>
-<h2 id="25-25-25">25 25 25</h2>
+<h2 id=heading-1></h2>
+<h2 id=c--s--v>c s v</h2>
+<h2 id=25-25-25>25 25 25</h2>
 <p>{% endhighlight %}</p>
 <p>{% highlight r %}
 Rprof(tmp &lt;- tempfile())</p>
@@ -375,143 +339,143 @@ z1 &lt;- update(z, . ~ . - Petal.W.)
 <p>summaryRprof(tmp)
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="byself">$by.self</h2>
-<h2 id="selftime-selfpct-totaltime-totalpct">self.time self.pct total.time total.pct</h2>
-<h2 id="anonymous---------------004-----417-------096----10000">&ldquo;<!-- raw HTML omitted -->&rdquo;               0.04     4.17       0.96    100.00</h2>
-<h2 id="modelframedefault-------004-----417-------030-----3125">&ldquo;model.frame.default&rdquo;       0.04     4.17       0.30     31.25</h2>
-<h2 id="dataframe--------------004-----417-------012-----1250">&ldquo;[.data.frame&rdquo;              0.04     4.17       0.12     12.50</h2>
-<h2 id="naomitdataframe--------004-----417-------012-----1250">&ldquo;na.omit.data.frame&rdquo;        0.04     4.17       0.12     12.50</h2>
-<h2 id="in----------------------004-----417-------006------625">&ldquo;%in%&rdquo;                      0.04     4.17       0.06      6.25</h2>
-<h2 id="lasvd--------------------004-----417-------006------625">&ldquo;La.svd&rdquo;                    0.04     4.17       0.06      6.25</h2>
-<h2 id="unique--------------------004-----417-------006------625">&ldquo;unique&rdquo;                    0.04     4.17       0.06      6.25</h2>
-<h2 id="aperm---------------------004-----417-------004------417">&ldquo;aperm&rdquo;                     0.04     4.17       0.04      4.17</h2>
-<h2 id="apply---------------------004-----417-------004------417">&ldquo;apply&rdquo;                     0.04     4.17       0.04      4.17</h2>
-<h2 id="levels--------------------004-----417-------004------417">&ldquo;levels&rdquo;                    0.04     4.17       0.04      4.17</h2>
-<h2 id="lapply--------------------002-----208-------096----10000">&ldquo;lapply&rdquo;                    0.02     2.08       0.96    100.00</h2>
-<h2 id="ldaformula---------------002-----208-------076-----7917">&ldquo;lda.formula&rdquo;               0.02     2.08       0.76     79.17</h2>
-<h2 id="update--------------------002-----208-------032-----3333">&ldquo;update&rdquo;                    0.02     2.08       0.32     33.33</h2>
-<h2 id="external2----------------002-----208-------020-----2083">&ldquo;.External2&rdquo;                0.02     2.08       0.20     20.83</h2>
-<h2 id="modelmatrixdefault------002-----208-------012-----1250">&ldquo;model.matrix.default&rdquo;      0.02     2.08       0.12     12.50</h2>
-<h2 id="-------------------------002-----208-------010-----1042">&ldquo;[&rdquo;                         0.02     2.08       0.10     10.42</h2>
-<h2 id="paste---------------------002-----208-------010-----1042">&ldquo;paste&rdquo;                     0.02     2.08       0.10     10.42</h2>
-<h2 id="deparseopts--------------002-----208-------006------625">&ldquo;.deparseOpts&rdquo;              0.02     2.08       0.06      6.25</h2>
-<h2 id="sweep---------------------002-----208-------006------625">&ldquo;sweep&rdquo;                     0.02     2.08       0.06      6.25</h2>
-<h2 id="factor------------------002-----208-------004------417">&ldquo;[.factor&rdquo;                  0.02     2.08       0.04      4.17</h2>
-<h2 id="matchcall----------------002-----208-------004------417">&ldquo;match.call&rdquo;                0.02     2.08       0.04      4.17</h2>
-<h2 id="repfactor----------------002-----208-------004------417">&ldquo;rep.factor&rdquo;                0.02     2.08       0.04      4.17</h2>
-<h2 id="asinteger----------------002-----208-------002------208">&ldquo;as.integer&rdquo;                0.02     2.08       0.02      2.08</h2>
-<h2 id="asmatrix-----------------002-----208-------002------208">&ldquo;as.matrix&rdquo;                 0.02     2.08       0.02      2.08</h2>
-<h2 id="c-------------------------002-----208-------002------208">&ldquo;c&rdquo;                         0.02     2.08       0.02      2.08</h2>
-<h2 id="colnames------------------002-----208-------002------208">&ldquo;colnames&rdquo;                  0.02     2.08       0.02      2.08</h2>
-<h2 id="colsums-------------------002-----208-------002------208">&ldquo;colSums&rdquo;                   0.02     2.08       0.02      2.08</h2>
-<h2 id="deleteresponse-----------002-----208-------002------208">&ldquo;delete.response&rdquo;           0.02     2.08       0.02      2.08</h2>
-<h2 id="isfinite-----------------002-----208-------002------208">&ldquo;is.finite&rdquo;                 0.02     2.08       0.02      2.08</h2>
-<h2 id="isordered----------------002-----208-------002------208">&ldquo;is.ordered&rdquo;                0.02     2.08       0.02      2.08</h2>
-<h2 id="lengths-------------------002-----208-------002------208">&ldquo;lengths&rdquo;                   0.02     2.08       0.02      2.08</h2>
-<h2 id="matchfun-----------------002-----208-------002------208">&ldquo;match.fun&rdquo;                 0.02     2.08       0.02      2.08</h2>
-<h2 id="meandefault--------------002-----208-------002------208">&ldquo;mean.default&rdquo;              0.02     2.08       0.02      2.08</h2>
-<h2 id="min-----------------------002-----208-------002------208">&ldquo;min&rdquo;                       0.02     2.08       0.02      2.08</h2>
-<h2 id="mode----------------------002-----208-------002------208">&ldquo;mode&rdquo;                      0.02     2.08       0.02      2.08</h2>
-<h2 id="nextmethod----------------002-----208-------002------208">&ldquo;NextMethod&rdquo;                0.02     2.08       0.02      2.08</h2>
-<h2 id="parentframe--------------002-----208-------002------208">&ldquo;parent.frame&rdquo;              0.02     2.08       0.02      2.08</h2>
-<h2 id="sysfunction--------------002-----208-------002------208">&ldquo;sys.function&rdquo;              0.02     2.08       0.02      2.08</h2>
-<h2 id="heading-2"></h2>
-<h2 id="bytotal">$by.total</h2>
-<h2 id="totaltime-totalpct-selftime-selfpct">total.time total.pct self.time self.pct</h2>
-<h2 id="anonymous----------------096----10000------004-----417">&ldquo;<!-- raw HTML omitted -->&rdquo;                0.96    100.00      0.04     4.17</h2>
-<h2 id="lapply---------------------096----10000------002-----208">&ldquo;lapply&rdquo;                     0.96    100.00      0.02     2.08</h2>
-<h2 id="block_exec-----------------096----10000------000-----000">&ldquo;block_exec&rdquo;                 0.96    100.00      0.00     0.00</h2>
-<h2 id="call_block-----------------096----10000------000-----000">&ldquo;call_block&rdquo;                 0.96    100.00      0.00     0.00</h2>
-<h2 id="dotrycatch-----------------096----10000------000-----000">&ldquo;doTryCatch&rdquo;                 0.96    100.00      0.00     0.00</h2>
-<h2 id="eval-----------------------096----10000------000-----000">&ldquo;eval&rdquo;                       0.96    100.00      0.00     0.00</h2>
-<h2 id="evalparent----------------096----10000------000-----000">&ldquo;eval.parent&rdquo;                0.96    100.00      0.00     0.00</h2>
-<h2 id="evaluate_call--------------096----10000------000-----000">&ldquo;evaluate_call&rdquo;              0.96    100.00      0.00     0.00</h2>
-<h2 id="fun------------------------096----10000------000-----000">&ldquo;FUN&rdquo;                        0.96    100.00      0.00     0.00</h2>
-<h2 id="handle---------------------096----10000------000-----000">&ldquo;handle&rdquo;                     0.96    100.00      0.00     0.00</h2>
-<h2 id="in_dir---------------------096----10000------000-----000">&ldquo;in_dir&rdquo;                     0.96    100.00      0.00     0.00</h2>
-<h2 id="local----------------------096----10000------000-----000">&ldquo;local&rdquo;                      0.96    100.00      0.00     0.00</h2>
-<h2 id="process_file---------------096----10000------000-----000">&ldquo;process_file&rdquo;               0.96    100.00      0.00     0.00</h2>
-<h2 id="process_group--------------096----10000------000-----000">&ldquo;process_group&rdquo;              0.96    100.00      0.00     0.00</h2>
-<h2 id="process_groupblock--------096----10000------000-----000">&ldquo;process_group.block&rdquo;        0.96    100.00      0.00     0.00</h2>
-<h2 id="replicate------------------096----10000------000-----000">&ldquo;replicate&rdquo;                  0.96    100.00      0.00     0.00</h2>
-<h2 id="sapply---------------------096----10000------000-----000">&ldquo;sapply&rdquo;                     0.96    100.00      0.00     0.00</h2>
-<h2 id="try------------------------096----10000------000-----000">&ldquo;try&rdquo;                        0.96    100.00      0.00     0.00</h2>
-<h2 id="trycatch-------------------096----10000------000-----000">&ldquo;tryCatch&rdquo;                   0.96    100.00      0.00     0.00</h2>
-<h2 id="trycatchlist---------------096----10000------000-----000">&ldquo;tryCatchList&rdquo;               0.96    100.00      0.00     0.00</h2>
-<h2 id="trycatchone----------------096----10000------000-----000">&ldquo;tryCatchOne&rdquo;                0.96    100.00      0.00     0.00</h2>
-<h2 id="withcallinghandlers--------096----10000------000-----000">&ldquo;withCallingHandlers&rdquo;        0.96    100.00      0.00     0.00</h2>
-<h2 id="withvisible----------------096----10000------000-----000">&ldquo;withVisible&rdquo;                0.96    100.00      0.00     0.00</h2>
-<h2 id="ldaformula----------------076-----7917------002-----208">&ldquo;lda.formula&rdquo;                0.76     79.17      0.02     2.08</h2>
-<h2 id="lda------------------------076-----7917------000-----000">&ldquo;lda&rdquo;                        0.76     79.17      0.00     0.00</h2>
-<h2 id="ldadefault----------------034-----3542------000-----000">&ldquo;lda.default&rdquo;                0.34     35.42      0.00     0.00</h2>
-<h2 id="update---------------------032-----3333------002-----208">&ldquo;update&rdquo;                     0.32     33.33      0.02     2.08</h2>
-<h2 id="modelframedefault--------030-----3125------004-----417">&ldquo;model.frame.default&rdquo;        0.30     31.25      0.04     4.17</h2>
-<h2 id="updatedefault-------------030-----3125------000-----000">&ldquo;update.default&rdquo;             0.30     31.25      0.00     0.00</h2>
-<h2 id="external2-----------------020-----2083------002-----208">&ldquo;.External2&rdquo;                 0.20     20.83      0.02     2.08</h2>
-<h2 id="predict--------------------018-----1875------000-----000">&ldquo;predict&rdquo;                    0.18     18.75      0.00     0.00</h2>
-<h2 id="predictlda----------------018-----1875------000-----000">&ldquo;predict.lda&rdquo;                0.18     18.75      0.00     0.00</h2>
-<h2 id="dataframe---------------012-----1250------004-----417">&ldquo;[.data.frame&rdquo;               0.12     12.50      0.04     4.17</h2>
-<h2 id="naomitdataframe---------012-----1250------004-----417">&ldquo;na.omit.data.frame&rdquo;         0.12     12.50      0.04     4.17</h2>
-<h2 id="modelmatrixdefault-------012-----1250------002-----208">&ldquo;model.matrix.default&rdquo;       0.12     12.50      0.02     2.08</h2>
-<h2 id="modelmatrix---------------012-----1250------000-----000">&ldquo;model.matrix&rdquo;               0.12     12.50      0.00     0.00</h2>
-<h2 id="naomit--------------------012-----1250------000-----000">&ldquo;na.omit&rdquo;                    0.12     12.50      0.00     0.00</h2>
-<h2 id="--------------------------010-----1042------002-----208">&ldquo;[&rdquo;                          0.10     10.42      0.02     2.08</h2>
-<h2 id="paste----------------------010-----1042------002-----208">&ldquo;paste&rdquo;                      0.10     10.42      0.02     2.08</h2>
-<h2 id="match----------------------010-----1042------000-----000">&ldquo;match&rdquo;                      0.10     10.42      0.00     0.00</h2>
-<h2 id="tapply---------------------010-----1042------000-----000">&ldquo;tapply&rdquo;                     0.10     10.42      0.00     0.00</h2>
-<h2 id="deparse--------------------008------833------000-----000">&ldquo;deparse&rdquo;                    0.08      8.33      0.00     0.00</h2>
-<h2 id="diag-----------------------008------833------000-----000">&ldquo;diag&rdquo;                       0.08      8.33      0.00     0.00</h2>
-<h2 id="svd------------------------008------833------000-----000">&ldquo;svd&rdquo;                        0.08      8.33      0.00     0.00</h2>
-<h2 id="in-----------------------006------625------004-----417">&ldquo;%in%&rdquo;                       0.06      6.25      0.04     4.17</h2>
-<h2 id="lasvd---------------------006------625------004-----417">&ldquo;La.svd&rdquo;                     0.06      6.25      0.04     4.17</h2>
-<h2 id="unique---------------------006------625------004-----417">&ldquo;unique&rdquo;                     0.06      6.25      0.04     4.17</h2>
-<h2 id="deparseopts---------------006------625------002-----208">&ldquo;.deparseOpts&rdquo;               0.06      6.25      0.02     2.08</h2>
-<h2 id="sweep----------------------006------625------002-----208">&ldquo;sweep&rdquo;                      0.06      6.25      0.02     2.08</h2>
-<h2 id="scale----------------------006------625------000-----000">&ldquo;scale&rdquo;                      0.06      6.25      0.00     0.00</h2>
-<h2 id="scaledefault--------------006------625------000-----000">&ldquo;scale.default&rdquo;              0.06      6.25      0.00     0.00</h2>
-<h2 id="simplify2array-------------006------625------000-----000">&ldquo;simplify2array&rdquo;             0.06      6.25      0.00     0.00</h2>
-<h2 id="aperm----------------------004------417------004-----417">&ldquo;aperm&rdquo;                      0.04      4.17      0.04     4.17</h2>
-<h2 id="apply----------------------004------417------004-----417">&ldquo;apply&rdquo;                      0.04      4.17      0.04     4.17</h2>
-<h2 id="levels---------------------004------417------004-----417">&ldquo;levels&rdquo;                     0.04      4.17      0.04     4.17</h2>
-<h2 id="factor-------------------004------417------002-----208">&ldquo;[.factor&rdquo;                   0.04      4.17      0.02     2.08</h2>
-<h2 id="matchcall-----------------004------417------002-----208">&ldquo;match.call&rdquo;                 0.04      4.17      0.02     2.08</h2>
-<h2 id="repfactor-----------------004------417------002-----208">&ldquo;rep.factor&rdquo;                 0.04      4.17      0.02     2.08</h2>
-<h2 id="-------------------------004------417------000-----000">&ldquo;[[&rdquo;                         0.04      4.17      0.00     0.00</h2>
-<h2 id="dataframe--------------004------417------000-----000">&ldquo;[[.data.frame&rdquo;              0.04      4.17      0.00     0.00</h2>
-<h2 id="rep------------------------004------417------000-----000">&ldquo;rep&rdquo;                        0.04      4.17      0.00     0.00</h2>
-<h2 id="asinteger-----------------002------208------002-----208">&ldquo;as.integer&rdquo;                 0.02      2.08      0.02     2.08</h2>
-<h2 id="asmatrix------------------002------208------002-----208">&ldquo;as.matrix&rdquo;                  0.02      2.08      0.02     2.08</h2>
-<h2 id="c--------------------------002------208------002-----208">&ldquo;c&rdquo;                          0.02      2.08      0.02     2.08</h2>
-<h2 id="colnames-------------------002------208------002-----208">&ldquo;colnames&rdquo;                   0.02      2.08      0.02     2.08</h2>
-<h2 id="colsums--------------------002------208------002-----208">&ldquo;colSums&rdquo;                    0.02      2.08      0.02     2.08</h2>
-<h2 id="deleteresponse------------002------208------002-----208">&ldquo;delete.response&rdquo;            0.02      2.08      0.02     2.08</h2>
-<h2 id="isfinite------------------002------208------002-----208">&ldquo;is.finite&rdquo;                  0.02      2.08      0.02     2.08</h2>
-<h2 id="isordered-----------------002------208------002-----208">&ldquo;is.ordered&rdquo;                 0.02      2.08      0.02     2.08</h2>
-<h2 id="lengths--------------------002------208------002-----208">&ldquo;lengths&rdquo;                    0.02      2.08      0.02     2.08</h2>
-<h2 id="matchfun------------------002------208------002-----208">&ldquo;match.fun&rdquo;                  0.02      2.08      0.02     2.08</h2>
-<h2 id="meandefault---------------002------208------002-----208">&ldquo;mean.default&rdquo;               0.02      2.08      0.02     2.08</h2>
-<h2 id="min------------------------002------208------002-----208">&ldquo;min&rdquo;                        0.02      2.08      0.02     2.08</h2>
-<h2 id="mode-----------------------002------208------002-----208">&ldquo;mode&rdquo;                       0.02      2.08      0.02     2.08</h2>
-<h2 id="nextmethod-----------------002------208------002-----208">&ldquo;NextMethod&rdquo;                 0.02      2.08      0.02     2.08</h2>
-<h2 id="parentframe---------------002------208------002-----208">&ldquo;parent.frame&rdquo;               0.02      2.08      0.02     2.08</h2>
-<h2 id="sysfunction---------------002------208------002-----208">&ldquo;sys.function&rdquo;               0.02      2.08      0.02     2.08</h2>
-<h2 id="asvector------------------002------208------000-----000">&ldquo;as.vector&rdquo;                  0.02      2.08      0.00     0.00</h2>
-<h2 id="formals--------------------002------208------000-----000">&ldquo;formals&rdquo;                    0.02      2.08      0.00     0.00</h2>
-<h2 id="getxlevels----------------002------208------000-----000">&ldquo;.getXlevels&rdquo;                0.02      2.08      0.00     0.00</h2>
-<h2 id="matcharg------------------002------208------000-----000">&ldquo;match.arg&rdquo;                  0.02      2.08      0.00     0.00</h2>
-<h2 id="modelframe----------------002------208------000-----000">&ldquo;model.frame&rdquo;                0.02      2.08      0.00     0.00</h2>
-<h2 id="nlevels--------------------002------208------000-----000">&ldquo;nlevels&rdquo;                    0.02      2.08      0.00     0.00</h2>
-<h2 id="stopifnot------------------002------208------000-----000">&ldquo;stopifnot&rdquo;                  0.02      2.08      0.00     0.00</h2>
-<h2 id="structure------------------002------208------000-----000">&ldquo;structure&rdquo;                  0.02      2.08      0.00     0.00</h2>
-<h2 id="table----------------------002------208------000-----000">&ldquo;table&rdquo;                      0.02      2.08      0.00     0.00</h2>
-<h2 id="vapply---------------------002------208------000-----000">&ldquo;vapply&rdquo;                     0.02      2.08      0.00     0.00</h2>
-<h2 id="var------------------------002------208------000-----000">&ldquo;var&rdquo;                        0.02      2.08      0.00     0.00</h2>
-<h2 id="heading-3"></h2>
-<h2 id="sampleinterval">$sample.interval</h2>
-<h2 id="1-002">[1] 0.02</h2>
-<h2 id="heading-4"></h2>
-<h2 id="samplingtime">$sampling.time</h2>
-<h2 id="1-096">[1] 0.96</h2>
+<h2 id=byself>$by.self</h2>
+<h2 id=selftime-selfpct-totaltime-totalpct>self.time self.pct total.time total.pct</h2>
+<h2 id=anonymous---------------004-----417-------096----10000>&ldquo;&rdquo; 0.04 4.17 0.96 100.00</h2>
+<h2 id=modelframedefault-------004-----417-------030-----3125>&ldquo;model.frame.default&rdquo; 0.04 4.17 0.30 31.25</h2>
+<h2 id=dataframe--------------004-----417-------012-----1250>&ldquo;[.data.frame&rdquo; 0.04 4.17 0.12 12.50</h2>
+<h2 id=naomitdataframe--------004-----417-------012-----1250>&ldquo;na.omit.data.frame&rdquo; 0.04 4.17 0.12 12.50</h2>
+<h2 id=in----------------------004-----417-------006------625>&ldquo;%in%&rdquo; 0.04 4.17 0.06 6.25</h2>
+<h2 id=lasvd--------------------004-----417-------006------625>&ldquo;La.svd&rdquo; 0.04 4.17 0.06 6.25</h2>
+<h2 id=unique--------------------004-----417-------006------625>&ldquo;unique&rdquo; 0.04 4.17 0.06 6.25</h2>
+<h2 id=aperm---------------------004-----417-------004------417>&ldquo;aperm&rdquo; 0.04 4.17 0.04 4.17</h2>
+<h2 id=apply---------------------004-----417-------004------417>&ldquo;apply&rdquo; 0.04 4.17 0.04 4.17</h2>
+<h2 id=levels--------------------004-----417-------004------417>&ldquo;levels&rdquo; 0.04 4.17 0.04 4.17</h2>
+<h2 id=lapply--------------------002-----208-------096----10000>&ldquo;lapply&rdquo; 0.02 2.08 0.96 100.00</h2>
+<h2 id=ldaformula---------------002-----208-------076-----7917>&ldquo;lda.formula&rdquo; 0.02 2.08 0.76 79.17</h2>
+<h2 id=update--------------------002-----208-------032-----3333>&ldquo;update&rdquo; 0.02 2.08 0.32 33.33</h2>
+<h2 id=external2----------------002-----208-------020-----2083>&ldquo;.External2&rdquo; 0.02 2.08 0.20 20.83</h2>
+<h2 id=modelmatrixdefault------002-----208-------012-----1250>&ldquo;model.matrix.default&rdquo; 0.02 2.08 0.12 12.50</h2>
+<h2 id=-------------------------002-----208-------010-----1042>&ldquo;[&rdquo; 0.02 2.08 0.10 10.42</h2>
+<h2 id=paste---------------------002-----208-------010-----1042>&ldquo;paste&rdquo; 0.02 2.08 0.10 10.42</h2>
+<h2 id=deparseopts--------------002-----208-------006------625>&ldquo;.deparseOpts&rdquo; 0.02 2.08 0.06 6.25</h2>
+<h2 id=sweep---------------------002-----208-------006------625>&ldquo;sweep&rdquo; 0.02 2.08 0.06 6.25</h2>
+<h2 id=factor------------------002-----208-------004------417>&ldquo;[.factor&rdquo; 0.02 2.08 0.04 4.17</h2>
+<h2 id=matchcall----------------002-----208-------004------417>&ldquo;match.call&rdquo; 0.02 2.08 0.04 4.17</h2>
+<h2 id=repfactor----------------002-----208-------004------417>&ldquo;rep.factor&rdquo; 0.02 2.08 0.04 4.17</h2>
+<h2 id=asinteger----------------002-----208-------002------208>&ldquo;as.integer&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=asmatrix-----------------002-----208-------002------208>&ldquo;as.matrix&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=c-------------------------002-----208-------002------208>&ldquo;c&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=colnames------------------002-----208-------002------208>&ldquo;colnames&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=colsums-------------------002-----208-------002------208>&ldquo;colSums&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=deleteresponse-----------002-----208-------002------208>&ldquo;delete.response&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=isfinite-----------------002-----208-------002------208>&ldquo;is.finite&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=isordered----------------002-----208-------002------208>&ldquo;is.ordered&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=lengths-------------------002-----208-------002------208>&ldquo;lengths&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=matchfun-----------------002-----208-------002------208>&ldquo;match.fun&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=meandefault--------------002-----208-------002------208>&ldquo;mean.default&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=min-----------------------002-----208-------002------208>&ldquo;min&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=mode----------------------002-----208-------002------208>&ldquo;mode&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=nextmethod----------------002-----208-------002------208>&ldquo;NextMethod&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=parentframe--------------002-----208-------002------208>&ldquo;parent.frame&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=sysfunction--------------002-----208-------002------208>&ldquo;sys.function&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=heading-2></h2>
+<h2 id=bytotal>$by.total</h2>
+<h2 id=totaltime-totalpct-selftime-selfpct>total.time total.pct self.time self.pct</h2>
+<h2 id=anonymous----------------096----10000------004-----417>&ldquo;&rdquo; 0.96 100.00 0.04 4.17</h2>
+<h2 id=lapply---------------------096----10000------002-----208>&ldquo;lapply&rdquo; 0.96 100.00 0.02 2.08</h2>
+<h2 id=block_exec-----------------096----10000------000-----000>&ldquo;block_exec&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=call_block-----------------096----10000------000-----000>&ldquo;call_block&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=dotrycatch-----------------096----10000------000-----000>&ldquo;doTryCatch&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=eval-----------------------096----10000------000-----000>&ldquo;eval&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=evalparent----------------096----10000------000-----000>&ldquo;eval.parent&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=evaluate_call--------------096----10000------000-----000>&ldquo;evaluate_call&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=fun------------------------096----10000------000-----000>&ldquo;FUN&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=handle---------------------096----10000------000-----000>&ldquo;handle&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=in_dir---------------------096----10000------000-----000>&ldquo;in_dir&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=local----------------------096----10000------000-----000>&ldquo;local&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=process_file---------------096----10000------000-----000>&ldquo;process_file&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=process_group--------------096----10000------000-----000>&ldquo;process_group&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=process_groupblock--------096----10000------000-----000>&ldquo;process_group.block&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=replicate------------------096----10000------000-----000>&ldquo;replicate&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=sapply---------------------096----10000------000-----000>&ldquo;sapply&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=try------------------------096----10000------000-----000>&ldquo;try&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=trycatch-------------------096----10000------000-----000>&ldquo;tryCatch&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=trycatchlist---------------096----10000------000-----000>&ldquo;tryCatchList&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=trycatchone----------------096----10000------000-----000>&ldquo;tryCatchOne&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=withcallinghandlers--------096----10000------000-----000>&ldquo;withCallingHandlers&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=withvisible----------------096----10000------000-----000>&ldquo;withVisible&rdquo; 0.96 100.00 0.00 0.00</h2>
+<h2 id=ldaformula----------------076-----7917------002-----208>&ldquo;lda.formula&rdquo; 0.76 79.17 0.02 2.08</h2>
+<h2 id=lda------------------------076-----7917------000-----000>&ldquo;lda&rdquo; 0.76 79.17 0.00 0.00</h2>
+<h2 id=ldadefault----------------034-----3542------000-----000>&ldquo;lda.default&rdquo; 0.34 35.42 0.00 0.00</h2>
+<h2 id=update---------------------032-----3333------002-----208>&ldquo;update&rdquo; 0.32 33.33 0.02 2.08</h2>
+<h2 id=modelframedefault--------030-----3125------004-----417>&ldquo;model.frame.default&rdquo; 0.30 31.25 0.04 4.17</h2>
+<h2 id=updatedefault-------------030-----3125------000-----000>&ldquo;update.default&rdquo; 0.30 31.25 0.00 0.00</h2>
+<h2 id=external2-----------------020-----2083------002-----208>&ldquo;.External2&rdquo; 0.20 20.83 0.02 2.08</h2>
+<h2 id=predict--------------------018-----1875------000-----000>&ldquo;predict&rdquo; 0.18 18.75 0.00 0.00</h2>
+<h2 id=predictlda----------------018-----1875------000-----000>&ldquo;predict.lda&rdquo; 0.18 18.75 0.00 0.00</h2>
+<h2 id=dataframe---------------012-----1250------004-----417>&ldquo;[.data.frame&rdquo; 0.12 12.50 0.04 4.17</h2>
+<h2 id=naomitdataframe---------012-----1250------004-----417>&ldquo;na.omit.data.frame&rdquo; 0.12 12.50 0.04 4.17</h2>
+<h2 id=modelmatrixdefault-------012-----1250------002-----208>&ldquo;model.matrix.default&rdquo; 0.12 12.50 0.02 2.08</h2>
+<h2 id=modelmatrix---------------012-----1250------000-----000>&ldquo;model.matrix&rdquo; 0.12 12.50 0.00 0.00</h2>
+<h2 id=naomit--------------------012-----1250------000-----000>&ldquo;na.omit&rdquo; 0.12 12.50 0.00 0.00</h2>
+<h2 id=--------------------------010-----1042------002-----208>&ldquo;[&rdquo; 0.10 10.42 0.02 2.08</h2>
+<h2 id=paste----------------------010-----1042------002-----208>&ldquo;paste&rdquo; 0.10 10.42 0.02 2.08</h2>
+<h2 id=match----------------------010-----1042------000-----000>&ldquo;match&rdquo; 0.10 10.42 0.00 0.00</h2>
+<h2 id=tapply---------------------010-----1042------000-----000>&ldquo;tapply&rdquo; 0.10 10.42 0.00 0.00</h2>
+<h2 id=deparse--------------------008------833------000-----000>&ldquo;deparse&rdquo; 0.08 8.33 0.00 0.00</h2>
+<h2 id=diag-----------------------008------833------000-----000>&ldquo;diag&rdquo; 0.08 8.33 0.00 0.00</h2>
+<h2 id=svd------------------------008------833------000-----000>&ldquo;svd&rdquo; 0.08 8.33 0.00 0.00</h2>
+<h2 id=in-----------------------006------625------004-----417>&ldquo;%in%&rdquo; 0.06 6.25 0.04 4.17</h2>
+<h2 id=lasvd---------------------006------625------004-----417>&ldquo;La.svd&rdquo; 0.06 6.25 0.04 4.17</h2>
+<h2 id=unique---------------------006------625------004-----417>&ldquo;unique&rdquo; 0.06 6.25 0.04 4.17</h2>
+<h2 id=deparseopts---------------006------625------002-----208>&ldquo;.deparseOpts&rdquo; 0.06 6.25 0.02 2.08</h2>
+<h2 id=sweep----------------------006------625------002-----208>&ldquo;sweep&rdquo; 0.06 6.25 0.02 2.08</h2>
+<h2 id=scale----------------------006------625------000-----000>&ldquo;scale&rdquo; 0.06 6.25 0.00 0.00</h2>
+<h2 id=scaledefault--------------006------625------000-----000>&ldquo;scale.default&rdquo; 0.06 6.25 0.00 0.00</h2>
+<h2 id=simplify2array-------------006------625------000-----000>&ldquo;simplify2array&rdquo; 0.06 6.25 0.00 0.00</h2>
+<h2 id=aperm----------------------004------417------004-----417>&ldquo;aperm&rdquo; 0.04 4.17 0.04 4.17</h2>
+<h2 id=apply----------------------004------417------004-----417>&ldquo;apply&rdquo; 0.04 4.17 0.04 4.17</h2>
+<h2 id=levels---------------------004------417------004-----417>&ldquo;levels&rdquo; 0.04 4.17 0.04 4.17</h2>
+<h2 id=factor-------------------004------417------002-----208>&ldquo;[.factor&rdquo; 0.04 4.17 0.02 2.08</h2>
+<h2 id=matchcall-----------------004------417------002-----208>&ldquo;match.call&rdquo; 0.04 4.17 0.02 2.08</h2>
+<h2 id=repfactor-----------------004------417------002-----208>&ldquo;rep.factor&rdquo; 0.04 4.17 0.02 2.08</h2>
+<h2 id=-------------------------004------417------000-----000>&ldquo;[[&rdquo; 0.04 4.17 0.00 0.00</h2>
+<h2 id=dataframe--------------004------417------000-----000>&ldquo;[[.data.frame&rdquo; 0.04 4.17 0.00 0.00</h2>
+<h2 id=rep------------------------004------417------000-----000>&ldquo;rep&rdquo; 0.04 4.17 0.00 0.00</h2>
+<h2 id=asinteger-----------------002------208------002-----208>&ldquo;as.integer&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=asmatrix------------------002------208------002-----208>&ldquo;as.matrix&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=c--------------------------002------208------002-----208>&ldquo;c&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=colnames-------------------002------208------002-----208>&ldquo;colnames&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=colsums--------------------002------208------002-----208>&ldquo;colSums&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=deleteresponse------------002------208------002-----208>&ldquo;delete.response&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=isfinite------------------002------208------002-----208>&ldquo;is.finite&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=isordered-----------------002------208------002-----208>&ldquo;is.ordered&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=lengths--------------------002------208------002-----208>&ldquo;lengths&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=matchfun------------------002------208------002-----208>&ldquo;match.fun&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=meandefault---------------002------208------002-----208>&ldquo;mean.default&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=min------------------------002------208------002-----208>&ldquo;min&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=mode-----------------------002------208------002-----208>&ldquo;mode&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=nextmethod-----------------002------208------002-----208>&ldquo;NextMethod&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=parentframe---------------002------208------002-----208>&ldquo;parent.frame&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=sysfunction---------------002------208------002-----208>&ldquo;sys.function&rdquo; 0.02 2.08 0.02 2.08</h2>
+<h2 id=asvector------------------002------208------000-----000>&ldquo;as.vector&rdquo; 0.02 2.08 0.00 0.00</h2>
+<h2 id=formals--------------------002------208------000-----000>&ldquo;formals&rdquo; 0.02 2.08 0.00 0.00</h2>
+<h2 id=getxlevels----------------002------208------000-----000>&ldquo;.getXlevels&rdquo; 0.02 2.08 0.00 0.00</h2>
+<h2 id=matcharg------------------002------208------000-----000>&ldquo;match.arg&rdquo; 0.02 2.08 0.00 0.00</h2>
+<h2 id=modelframe----------------002------208------000-----000>&ldquo;model.frame&rdquo; 0.02 2.08 0.00 0.00</h2>
+<h2 id=nlevels--------------------002------208------000-----000>&ldquo;nlevels&rdquo; 0.02 2.08 0.00 0.00</h2>
+<h2 id=stopifnot------------------002------208------000-----000>&ldquo;stopifnot&rdquo; 0.02 2.08 0.00 0.00</h2>
+<h2 id=structure------------------002------208------000-----000>&ldquo;structure&rdquo; 0.02 2.08 0.00 0.00</h2>
+<h2 id=table----------------------002------208------000-----000>&ldquo;table&rdquo; 0.02 2.08 0.00 0.00</h2>
+<h2 id=vapply---------------------002------208------000-----000>&ldquo;vapply&rdquo; 0.02 2.08 0.00 0.00</h2>
+<h2 id=var------------------------002------208------000-----000>&ldquo;var&rdquo; 0.02 2.08 0.00 0.00</h2>
+<h2 id=heading-3></h2>
+<h2 id=sampleinterval>$sample.interval</h2>
+<h2 id=1-002>[1] 0.02</h2>
+<h2 id=heading-4></h2>
+<h2 id=samplingtime>$sampling.time</h2>
+<h2 id=1-096>[1] 0.96</h2>
 <p>{% endhighlight %}</p>
 <p>There are two main components to this summary:</p>
 <ol>
@@ -522,46 +486,46 @@ z1 &lt;- update(z, . ~ . - Petal.W.)
 <p><code>by.total</code>, which represents the time spent in the function, and all other functions it called.</p>
 </li>
 </ol>
-<p>Note that we have wrapped the code in a call to <code>replicate</code>, as suggested by the <a href="http://www.hep.by/gnu/r-patched/r-exts/R-exts_71.html#SEC71">documentation</a>, since its running time is very small. This is actually part of the profiling, and therefore makes it even more difficult to understand the output. This is why I recommand using Noam Ross&rsquo;s <code>proftable</code> function. It takes the text file created by <code>Rprof</code>, but summarizes it differently:</p>
+<p>Note that we have wrapped the code in a call to <code>replicate</code>, as suggested by the <a href=http://www.hep.by/gnu/r-patched/r-exts/R-exts_71.html#SEC71>documentation</a>, since its running time is very small. This is actually part of the profiling, and therefore makes it even more difficult to understand the output. This is why I recommand using Noam Ross&rsquo;s <code>proftable</code> function. It takes the text file created by <code>Rprof</code>, but summarizes it differently:</p>
 <p>{% highlight r %}
 proftable(tmp)
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="pcttime">PctTime</h2>
-<h2 id="417">4.17</h2>
-<h2 id="417-1">4.17</h2>
-<h2 id="417-2">4.17</h2>
-<h2 id="417-3">4.17</h2>
-<h2 id="208">2.08</h2>
-<h2 id="208-1">2.08</h2>
-<h2 id="208-2">2.08</h2>
-<h2 id="208-3">2.08</h2>
-<h2 id="208-4">2.08</h2>
-<h2 id="208-5">2.08</h2>
-<h2 id="call">Call</h2>
-<h2 id="lda--ldaformula--modelframedefault--external2--naomit--naomitdataframe">lda &gt; lda.formula &gt; model.frame.default &gt; .External2 &gt; na.omit &gt; na.omit.data.frame</h2>
-<h2 id="predict--predictlda--apply">predict &gt; predict.lda &gt; apply</h2>
-<h2 id="predict--predictlda--scale--scaledefault--sweep--aperm">predict &gt; predict.lda &gt; scale &gt; scale.default &gt; sweep &gt; aperm</h2>
-<h2 id="update--updatedefault--lda--ldaformula--ldadefault--svd--lasvd">update &gt; update.default &gt; lda &gt; lda.formula &gt; lda.default &gt; svd &gt; La.svd</h2>
-<h2 id="lda--ldaformula">lda &gt; lda.formula</h2>
-<h2 id="lda--ldaformula--modelframedefault">lda &gt; lda.formula &gt; model.frame.default</h2>
-<h2 id="lda--ldaformula--modelframedefault--external2--dataframe--">lda &gt; lda.formula &gt; model.frame.default &gt; .External2 &gt; [.data.frame &gt; [</h2>
-<h2 id="lda--ldaformula--modelframedefault--external2--dataframe----factor">lda &gt; lda.formula &gt; model.frame.default &gt; .External2 &gt; [.data.frame &gt; [ &gt; [.factor</h2>
-<h2 id="lda--ldaformula--modelframedefault--external2--naomit--naomitdataframe----dataframe">lda &gt; lda.formula &gt; model.frame.default &gt; .External2 &gt; na.omit &gt; na.omit.data.frame &gt; [ &gt; [.data.frame</h2>
-<h2 id="lda--ldaformula--modelframedefault--external2--naomit--naomitdataframe----dataframe-1">lda &gt; lda.formula &gt; model.frame.default &gt; .External2 &gt; na.omit &gt; na.omit.data.frame &gt; [[ &gt; [[.data.frame</h2>
-<h2 id="heading-5"></h2>
-<h2 id="parent-call-local--evalparent--eval--eval--eval--eval--anonymous--process_file--withcallinghandlers--process_group--process_groupblock--call_block--block_exec--in_dir--anonymous--evaluate_call--handle--try--trycatch--trycatchlist--trycatchone--dotrycatch--withcallinghandlers--withvisible--eval--eval--replicate--sapply--lapply--fun--">Parent Call: local &gt; eval.parent &gt; eval &gt; eval &gt; eval &gt; eval &gt; <!-- raw HTML omitted --> &gt; process_file &gt; withCallingHandlers &gt; process_group &gt; process_group.block &gt; call_block &gt; block_exec &gt; in_dir &gt; <!-- raw HTML omitted --> &gt; evaluate_call &gt; handle &gt; try &gt; tryCatch &gt; tryCatchList &gt; tryCatchOne &gt; doTryCatch &gt; withCallingHandlers &gt; withVisible &gt; eval &gt; eval &gt; replicate &gt; sapply &gt; lapply &gt; FUN &gt; &hellip;</h2>
-<h2 id="heading-6"></h2>
-<h2 id="total-time-096-seconds">Total Time: 0.96 seconds</h2>
-<h2 id="percent-of-run-time-represented-292-">Percent of run time represented: 29.2 %</h2>
+<h2 id=pcttime>PctTime</h2>
+<h2 id=417>4.17</h2>
+<h2 id=417-1>4.17</h2>
+<h2 id=417-2>4.17</h2>
+<h2 id=417-3>4.17</h2>
+<h2 id=208>2.08</h2>
+<h2 id=208-1>2.08</h2>
+<h2 id=208-2>2.08</h2>
+<h2 id=208-3>2.08</h2>
+<h2 id=208-4>2.08</h2>
+<h2 id=208-5>2.08</h2>
+<h2 id=call>Call</h2>
+<h2 id=lda--ldaformula--modelframedefault--external2--naomit--naomitdataframe>lda > lda.formula > model.frame.default > .External2 > na.omit > na.omit.data.frame</h2>
+<h2 id=predict--predictlda--apply>predict > predict.lda > apply</h2>
+<h2 id=predict--predictlda--scale--scaledefault--sweep--aperm>predict > predict.lda > scale > scale.default > sweep > aperm</h2>
+<h2 id=update--updatedefault--lda--ldaformula--ldadefault--svd--lasvd>update > update.default > lda > lda.formula > lda.default > svd > La.svd</h2>
+<h2 id=lda--ldaformula>lda > lda.formula</h2>
+<h2 id=lda--ldaformula--modelframedefault>lda > lda.formula > model.frame.default</h2>
+<h2 id=lda--ldaformula--modelframedefault--external2--dataframe-->lda > lda.formula > model.frame.default > .External2 > [.data.frame > [</h2>
+<h2 id=lda--ldaformula--modelframedefault--external2--dataframe----factor>lda > lda.formula > model.frame.default > .External2 > [.data.frame > [ > [.factor</h2>
+<h2 id=lda--ldaformula--modelframedefault--external2--naomit--naomitdataframe----dataframe>lda > lda.formula > model.frame.default > .External2 > na.omit > na.omit.data.frame > [ > [.data.frame</h2>
+<h2 id=lda--ldaformula--modelframedefault--external2--naomit--naomitdataframe----dataframe-1>lda > lda.formula > model.frame.default > .External2 > na.omit > na.omit.data.frame > [[ > [[.data.frame</h2>
+<h2 id=heading-5></h2>
+<h2 id=parent-call-local--evalparent--eval--eval--eval--eval--anonymous--process_file--withcallinghandlers--process_group--process_groupblock--call_block--block_exec--in_dir--anonymous--evaluate_call--handle--try--trycatch--trycatchlist--trycatchone--dotrycatch--withcallinghandlers--withvisible--eval--eval--replicate--sapply--lapply--fun-->Parent Call: local > eval.parent > eval > eval > eval > eval > > process_file > withCallingHandlers > process_group > process_group.block > call_block > block_exec > in_dir > > evaluate_call > handle > try > tryCatch > tryCatchList > tryCatchOne > doTryCatch > withCallingHandlers > withVisible > eval > eval > replicate > sapply > lapply > FUN > &mldr;</h2>
+<h2 id=heading-6></h2>
+<h2 id=total-time-096-seconds>Total Time: 0.96 seconds</h2>
+<h2 id=percent-of-run-time-represented-292->Percent of run time represented: 29.2 %</h2>
 <p>{% endhighlight %}</p>
 <p>First of all, we can see that the call to <code>replicate</code> is now relegated to the end and removed from the general summary. Second, we see the chain of calls, which helps us understand what some functions we didn&rsquo;t call directly (e.g. <code>.getXlevels</code> or <code>model.frame.default</code>) actually do. Finally, it only shows the first few lines, ordered by their percentage of the whole running time, and therefore it is easier to read. For all these reasons, I recommend the use of <code>proftable</code> over <code>summaryRprof</code>.</p>
-<p>There exist also graphical ways of representing the call stack. One example is the <code>proftools</code> package. Note that it requires the <code>graph</code> and <code>Rgraphviz</code> packages, which are available on <a href="http://bioconductor.org/">Bioconductor</a>.</p>
+<p>There exist also graphical ways of representing the call stack. One example is the <code>proftools</code> package. Note that it requires the <code>graph</code> and <code>Rgraphviz</code> packages, which are available on <a href=http://bioconductor.org/>Bioconductor</a>.</p>
 <p>{% highlight r %}
 library(proftools)
 library(graphics)</p>
 <p>Rprof(tmp &lt;- tempfile())</p>
-<h1 id="clustering-example">Clustering example</h1>
+<h1 id=clustering-example>Clustering example</h1>
 <p>test.data &lt;- function(dim, num, seed=12345) {
 set.seed(seed)
 matrix(rnorm(dim * num), nrow=num)
@@ -570,108 +534,95 @@ m &lt;- test.data(120, 4500)</p>
 <p>hclust(dist(m))
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="heading-7"></h2>
-<h2 id="call-1">Call:</h2>
-<h2 id="hclustd--distm">hclust(d = dist(m))</h2>
-<h2 id="heading-8"></h2>
-<h2 id="cluster-method----complete">Cluster method   : complete</h2>
-<h2 id="distance----------euclidean">Distance         : euclidean</h2>
-<h2 id="number-of-objects-4500">Number of objects: 4500</h2>
+<h2 id=heading-7></h2>
+<h2 id=call-1>Call:</h2>
+<h2 id=hclustd--distm>hclust(d = dist(m))</h2>
+<h2 id=heading-8></h2>
+<h2 id=cluster-method----complete>Cluster method : complete</h2>
+<h2 id=distance----------euclidean>Distance : euclidean</h2>
+<h2 id=number-of-objects-4500>Number of objects: 4500</h2>
 <p>{% endhighlight %}</p>
 <p>{% highlight r %}
 Rprof()</p>
 <p>plotProfileCallGraph(readProfileData(tmp),
 score = &ldquo;total&rdquo;)
 {% endhighlight %}</p>
-<p><img src="/figure/source/2015-09-11-optimisation/proftools-1.png" alt="plot of chunk proftools"></p>
+<p><img src=/figure/source/2015-09-11-optimisation/proftools-1.png alt="plot of chunk proftools"></p>
 <p>The colours are used to represent the amount of time used by each function. As we can see, the <code>dist</code> function is the real bottleneck in this example, and therefore improving the running time would necessitate a faster algorithm for computing the Euclidean distance.</p>
-<p>We can see all these functions being used in a real-life <a href="/optimisation-test-case">example</a>, where I tried to optimise the main component of the function which computes the PCEV in order to speed up my simulations. Follow the link to see the different steps I took.</p>
-<h3 id="other-things-to-keep-in-mind">Other things to keep in mind</h3>
+<p>We can see all these functions being used in a real-life <a href=/optimisation-test-case>example</a>, where I tried to optimise the main component of the function which computes the PCEV in order to speed up my simulations. Follow the link to see the different steps I took.</p>
+<h3 id=other-things-to-keep-in-mind>Other things to keep in mind</h3>
 <p>Profiling the code is the best way to identify bottleneck, but it doesn&rsquo;t directly tell us how to optimise our code. Below, I give three general ideas to keep in mind.</p>
-<h4 id="a-faster-implementation">A faster implementation</h4>
+<h4 id=a-faster-implementation>A faster implementation</h4>
 <p>The greatest strength of R is its massive package ecosystem. Often, we don&rsquo;t need to write from scratch the code for a new method appearing in a paper because its authors have already published a package. Moreover, different packages may have different implementations of a same (or similar) method. This means that, sometimes, a faster implementation (or even a more efficient algorithm) can be used simply by changing the function call. One example of this is the <code>slanczos</code> function in the <code>mgcv</code> package: it computes the eigenvectors of a square matrix using a different algorithm than the one used by <code>eigen</code>. One advantage of this particular algorithm is its <em>iterative</em> nature: eigenvectors are computed one at a time, and therefore if we only need the eigenvector corresponding to the largest eigenvalue, it is possibly faster to use <code>slanczos</code> than <code>eigen</code>; from experience, I would say that this depends a lot on the size of the matrix and how many eigenvectors you need.</p>
 <p>The next example is related to our discussion of design choices for R. R implements what is called <em>modify-on-copy</em>, which means that when we modify an object a (possibly partial) copy is made. For example, when we write</p>
 <p>{% highlight r %}
 x &lt;- x[,c(1,2,4)]
 {% endhighlight %}</p>
 <p>the result of subsetting <code>x</code> on its columns is stored in a temporary variable, which is then assigned <code>x</code> (and in fact, this is what allows us to use <code>x</code> on both sides of the assignment operator). This allows for clearer code, but it actually slows down the execution and can lead to quite a lot of memory being used (this is why it is usually suggested to fill your memory only up to one third of its capacity, leaving space for all these copies).</p>
-<p>Enter the <a href="https://cran.r-project.org/web/packages/data.table/index.html">package</a> <code>data.table</code>. For large datasets, it can be significantly faster (i.e. several orders of magnitude) than using a plain data frame. Its speed comes from a new implementation of the usual data frame routines (e.g. rbind, subset, etc.) using a pass-by-reference syntax; in other words, <strong>no copy of the data is made during modification</strong> (although this behaviour <a href="http://stackoverflow.com/questions/10225098/understanding-exactly-when-a-data-table-is-a-reference-to-vs-a-copy-of-another">can actually be broken if not used properly</a>).</p>
-<h4 id="byte-code-compilation">Byte-code compilation</h4>
+<p>Enter the <a href=https://cran.r-project.org/web/packages/data.table/index.html>package</a> <code>data.table</code>. For large datasets, it can be significantly faster (i.e. several orders of magnitude) than using a plain data frame. Its speed comes from a new implementation of the usual data frame routines (e.g. rbind, subset, etc.) using a pass-by-reference syntax; in other words, <strong>no copy of the data is made during modification</strong> (although this behaviour <a href=http://stackoverflow.com/questions/10225098/understanding-exactly-when-a-data-table-is-a-reference-to-vs-a-copy-of-another>can actually be broken if not used properly</a>).</p>
+<h4 id=byte-code-compilation>Byte-code compilation</h4>
 <p>Recall from above that R is an interpreted language. The code we run has to be decomposed in small parts (called <em>token</em>) which are then mapped to pre-compiled code. One way to speed up your code is therefore to do this mapping once and for all for functions (or expressions) that are used quite often; this can be done using the <code>compiler</code> package (which is now part of the standard packages you get by default).</p>
 <p>{% highlight r %}
 library(compiler)</p>
-<h1 id="original-implementation-of-lapply">Original implementation of lapply</h1>
-<p>old_lapply &lt;- function(X, FUN, &hellip;) {
+<h1 id=original-implementation-of-lapply>Original implementation of lapply</h1>
+<p>old_lapply &lt;- function(X, FUN, &mldr;) {
 FUN &lt;- match.fun(FUN)
 if (!is.list(X))
 X &lt;- as.list(X)
 rval &lt;- vector(&ldquo;list&rdquo;, length(X))
 for(i in seq(along = X))
-rval[i] &lt;- list(FUN(X[[i]], &hellip;))
-names(rval) &lt;- names(X)       <br>
+rval[i] &lt;- list(FUN(X[[i]], &mldr;))
+names(rval) &lt;- names(X) <br>
 return(rval)
 }</p>
 <p>old_lapply_comp &lt;- cmpfun(old_lapply)</p>
 <p>data &lt;- lapply(1:1000, function(i) rnorm(100))</p>
-<p>compare &lt;- microbenchmark(&ldquo;original&quot;=old_lapply(data, mean),
-&ldquo;compiled&quot;=old_lapply_comp(data, mean),
-&ldquo;new&quot;=lapply(data,mean), times=1000)
+<p>compare &lt;- microbenchmark(&ldquo;original&rdquo;=old_lapply(data, mean),
+&ldquo;compiled&rdquo;=old_lapply_comp(data, mean),
+&ldquo;new&rdquo;=lapply(data,mean), times=1000)
 compare
 {% endhighlight %}</p>
 <p>{% highlight text %}</p>
-<h2 id="unit-milliseconds-1">Unit: milliseconds</h2>
-<h2 id="expr------min-------lq-----mean---median-------uq------max-neval">expr      min       lq     mean   median       uq      max neval</h2>
-<h2 id="original-8540425-8810987-9203373-8906748-8999030-9557505--1000">original 8.540425 8.810987 9.203373 8.906748 8.999030 95.57505  1000</h2>
-<h2 id="compiled-6803040-7028638-7291496-7102944-7204534-1512300--1000">compiled 6.803040 7.028638 7.291496 7.102944 7.204534 15.12300  1000</h2>
-<h2 id="new-6009491-6229223-6523165-6306225-6393313-9089608--1000">new 6.009491 6.229223 6.523165 6.306225 6.393313 90.89608  1000</h2>
+<h2 id=unit-milliseconds-1>Unit: milliseconds</h2>
+<h2 id=expr------min-------lq-----mean---median-------uq------max-neval>expr min lq mean median uq max neval</h2>
+<h2 id=original-8540425-8810987-9203373-8906748-8999030-9557505--1000>original 8.540425 8.810987 9.203373 8.906748 8.999030 95.57505 1000</h2>
+<h2 id=compiled-6803040-7028638-7291496-7102944-7204534-1512300--1000>compiled 6.803040 7.028638 7.291496 7.102944 7.204534 15.12300 1000</h2>
+<h2 id=new-6009491-6229223-6523165-6306225-6393313-9089608--1000>new 6.009491 6.229223 6.523165 6.306225 6.393313 90.89608 1000</h2>
 <p>{% endhighlight %}</p>
 <p>{% highlight r %}
 autoplot(compare)
 {% endhighlight %}</p>
-<p><img src="/figure/source/2015-09-11-optimisation/comp-1.png" alt="plot of chunk comp"></p>
+<p><img src=/figure/source/2015-09-11-optimisation/comp-1.png alt="plot of chunk comp"></p>
 <p>As we can see, byte-code compilation actually improves speed, even though the new implementation is even faster. Similarly, expressions can be compiled using the function <code>compile</code>, and the result can be evaluated using <code>eval</code>:</p>
 <p>{% highlight r %}
 expr &lt;- compile(rev(1:100) + 1:100)
 eval(expr)
 {% endhighlight %}</p>
-<p>To see how the <code>compiler</code> package can be used to turn the usual interpreter into a &ldquo;just-in-time&rdquo; compiler, see the <a href="http://www.r-statistics.com/2012/04/speed-up-your-r-code-using-a-just-in-time-jit-compiler/">following blog post</a>.</p>
-<h3 id="concluding-remarks">Concluding remarks</h3>
+<p>To see how the <code>compiler</code> package can be used to turn the usual interpreter into a &ldquo;just-in-time&rdquo; compiler, see the <a href=http://www.r-statistics.com/2012/04/speed-up-your-r-code-using-a-just-in-time-jit-compiler/>following blog post</a>.</p>
+<h3 id=concluding-remarks>Concluding remarks</h3>
 <p>In this tutorial, we first discussed why you would want to optimise your code, and how to keep in mind some of the key features of R so that the code you write in the first place isn&rsquo;t too bad. We then showed how to benchmark pieces of code, and how to use some of the many profiling resources out there.</p>
-<p>This is not the end of the discussion. Two main points I didn&rsquo;t discuss are how to incorporate low-level languages (e.g. C, C++, Fortran) in your code, and how to take advantage of multiple cores to do parts of the computations in parallel. These two points are already well covered in some other places, like <a href="http://adv-r.had.co.nz/Rcpp.html">here</a> and <a href="http://blog.yhathq.com/posts/running-r-in-parallel.html">here</a>.</p>
-<p>Finally, two more options to consider (but a lot more drastic!) are to either <a href="http://edustatistics.org/nathanvan/2013/07/09/for-faster-r-use-openblas-instead-better-than-atlas-trivial-to-switch-to-on-ubuntu/">link your version of R to a different, more efficient BLAS (Basic Linear Algebra System)</a>, or even to go for a faster R implementation (e.g. <a href="http://www.pqr-project.org/">pretty quick R</a> or <a href="http://www.renjin.org/">Renjin</a>). However, I haven&rsquo;t tried either option, and therefore I cannot comment on them.</p>
+<p>This is not the end of the discussion. Two main points I didn&rsquo;t discuss are how to incorporate low-level languages (e.g. C, C++, Fortran) in your code, and how to take advantage of multiple cores to do parts of the computations in parallel. These two points are already well covered in some other places, like <a href=http://adv-r.had.co.nz/Rcpp.html>here</a> and <a href=http://blog.yhathq.com/posts/running-r-in-parallel.html>here</a>.</p>
+<p>Finally, two more options to consider (but a lot more drastic!) are to either <a href=http://edustatistics.org/nathanvan/2013/07/09/for-faster-r-use-openblas-instead-better-than-atlas-trivial-to-switch-to-on-ubuntu/>link your version of R to a different, more efficient BLAS (Basic Linear Algebra System)</a>, or even to go for a faster R implementation (e.g. <a href=http://www.pqr-project.org/>pretty quick R</a> or <a href=http://www.renjin.org/>Renjin</a>). However, I haven&rsquo;t tried either option, and therefore I cannot comment on them.</p>
 <p>In conclusion, another quote from Donald Knuth (pointed out by Vince Forgetta):</p>
 <blockquote>
 <p>If you optimize everything, you will always be unhappy. (Donald Knuth)</p>
 </blockquote>
 <p><strong>Update</strong> (2015-10-15): I&rsquo;ve actually switched to the ATLAS system a few weeks ago, and the improvements I got are similar to the results discussed in the link above. For Ubuntu users, I recommend to make the switch, since there doesn&rsquo;t seem to be any downside!</p>
-    </div>
-  </article>
-
-  
-
-
+</div>
+</article>
 </main>
-
-      <footer class="footer">
-        <ul class="footer-links">
-          <li>
-            <a href="/blog/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
-          </li>
-          <li>
-            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/blog/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
-          </li>
-        </ul>
-      </footer>
-
-    </div>
-    
-
-    
-<script src="/blog/js/math-code.js"></script>
+<footer class=footer>
+<ul class=footer-links>
+<li>
+<a href=/blog/index.xml type=application/rss+xml target=_blank>RSS feed</a>
+</li>
+<li>
+<a href=https://gohugo.io/ class=footer-links-kudos>Made with <img src=/blog/images/hugo-logo.png alt="Img link to Hugo website" width=22 height=22></a>
+</li>
+</ul>
+</footer>
+</div>
+<script src=/blog/js/math-code.js></script>
 <script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-
-
-    
-  </body>
+</body>
 </html>
-
