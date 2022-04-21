@@ -7,7 +7,7 @@ date: 2015-08-14
 comments: true
 ---
 
-I had some trouble rendering correctly the mathematical equations in my [previous post]({{ site.github.url }}/pcev/): at first I could only see the untransformed markup, then the text simply disappeared, without being transformed, and finally the equations appeared, but coloured orange. As you can see, everything now looks fine, but to fix this I ended up learning a bit more about how markdown, HTML, CSS and javacript all work together to create the website you are currently visiting. The purpose of this post is to share some of what I learned, so that future visitors can be spared some of the pain that accompanied the learning.
+I had some trouble rendering correctly the mathematical equations in my [previous post](https://www.maxturgeon.ca/blog/2015-08-06-pcev/): at first I could only see the untransformed markup, then the text simply disappeared, without being transformed, and finally the equations appeared, but coloured orange. As you can see, everything now looks fine, but to fix this I ended up learning a bit more about how markdown, HTML, CSS and javacript all work together to create the website you are currently visiting. The purpose of this post is to share some of what I learned, so that future visitors can be spared some of the pain that accompanied the learning.
 
 <!--more-->
 
@@ -25,7 +25,7 @@ The main strengths of MathJax are that it works with pretty much all browsers an
 
 How can we use it? We simply need to add a few lines in the header of our html document, which will tell the browser where to find the necessary Javascript code. You can provide a custom implementation of MathJax (it's open-source!), but the simplest way is to point directly to the latest stable implementation, like this:
 
-{% highlight html %}
+```html
 <head>
 
 <!-- Some html code -->
@@ -37,11 +37,11 @@ How can we use it? We simply need to add a few lines in the header of our html d
 <!-- Some more html code -->
 
 </head>
-{% endhighlight %}
+```
 
 If you want to change a few things to the script, but you only want these changes to apply to a given webpage, you can also add some custom Javascript between the <code>&lt;script&gt;</code> tags. For example, if you want to change the color to yellow, you can do it like this:
 
-{% highlight html %}
+```html
 <script type="text/javascript"
         src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 
@@ -53,7 +53,7 @@ If you want to change a few things to the script, but you only want these change
     })
 
 </script>
-{% endhighlight %}
+```
 
 How does MathJax know where to start and stop rendering the math equations? There are delimiters, of course! By default, MathJax supports three kinds: <code> \[ ... \] </code> for block mathematics, <code> \( ... \) </code> for inline mathematics, and <code> \$\$ ... \$\$ </code> for both (depending on the relation between the markup and the surrounding text, it will be displayed inline or as a block). Note, however, that the familiar LaTex-way of displaying inline equations (using single dollar signs) is **not** supported by default, since dollar signs are frequently used in plain text. If you want to change this default behaviour, have a look at the [documentation](http://docs.mathjax.org/en/latest/tex.html#tex-and-latex-math-delimiters). 
 

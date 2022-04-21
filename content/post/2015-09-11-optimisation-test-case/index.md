@@ -7,9 +7,9 @@ date: 2015-09-11
 comments: true
 ---
 
-I will give an example of code optimisation in R, using Noam Ross's ```proftable``` function and Luke Tierney's ```proftools``` package, which I discuss in my [tutorial on optimisation]({{ site.github.url }}/optimisation/). The code we will optimise comes from the main function of our [PCEV package](https://github.com/GreenwoodLab/pcev). A few months ago, while testing the method using simulations, I had to speed up my code because it was way to slow, and the result of this optimisation is given below. 
+I will give an example of code optimisation in R, using Noam Ross's ```proftable``` function and Luke Tierney's ```proftools``` package, which I discuss in my [tutorial on optimisation](https://www.maxturgeon.ca/blog/2015-09-10-optimisation/). The code we will optimise comes from the main function of our [PCEV package](https://github.com/GreenwoodLab/pcev). A few months ago, while testing the method using simulations, I had to speed up my code because it was way to slow, and the result of this optimisation is given below. 
 
-For background, recall that PCEV is a dimension-reduction technique, akin to PCA, but where the components are obtained by maximising the proportion of variance explained by a set of covariates. For more information, see this [blog post]({{ site.github.url }}/pcev/). 
+For background, recall that PCEV is a dimension-reduction technique, akin to PCA, but where the components are obtained by maximising the proportion of variance explained by a set of covariates. For more information, see this [blog post](https://www.maxturgeon.ca/blog/2015-08-06-pcev/). 
 
 <!--more-->
 
@@ -18,7 +18,7 @@ For background, recall that PCEV is a dimension-reduction technique, akin to PCA
 Below, I have reproduced the first version of the code that I was using:
 
 
-{% highlight r %}
+```r
 # Compute PCEV and its p-value 
 Wilks.lambda <- function(Y, x) {
   N <- dim(Y)[1]
@@ -54,12 +54,12 @@ Wilks.lambda <- function(Y, x) {
               "values"=d, 
               "p.value"=p.value))
 }
-{% endhighlight %}
+```
 
 As we can see, we are using a few common R functions, like ```lm```, matrix multiplication and ```eigen```. Let's see where the bottlenecks are. As mentioned in the [documentation](http://www.hep.by/gnu/r-patched/r-exts/R-exts_71.html#SEC71), we will wrap our code in a call to replicate so that we can accurately investigate the call stack.
 
 
-{% highlight r %}
+```r
 set.seed(12345)
 Y <- matrix(rnorm(100*20), nrow=100)
 X <- rnorm(100)
@@ -70,11 +70,11 @@ Rprof(tmp <- tempfile())
 res <- replicate(n = 1000, Wilks.lambda(Y, X), simplify = FALSE)
 Rprof()
 proftable(tmp)
-{% endhighlight %}
+```
 
 
 
-{% highlight text %}
+```
 ##  PctTime
 ##  11.95  
 ##   7.55  
@@ -102,16 +102,16 @@ proftable(tmp)
 ## 
 ## Total Time: 3.18 seconds
 ## Percent of run time represented: 47.8 %
-{% endhighlight %}
+```
 
 
 
-{% highlight r %}
+```r
 plotProfileCallGraph(readProfileData(tmp),
                      score = "total")
-{% endhighlight %}
+```
 
-![plot of chunk Wilks1](/figure/source/2015-09-10-optimisation-test-case/Wilks1-1.png) 
+![plot of chunk Wilks1](Wilks1-1.png) 
 
 Not surprisingly, ```eigen``` is taking up quite some time to run (but note that we are calling it twice). Moreover, ```lm``` is calling several other functions. This is because it tidies up the output. 
 
@@ -120,7 +120,7 @@ Not surprisingly, ```eigen``` is taking up quite some time to run (but note that
 Since we only need the fitted values, we can replace our call to ```lm``` by a call to ```lm.fit```.
 
 
-{% highlight r %}
+```r
 # Compute PCEV and its p-value - Take 2
 Wilks.lambda2 <- function(Y, x) {
   N <- dim(Y)[1]
@@ -156,19 +156,19 @@ Wilks.lambda2 <- function(Y, x) {
               "values"=d, 
               "p.value"=p.value))
 }
-{% endhighlight %}
+```
 
 
-{% highlight r %}
+```r
 Rprof(tmp <- tempfile())
 res <- replicate(n = 1000, Wilks.lambda2(Y, X), simplify = FALSE)
 Rprof()
 proftable(tmp)
-{% endhighlight %}
+```
 
 
 
-{% highlight text %}
+```
 ##  PctTime Call                                                  
 ##  24.10   FUN > Wilks.lambda2 > eigen                           
 ##  22.89   FUN > Wilks.lambda2 > %*%                             
@@ -185,21 +185,21 @@ proftable(tmp)
 ## 
 ## Total Time: 1.66 seconds
 ## Percent of run time represented: 77.1 %
-{% endhighlight %}
+```
 
 
 
-{% highlight r %}
+```r
 plotProfileCallGraph(readProfileData(tmp),
                      score = "total")
-{% endhighlight %}
+```
 
-![plot of chunk Wilks2](/figure/source/2015-09-10-optimisation-test-case/Wilks2-1.png) 
+![plot of chunk Wilks2](Wilks2-1.png) 
 
 What we can notice now is that ```as.vector``` is being called quite often. Looking at the source code, we see that we can probably replace ```apply(Y, 2, mean)``` by the optimised function ```colMeans```. Moreover, some of the matrix multiplications involve matrix transposition; for this purpose, it is better to use the optimised functions ```crossprod``` and ```tcrossprod```:
 
 
-{% highlight r %}
+```r
 # Compute PCEV and its p-value - Take 3
 Wilks.lambda3 <- function(Y, x) {
   N <- dim(Y)[1]
@@ -235,19 +235,19 @@ Wilks.lambda3 <- function(Y, x) {
               "values"=d, 
               "p.value"=p.value))
 }
-{% endhighlight %}
+```
 
 
-{% highlight r %}
+```r
 Rprof(tmp <- tempfile())
 res <- replicate(n = 1000, Wilks.lambda3(Y, X), simplify = FALSE)
 Rprof()
 proftable(tmp)
-{% endhighlight %}
+```
 
 
 
-{% highlight text %}
+```
 ##  PctTime Call                     
 ##  36.73   eigen                    
 ##  14.29   crossprod                
@@ -264,16 +264,16 @@ proftable(tmp)
 ## 
 ## Total Time: 0.98 seconds
 ## Percent of run time represented: 85.7 %
-{% endhighlight %}
+```
 
 
 
-{% highlight r %}
+```r
 plotProfileCallGraph(readProfileData(tmp),
                      score = "total")
-{% endhighlight %}
+```
 
-![plot of chunk Wilks3](/figure/source/2015-09-10-optimisation-test-case/Wilks3-1.png) 
+![plot of chunk Wilks3](Wilks3-1.png) 
 
 This is getting much better.
 
@@ -282,7 +282,7 @@ This is getting much better.
 It seems the next thing we could do is try to improve the function ```eigen```. Looking at the graph of calls, we see that ```eigen``` actually calls quite a lot of helper functions to look at the data type. It is also calling ```ncol``` and ```nrow```, which gives quantities we already know about. Looking at the source code reveals that the main work is being done by an internal function, ```La_rs```. Therefore, by calling it directly, we can avoid all the type checking.
 
 
-{% highlight r %}
+```r
 # Compute PCEV and its p-value - Take 4
 Wilks.lambda4 <- function(Y, x) {
   N <- dim(Y)[1]
@@ -318,19 +318,19 @@ Wilks.lambda4 <- function(Y, x) {
               "values"=d, 
               "p.value"=p.value))
 }
-{% endhighlight %}
+```
 
 
-{% highlight r %}
+```r
 Rprof(tmp <- tempfile())
 res <- replicate(n = 1000, Wilks.lambda4(Y, X), simplify = FALSE)
 Rprof()
 proftable(tmp)
-{% endhighlight %}
+```
 
 
 
-{% highlight text %}
+```
 ##  PctTime Call                             
 ##  33.33   Wilks.lambda4                    
 ##  17.78   Wilks.lambda4 > crossprod        
@@ -347,21 +347,21 @@ proftable(tmp)
 ## 
 ## Total Time: 0.9 seconds
 ## Percent of run time represented: 88.9 %
-{% endhighlight %}
+```
 
 
 
-{% highlight r %}
+```r
 plotProfileCallGraph(readProfileData(tmp),
                      score = "total")
-{% endhighlight %}
+```
 
-![plot of chunk Wilks4](/figure/source/2015-09-10-optimisation-test-case/Wilks4-1.png) 
+![plot of chunk Wilks4](Wilks4-1.png) 
 
 This looks quite good, there isn't much left to improve, except perhaps the call to ```lm.fit```. We will replace it by an explicit QR decomposition, which calls Fortran routines. 
 
 
-{% highlight r %}
+```r
 # Compute PCEV and its p-value - Final take
 Wilks.lambda5 <- function(Y, x) {
   N <- dim(Y)[1]
@@ -401,19 +401,19 @@ Wilks.lambda5 <- function(Y, x) {
               "values"=d, 
               "p.value"=p.value))
 }
-{% endhighlight %}
+```
 
 
-{% highlight r %}
+```r
 Rprof(tmp <- tempfile())
 res <- replicate(n = 1000, Wilks.lambda5(Y, X), simplify = FALSE)
 Rprof()
 proftable(tmp)
-{% endhighlight %}
+```
 
 
 
-{% highlight text %}
+```
 ##  PctTime
 ##  47.06  
 ##  26.47  
@@ -437,16 +437,16 @@ proftable(tmp)
 ## 
 ## Total Time: 0.68 seconds
 ## Percent of run time represented: 100 %
-{% endhighlight %}
+```
 
 
 
-{% highlight r %}
+```r
 plotProfileCallGraph(readProfileData(tmp),
                      score = "total")
-{% endhighlight %}
+```
 
-![plot of chunk Wilks5](/figure/source/2015-09-10-optimisation-test-case/Wilks5-1.png) 
+![plot of chunk Wilks5](Wilks5-1.png) 
 
 We have also replaced the call to ```pf``` by a call to a C routine. Finally, note that the ```diag``` function, even though it is used only once, is a very flexible function that behaves quite differently depending on its input. Therefore, we can speed it up by calling the appropriate subroutine; this is what we did above.
 
@@ -455,18 +455,18 @@ We have also replaced the call to ```pf``` by a call to a C routine. Finally, no
 Let's do a timing comparison between the five different approaches:
 
 
-{% highlight r %}
+```r
 compare <- microbenchmark(Wilks.lambda(Y, X), 
                           Wilks.lambda2(Y, X), 
                           Wilks.lambda3(Y, X), 
                           Wilks.lambda4(Y, X), 
                           Wilks.lambda5(Y, X), times = 1000)
 compare
-{% endhighlight %}
+```
 
 
 
-{% highlight text %}
+```
 ## Unit: microseconds
 ##                 expr      min        lq      mean    median        uq
 ##   Wilks.lambda(Y, X) 2713.097 2840.7870 2995.7128 2879.5495 2929.4545
@@ -480,15 +480,15 @@ compare
 ##  4056.642  1000
 ##  8361.569  1000
 ##  6253.913  1000
-{% endhighlight %}
+```
 
 
 
-{% highlight r %}
+```r
 autoplot(compare)
-{% endhighlight %}
+```
 
-![plot of chunk WilksComp](/figure/source/2015-09-10-optimisation-test-case/WilksComp-1.png) 
+![plot of chunk WilksComp](WilksComp-1.png) 
 
 We see that the final approach provides about a five-fold speed increase over the initial approach. This means we can do five times more permutations for the same amount of computing time!
 

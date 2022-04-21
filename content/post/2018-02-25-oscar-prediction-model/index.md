@@ -14,7 +14,7 @@ A few years ago, as part of the graduate course *Data Analysis and Report Writin
 
 <!--more-->
 
-Over the years, I've continued using the model, but I've also tweaked it a bit. In this post, I want to describe my model and present the predictions for this year (see also ({{ site.github.url }}/oscar-predictions-2018)). 
+Over the years, I've continued using the model, but I've also tweaked it a bit. In this post, I want to describe my model and present the predictions for this year (see my full predictions [here](https://www.maxturgeon.ca/blog/2018-02-24-oscar-predictions-2018/)). 
 
 ## Conditional logistic regression
 
@@ -238,7 +238,7 @@ boot_prob_pic %>%
     theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-![plot of chunk unnamed-chunk-6](/figure/source/2018-02-25-oscar-prediction-model/unnamed-chunk-6-1.png)
+![plot of chunk unnamed-chunk-6](unnamed-chunk-6-1.png)
 
 As we can see, there is a lot of variation in these predictions, and therefore *The Shape of Water* winning is not incompatible with our model fit. 
 
@@ -280,6 +280,6 @@ fit_pic %>%
 ## they will be dropped
 ```
 
-![plot of chunk unnamed-chunk-7](/figure/source/2018-02-25-oscar-prediction-model/unnamed-chunk-7-1.png)
+![plot of chunk unnamed-chunk-7](unnamed-chunk-7-1.png)
 
 As we can see, although on its own the PGA Award winner seems a good predictor (since 1989, the Academy Award and the PGA Award went to the same movie 19 times out of 28), once we include the information coming from the other guild awards it loses its predictive ability. Therefore, given that *The Shape of Water* only won the PGA and DGA awards, I believe *Three Billboards Outside Ebbing, Missouri* is the real front-runner.

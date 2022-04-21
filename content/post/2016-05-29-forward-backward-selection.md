@@ -8,8 +8,6 @@ date: 2016-05-29
 comments: true
 ---
 
-
-
 Classical statistics often assumes that the analyst knows which variables are important and which variables are not. Of course, this is a strong assumption, and therefore many variable selection procedures have been developed to address this problem. In this blog post, I want to focus on two subset selection methods, and I want to address their instability. In other words, I want to discuss how **small changes** in the data can lead to **completely different solutions**.
 
 <!--more-->
@@ -37,28 +35,32 @@ One such method is called the *all-subset selection*. This method is typically b
 Instead I will focus on [Forward and Backward selection](https://en.wikipedia.org/wiki/Stepwise_regression), which are very popular approaches to model selection. Their distinguishing feature is that they are procedure that move through the lattice of all possible models until no "good" move is left. I will illustrate these methods using a well-known dataset on prostate cancer:
 
 
-{% highlight r %}
+```r
 library(lasso2)
 data(Prostate)
-{% endhighlight %}
+```
 
 Looking at the documentation for this dataset: 
 
 ```
-These data come from a study that examined the correlation between the level of prostate specific antigen and a number of clinical measures in men who were about to receive a radical prostatectomy. It is data frame with 97 rows and 9 columns.
+These data come from a study that examined the correlation 
+between the level of prostate specific antigen and a number 
+of clinical measures in men who were about to receive a 
+radical prostatectomy. 
+It is data frame with 97 rows and 9 columns.
 ```
 
 We will look at the mean cancer volume (on the log scale) as a function of the other 8 clinical features (so there are 255 possible models). 
 
 
-{% highlight r %}
+```r
 full_model <- lm(lcavol ~ ., data = Prostate)
 summary(full_model)
-{% endhighlight %}
+```
 
 
 
-{% highlight text %}
+```
 ## 
 ## Call:
 ## lm(formula = lcavol ~ ., data = Prostate)
@@ -84,7 +86,7 @@ summary(full_model)
 ## Residual standard error: 0.6998 on 88 degrees of freedom
 ## Multiple R-squared:  0.6769,	Adjusted R-squared:  0.6475 
 ## F-statistic: 23.04 on 8 and 88 DF,  p-value: < 2.2e-16
-{% endhighlight %}
+```
 
 As we can see, the prostate specific antigen (PSA) levels and capsular penetration (both on the log scale) are the most significant variables. 
 In forward selection, we start with the null model (only the intercept) and we look at all available variables. Adding them one at a time, we decide which one is the most relevant to the model, and consider it part of our model. We then look at the remaining terms and decide if we can improve our model by adding one more variable. We stop when including another variable does not improve our model anymore.
@@ -92,16 +94,16 @@ In forward selection, we start with the null model (only the intercept) and we l
 We will use this approach with the Prostate dataset:
 
 
-{% highlight r %}
+```r
 null_model <- lm(lcavol ~ 1, data = Prostate)
 forward_model <- step(null_model, scope=list(lower=null_model,
                                              upper=full_model),
                       direction = "forward")
-{% endhighlight %}
+```
 
 
 
-{% highlight text %}
+```
 ## Start:  AIC=32.88
 ## lcavol ~ 1
 ## 
@@ -161,20 +163,20 @@ forward_model <- step(null_model, scope=list(lower=null_model,
 ## + svi      1   0.31382 44.565 -63.444
 ## + gleason  1   0.09437 44.784 -62.967
 ## + lweight  1   0.09065 44.788 -62.959
-{% endhighlight %}
+```
 
-The most important variable in the dirst stage was, no surprise, the PSA level. But we also ended up adding three mode variables: capsular penetration, age, and benign prostatic hyperplasia amount (also on the log scale). Therefore, this is the model selected using Forward selection.
+The most important variable in the first stage was, no surprise, the PSA level. But we also ended up adding three mode variables: capsular penetration, age, and benign prostatic hyperplasia amount (also on the log scale). Therefore, this is the model selected using Forward selection.
 
 Backward selection is very similar, but we start with the full model and decide which variable is the *least* relevant to the model. We then continue removing variables until doing so decreases significantly the quality of our model. Using this approach with the Prostate dataset:
 
 
-{% highlight r %}
+```r
 backward_model <- step(full_model, direction = "backward")
-{% endhighlight %}
+```
 
 
 
-{% highlight text %}
+```
 ## Start:  AIC=-60.7
 ## lcavol ~ lweight + age + lbph + svi + lcp + gleason + pgg45 + 
 ##     lpsa
@@ -214,11 +216,9 @@ backward_model <- step(full_model, direction = "backward")
 ## - age      1    1.9355 45.290 -61.878
 ## - lcp      1   10.9352 54.289 -44.297
 ## - lpsa     1   24.9001 68.254 -22.093
-{% endhighlight %}
+```
 
 The least relevant variable is the weight of the prostate. But we only ended up removing one more variable (seminal vesicle invasion), and therefore we can see that forward and backward selection **do not** lead to the same model. Which in itself can be a problem: which one should we choose?
-
-
 
 ## Perturbation and Instability
 
@@ -227,7 +227,7 @@ In a [1996 Annals of Statistics paper](https://projecteuclid.org/euclid.aos/1032
 We will investigate this phenomenon through simulations. I will randomly select one observation and change its value for the response variable. I repeat this process 500 times, and I look at the percentage of time each variable was selected in the model. So I am only changing **one number** in the whole dataset.
 
 
-{% highlight r %}
+```r
 forward_pert <- replicate(500, expr = {
     sampleID <- sample(nrow(Prostate), size = 1)
     Prostate_pert <- Prostate
@@ -245,23 +245,23 @@ forward_pert <- replicate(500, expr = {
 
 rownames(forward_pert) <- names(Prostate)
 rowMeans(forward_pert)
-{% endhighlight %}
+```
 
 
 
-{% highlight text %}
+```
 ##  lcavol lweight     age    lbph     svi     lcp gleason   pgg45 
 ##   0.000   0.006   0.486   0.456   0.066   1.000   0.044   0.054 
 ##    lpsa 
 ##   1.000
-{% endhighlight %}
+```
 
 First, the good news: PSA levels and capsular penetration are **always** selected by forward selection. However, age and benign prostatic hyperplasia amount are selected only about 50% of the time. And remember that we're only changing one number!
 
 We can also look at backward selection:
 
 
-{% highlight r %}
+```r
 backward_pert <- replicate(500, expr = {
     sampleID <- sample(nrow(Prostate), size = 1)
     Prostate_pert <- Prostate
@@ -276,16 +276,16 @@ backward_pert <- replicate(500, expr = {
 
 rownames(backward_pert) <- names(Prostate)
 rowMeans(backward_pert)
-{% endhighlight %}
+```
 
 
 
-{% highlight text %}
+```
 ##  lcavol lweight     age    lbph     svi     lcp gleason   pgg45 
 ##   0.000   0.016   0.772   0.662   0.068   1.000   0.482   0.528 
 ##    lpsa 
 ##   1.000
-{% endhighlight %}
+```
 
 Here the problem is even worse: age is selected 80% of the time, benign prostatic hyperplasia amount is selected two times out of three, and both gleason score variables are selected only half the time.
 

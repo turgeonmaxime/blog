@@ -7,7 +7,7 @@ date: 2018-02-24
 comments: true
 ---
 
-For the past few years, I have tried to predict the winners in all categories at the Academy Awards. Again, I will be using statistics and data analysis to inform my decision in some categories: Best Picure, Best Director, Best Actor, Best Actress, Best Supporting Actor, and Best Supporting Actress
+For the past few years, I have tried to predict the winners in all categories at the Academy Awards. Again, I will be using statistics and data analysis to inform my decision in some categories: Best Picure, Best Director, Best Actor, Best Actress, Best Supporting Actor, and Best Supporting Actress.
 
 As for the last three years, I stick to what the model tells me for my prediction in these categories. However, I'm skeptical about the predictions I have for best picture: several pundits see *The Shape of Water* as a front runner, but my model only gives it a 16% chance of winning. Due to rule changes that now require a preferential ballot for Best Picture, the winner has been difficult to predict in recent years. Since *The Shape of Water* possibly has a broader appeal than *Lady Bird* and *Three Billboards Outside Ebbing, Missouri*, it may prevail in the end. But I still believe *Three Billboards Outside Ebbing, Missouri* is the actual front-runner; but I do think my model is under-estimating *The Shape of Water*'s chances and over-estimating *Lady Bird*'s.
 
