@@ -15,7 +15,7 @@ permalinks:
 menu:
   main:
     - name: Home
-      url: /../
+      url: https://maxturgeon.ca/
 params:
   MathJaxCDN: //cdnjs.cloudflare.com/ajax/libs
   MathJaxVersion: 2.7.5

@@ -31,23 +31,23 @@ ggplot(Y, aes(X1, X2)) +
   theme_minimal()
 ```
 
-![Elliptical contours of multivariate normal](/figure/source/2020-02-06-multivariate-t-distribution_files/figure-latex/unnamed-chunk-1-1.png) 
+![Elliptical contours of multivariate normal](unnamed-chunk-1-1.png) 
 
 Elliptical distributions are a generalization of the multivariate normal distribution that retain this property that lines of constant density are ellipses. 
 
 <!--more-->
 
-There are many ways to formalise this definition. For example, let $$\mu\in\mathbb{R}^p$$ and $$\Lambda$$ be a $$p\times p$$ positive-definite matrix. If $$\mathbf{Y}$$ has density
+There are many ways to formalise this definition. For example, let `$\mu\in\mathbb{R}^p$` and `$\Lambda$` be a `$p\times p$` positive-definite matrix. If `$\mathbf{Y}$` has density
 
 $$f(\mathbf{Y}) = \lvert\Lambda\rvert^{-1/2}g\left((\mathbf{Y} - \mu)^T\Lambda^{-1}(\mathbf{Y} - \mu)\right),$$
 
-where $$g:[0, \infty)\to [0, \infty)$$ does not depend on $$\mu,\Lambda$$, we say that $$\mathbf{Y}$$ follows an **elliptical distribution** with location-scale parameters $$\mu,\Lambda$$, and we write $$\mathbf{Y}\sim E_p(\mu,\Lambda)$$.
+where `$g:[0, \infty)\to [0, \infty)$` does not depend on `$\mu,\Lambda$`, we say that `$\mathbf{Y}$` follows an **elliptical distribution** with location-scale parameters `$\mu,\Lambda$`, and we write `$\mathbf{Y}\sim E_p(\mu,\Lambda)$`.
 
-We can recover the multivariate normal distribution by taking $$g(u) = (2\pi)^{-p/2}\exp\left(-\frac{1}{2}u\right)$$.
+We can recover the multivariate normal distribution by taking `$g(u) = (2\pi)^{-p/2}\exp\left(-\frac{1}{2}u\right)$`.
 
 ## Multivariate *t* distribution
 
-One very important example of elliptical distribution is the *multivariate t distribution*. Its density is defined as follows: if we let $$\nu > 0$$, we have
+One very important example of elliptical distribution is the *multivariate t distribution*. Its density is defined as follows: if we let `$\nu > 0$`, we have
 
 $$f(\mathbf{Y}) = c_{p,\nu}\lvert\Lambda\vert^{-1/2}(1 + (\mathbf{Y} - \mu)^T\Lambda^{-1}(\mathbf{Y} - \mu)/\nu)^{-(\nu+p)/2},$$
 
@@ -55,9 +55,9 @@ where
 
 $$c_{p,\nu} = \frac{(\nu\pi)^{-p/2} \Gamma\left(\frac{1}{2} (\nu + p)\right)}{\Gamma\left(\frac{1}{2}\nu\right)}.$$
 
-This clearly fits our definition of an elliptical distribution: simply take $$g(u) = c_{p,\nu}(1 + u)^{-(\nu+p)/2}$$.
+This clearly fits our definition of an elliptical distribution: simply take $$g(u) = c_{p,\nu}(1 + u)^{-(\nu+p)/2}.$$
 
-There is a different, equivalent way of defining the multivariate *t* distribution: let $$W$$ be such that $$\nu W^{-1}\sim\chi^2(\nu)$$, and let $$\mathbf{Z} \sim N(0, I_p)$$. Then we have
+There is a different, equivalent way of defining the multivariate *t* distribution: let `$W$` be such that `$\nu W^{-1}\sim\chi^2(\nu)$`, and let `$\mathbf{Z} \sim N(0, I_p)$`. Then we have
 
 $$\mu + \sqrt{W}\Lambda^{1/2}\mathbf{Z} \sim t_{p,\nu}(\mu, \Lambda).$$
 
@@ -65,11 +65,11 @@ This representation readily gives us a way to generate samples from a *t* distri
 
 ## Generating samples
 
-So the equation above gives us a recipe for generating a sample $$\mathbf{Y}_1, \ldots, \mathbf{Y}_n$$: for $$i=1, \ldots, n$$:
+So the equation above gives us a recipe for generating a sample `$\mathbf{Y}_1, \ldots, \mathbf{Y}_n$`: for `$i=1, \ldots, n$`:
 
-  1. Generate $$X_i\sim \chi^2(\nu)$$ and set $$W_i = \nu/X_i$$;
-  2. Generate $$\mathbf{Z}_i\sim N(0, I_p)$$ (e.g. by generating $$p$$ univariate standard normal variables);
-  3. Set $$\mathbf{Y}_i = \mu + \sqrt{W_i}\Lambda^{1/2}\mathbf{Z}_i$$.
+  1. Generate `$X_i\sim \chi^2(\nu)$` and set `$W_i = \nu/X_i$`;
+  2. Generate `$\mathbf{Z}_i\sim N(0, I_p)$` (e.g. by generating `$p$` univariate standard normal variables);
+  3. Set `$\mathbf{Y}_i = \mu + \sqrt{W_i}\Lambda^{1/2}\mathbf{Z}_i$`.
   
 We can easily implement this in `R`:
 
@@ -114,9 +114,9 @@ Students of statistics are taught the different between correlation and dependen
 
 ### Proposition
 
-*Within the class of elliptical distributions $$E_p(\mu,\Lambda)$$, the property that independence and uncorrelatedness are equivalent uniquely defines the multivariate normal distribution.*
+*Within the class of elliptical distributions `$E_p(\mu,\Lambda)$`, the property that independence and uncorrelatedness are equivalent uniquely defines the multivariate normal distribution.*
 
-This result is important! Because whereas I was able to generate a standard multivariate normal $$Z$$ by simply generating $$p$$ standard univariate normals, I cannot do the same for the uncorrelated (i.e. $$\Lambda = I_p$$ ) multivariate *t* distribution. We can clearly see how this wrong using a simulation:
+This result is important! Because whereas I was able to generate a standard multivariate normal `$Z$` by simply generating `$p$` standard univariate normals, I cannot do the same for the uncorrelated (i.e. `$\Lambda = I_p$` ) multivariate *t* distribution. We can clearly see how this wrong using a simulation:
 
 
 ```r
@@ -154,6 +154,6 @@ data_plot %>%
   geom_density2d()
 ```
 
-![Comparison of joint vs independent t distributions]({{ site.github.url }}/figure/source/2020-02-06-multivariate-t-distribution_files/figure-latex/unnamed-chunk-5-1.png) 
+![Comparison of joint vs independent t distributions](unnamed-chunk-5-1.png)
 
 As we can see from the left panel, by multiplying two marginal *t* distribution, we do not get an elliptical distribution; the contour lines are closer to diamonds.

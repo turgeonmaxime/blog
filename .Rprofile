@@ -20,4 +20,4 @@ options(
 )
 
 # fix Hugo version
-options(blogdown.hugo.version = "0.74.1")
+# options(blogdown.hugo.version = "0.74.1")
