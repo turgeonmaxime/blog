@@ -1,0 +1,92 @@
+<!doctype html><html lang=en-ca>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta name=generator content="Hugo 0.91.2">
+<title>PCA and MDS - Blog—Max Turgeon</title>
+<meta property="og:title" content="PCA and MDS - Blog—Max Turgeon">
+<link href=https://maxturgeon.ca/blog/icon.png rel=icon type=image/x-icon>
+<link href=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css rel=stylesheet type=text/css>
+<link rel=stylesheet href=/blog/css/fonts.css media=all>
+<link rel=stylesheet href=/blog/css/main.css media=all>
+</head>
+<body>
+<div class=wrapper>
+<header class=header>
+<nav class=nav>
+<a href=/blog/ class=nav-logo>
+<img src=/blog/avatar.jpeg width=50 height=50 alt="Max Turgeon">
+</a>
+<ul class=nav-links>
+<li><a href=https://maxturgeon.ca/>Home</a></li>
+</ul>
+</nav>
+</header>
+<main class=content role=main>
+<article class=article>
+<span class=article-duration>3 min read</span>
+<h1 class=article-title>PCA and MDS</h1>
+<span class=article-date>2021-09-21</span>
+<div class=article-content>
+<p>Principal Component Analysis (PCA) and classical Multidimensional Scaling (MDS) are two closely related dimension reduction methods. In fact, under certain conditions, there are <strong>exactly</strong> the same. Their main difference is the type of input they take:</p>
+<ul>
+<li><strong>PCA</strong>: A dataset where each row is an observation, and each column is a feature.</li>
+<li><strong>MDS</strong>: A distance matrix.</li>
+</ul>
+<p>Let’s look at an example. We will apply PCA to the <code>USArrests</code> data that is included with base <code>R</code>. Each row is a US state, and the four columns correspond to:</p>
+<ul>
+<li>Number of arrests for murder per 100,000.</li>
+<li>Number of arrests for assault per 100,000.</li>
+<li>Number of arrests for rape per 100,000.</li>
+<li>Percent of the population that lives in an urban area.</li>
+</ul>
+<p>For the purposes of this post, we will ignore the fact that one of the variables is measured on a different scale than the others.</p>
+<p>We can perform PCA using the function <code>prcomp</code>, to which we directly pass the dataset.</p>
+<pre class=r><code># PCA on USArrests dataset
+pca_out &lt;- prcomp(USArrests)</code></pre>
+<p>The object <code>pca_out</code> now contains the information you would need to evaluate the results of this PCA decomposition. See the help page for more information.</p>
+<p>With MDS, we need to compute the distance matrix first. Here we choose the Euclidean distance.</p>
+<pre class=r><code># Compute Euclidean distance between each observation
+dmat &lt;- dist(USArrests)
+mds_out &lt;- cmdscale(dmat, k = 4)</code></pre>
+<p>The function <code>cmdscale</code> requires both the distance matrix and the number of dimensions. Note that in PCA, we passed the full dataset, and therefore <code>prcomp</code> “knows” how many dimensions to consider. In MDS, we need to be explicit.</p>
+<p>Because we chose the Euclidean distance, it turns out that PCA and MDS give us the same decomposition. We can check that this is the case as follows:</p>
+<pre class=r><code># Equality only up to a sign
+# Remember: Eigenvectors are not unique!
+all.equal(pca_out$x, -mds_out,
+          check.attributes = FALSE)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<p><strong>So what is the point of MDS</strong>, if there is an extra step but we get the same output? Sometimes, all we have to work with is a distance matrix. For example, the <code>eurodist</code> dataset (also included with base <code>R</code>) contains <em>road</em> distances (in km) between 21 European cities. In this setting, we can perform MDS on the distance matrix and visualize the data in two dimensions.</p>
+<pre class=r><code>mds_out &lt;- cmdscale(eurodist, k = 2)
+
+# Visualize
+plot(mds_out[, 1], mds_out[, 2], type = &quot;n&quot;,
+     xlab = &quot;MDS1&quot;, ylab = &quot;MDS2&quot;, asp = 1)
+text(mds_out[, 1], mds_out[, 2],
+     rownames(mds_out), cex = 0.6)</code></pre>
+<p><img src=https://maxturgeon.ca/blog/2021-09-21-pca-and-mds/index_files/figure-html/unnamed-chunk-4-1.png width=672></p>
+<p>We can see from the plot that MDS recovers the geographic arrangement of European cities, with North and South flipped.</p>
+<p>Therefore, to apply PCA, we need data in matrix form. However, to apply MDS, all we need is a distance matrix. The observations themselves could be anything: cities, DNA sequences, molecules, etc.</p>
+<p>For more details on MDS (and its nonlinear extensions), see these <a href=https://www.maxturgeon.ca/f19-stat4690/slides/multidimensional-scaling.pdf>slides</a> from my Multivariate Analysis course.</p>
+</div>
+</article>
+</main>
+<footer class=footer>
+<ul class=footer-links>
+<li>
+<a href=/blog/index.xml type=application/rss+xml target=_blank>RSS feed</a>
+</li>
+<li>
+<a href=https://gohugo.io/ class=footer-links-kudos>Made with <img src=/blog/images/hugo-logo.png alt="Img link to Hugo website" width=22 height=22></a>
+</li>
+</ul>
+</footer>
+</div>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js></script>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js></script>
+<script src=//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js></script>
+<script>hljs.configure({languages:[]}),hljs.initHighlightingOnLoad()</script>
+<script src=/blog/js/math-code.js></script>
+<script async src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</body>
+</html>
