@@ -1,0 +1,70 @@
+---
+title: Hidden powerful features of the tidyverse
+author: Max Turgeon
+date: '2023-09-21'
+slug: hidden-powerful-features-of-the-tidyverse
+categories: []
+tags: []
+---
+
+Lately, I have had to write `R` code that would run from the command line (through `Rscript`) and whose expected behaviour was to summarise datasets that have standardized column names, but where the existing columns may differ from project to project.
+
+In developing this code, I ran into a couple of (new to me) features of the tidyverse, and specifically the packages `tidyselect` and `dplyr`. These are:
+
+  - `tidyselect::any_of`: variable selection by character vector that ignores missing variable.
+  - the ability of `dplyr::across` to rename variables on the fly.
+  
+If you have been following the developments of the tidyverse over the last few years, you'll know that with the release of `dplyr==1.0.0`, the recommended way of applying a mutating or summarising function to several columns is to use `across`. Let's look at an example.
+
+```{r message = FALSE}
+library(tidyverse)
+
+# Compute mean of all numerical variables
+iris |> 
+  summarise(across(where(is.numeric), mean))
+```
+
+This approach also works with `group_by`. Moreover, if you want to pass arguments to the function, you should use anonymous functions:
+
+```{r}
+iris |> 
+  group_by(Species) |> 
+  summarise(across(where(is.numeric), 
+                   \(x) mean(x, na.rm = TRUE)))
+```
+
+The use case of the functions `all_of` and `any_of` is when you have a vector containing the name of the variables you want to use with `across`. The difference between the two is that `all_of` will throw an error if you're trying to summarize a column that doesn't exist.
+
+```{r}
+vars_to_summarize <- c('Sepal.Length', 'New.Variable')
+
+iris |> 
+  group_by(Species) |> 
+  summarise(across(any_of(vars_to_summarize), 
+                   \(x) mean(x, na.rm = TRUE)))
+```
+
+But the following throws an error:
+
+```{r error=TRUE}
+iris |> 
+  group_by(Species) |> 
+  summarise(across(all_of(vars_to_summarize), 
+                   \(x) mean(x, na.rm = TRUE)))
+```
+
+The above has been documented elsewhere. But a nice hidden feature that I made use of is that `across` can rename variables on-the-fly if you pass a *named* vector to `any_of`! Here is what it looks like:
+
+```{r}
+vars_to_summarize <- c(
+  avg_sepal_length = 'Sepal.Length', 
+  avg_new_variable = 'New.Variable'
+  )
+
+iris |> 
+  group_by(Species) |> 
+  summarise(across(any_of(vars_to_summarize), 
+                   \(x) mean(x, na.rm = TRUE)))
+```
+
+I hope this little trick can be useful to others!

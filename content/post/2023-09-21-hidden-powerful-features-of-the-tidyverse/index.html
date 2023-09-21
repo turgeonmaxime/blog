@@ -1,0 +1,77 @@
+---
+title: Hidden powerful features of the tidyverse
+author: Max Turgeon
+date: '2023-09-21'
+slug: hidden-powerful-features-of-the-tidyverse
+categories: []
+tags: []
+---
+
+
+
+<p>Lately, I have had to write <code>R</code> code that would run from the command line (through <code>Rscript</code>) and whose expected behaviour was to summarise datasets that have standardized column names, but where the existing columns may differ from project to project.</p>
+<p>In developing this code, I ran into a couple of (new to me) features of the tidyverse, and specifically the packages <code>tidyselect</code> and <code>dplyr</code>. These are:</p>
+<ul>
+<li><code>tidyselect::any_of</code>: variable selection by character vector that ignores missing variable.</li>
+<li>the ability of <code>dplyr::across</code> to rename variables on the fly.</li>
+</ul>
+<p>If you have been following the developments of the tidyverse over the last few years, you’ll know that with the release of <code>dplyr==1.0.0</code>, the recommended way of applying a mutating or summarising function to several columns is to use <code>across</code>. Let’s look at an example.</p>
+<pre class="r"><code>library(tidyverse)
+
+# Compute mean of all numerical variables
+iris |&gt; 
+  summarise(across(where(is.numeric), mean))</code></pre>
+<pre><code>##   Sepal.Length Sepal.Width Petal.Length Petal.Width
+## 1     5.843333    3.057333        3.758    1.199333</code></pre>
+<p>This approach also works with <code>group_by</code>. Moreover, if you want to pass arguments to the function, you should use anonymous functions:</p>
+<pre class="r"><code>iris |&gt; 
+  group_by(Species) |&gt; 
+  summarise(across(where(is.numeric), 
+                   \(x) mean(x, na.rm = TRUE)))</code></pre>
+<pre><code>## # A tibble: 3 × 5
+##   Species    Sepal.Length Sepal.Width Petal.Length Petal.Width
+##   &lt;fct&gt;             &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;
+## 1 setosa             5.01        3.43         1.46       0.246
+## 2 versicolor         5.94        2.77         4.26       1.33 
+## 3 virginica          6.59        2.97         5.55       2.03</code></pre>
+<p>The use case of the functions <code>all_of</code> and <code>any_of</code> is when you have a vector containing the name of the variables you want to use with <code>across</code>. The difference between the two is that <code>all_of</code> will throw an error if you’re trying to summarize a column that doesn’t exist.</p>
+<pre class="r"><code>vars_to_summarize &lt;- c(&#39;Sepal.Length&#39;, &#39;New.Variable&#39;)
+
+iris |&gt; 
+  group_by(Species) |&gt; 
+  summarise(across(any_of(vars_to_summarize), 
+                   \(x) mean(x, na.rm = TRUE)))</code></pre>
+<pre><code>## # A tibble: 3 × 2
+##   Species    Sepal.Length
+##   &lt;fct&gt;             &lt;dbl&gt;
+## 1 setosa             5.01
+## 2 versicolor         5.94
+## 3 virginica          6.59</code></pre>
+<p>But the following throws an error:</p>
+<pre class="r"><code>iris |&gt; 
+  group_by(Species) |&gt; 
+  summarise(across(all_of(vars_to_summarize), 
+                   \(x) mean(x, na.rm = TRUE)))</code></pre>
+<pre><code>## Error in `summarise()`:
+## ℹ In argument: `across(all_of(vars_to_summarize), function(x) mean(x,
+##   na.rm = TRUE))`.
+## Caused by error in `all_of()`:
+## ! Can&#39;t subset columns that don&#39;t exist.
+## ✖ Column `New.Variable` doesn&#39;t exist.</code></pre>
+<p>The above has been documented elsewhere. But a nice hidden feature that I made use of is that <code>across</code> can rename variables on-the-fly if you pass a <em>named</em> vector to <code>any_of</code>! Here is what it looks like:</p>
+<pre class="r"><code>vars_to_summarize &lt;- c(
+  avg_sepal_length = &#39;Sepal.Length&#39;, 
+  avg_new_variable = &#39;New.Variable&#39;
+  )
+
+iris |&gt; 
+  group_by(Species) |&gt; 
+  summarise(across(any_of(vars_to_summarize), 
+                   \(x) mean(x, na.rm = TRUE)))</code></pre>
+<pre><code>## # A tibble: 3 × 2
+##   Species    avg_sepal_length
+##   &lt;fct&gt;                 &lt;dbl&gt;
+## 1 setosa                 5.01
+## 2 versicolor             5.94
+## 3 virginica              6.59</code></pre>
+<p>I hope this little trick can be useful to others!</p>
